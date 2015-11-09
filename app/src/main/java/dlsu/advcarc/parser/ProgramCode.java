@@ -21,6 +21,14 @@ public class ProgramCode {
         return StartingMemoryAddress + code.size() * 4;
     }
 
+    public int InitialProgramCounter() {
+        return StartingMemoryAddress;
+    }
+
+    public void setInitialProgramCounter(int start){
+        StartingMemoryAddress = start;
+    }
+
     public class Code {
         private String line;
         private int memoryLocation;
