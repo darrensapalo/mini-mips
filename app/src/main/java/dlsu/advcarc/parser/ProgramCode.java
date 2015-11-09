@@ -61,6 +61,10 @@ public class ProgramCode {
             return memoryLocation;
         }
 
+        public String getMemoryLocationHex() {
+            return Integer.toHexString(memoryLocation);
+        }
+
         @Override
         public String toString() {
             return memoryLocation + ": " + line;
