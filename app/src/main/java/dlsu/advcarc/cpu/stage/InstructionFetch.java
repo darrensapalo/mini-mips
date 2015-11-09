@@ -28,4 +28,8 @@ public class InstructionFetch extends Stage {
         int programCounter = cpu.getProgramCounter();
         fetchedLine = code.getCode(programCounter);
     }
+
+    public String getFetchedLine() {
+        return fetchedLine;
+    }
 }

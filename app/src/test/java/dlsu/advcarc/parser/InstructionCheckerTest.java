@@ -7,7 +7,6 @@ import junit.framework.TestCase;
  */
 public class InstructionCheckerTest extends TestCase {
 
-
     public static final String SAMPLE_INSTRUCTION_1 = "somelabel: DADDU R1, R2, R3";
     public static final String SAMPLE_INSTRUCTION_2 = "doThis: DADDU R1";
     public static final String SAMPLE_INSTRUCTION_3 = "try_to_work: BNE R1, R2, doThis";
@@ -68,16 +67,16 @@ public class InstructionCheckerTest extends TestCase {
     public void testGetLabel() throws Exception {
 
 
-        String label = InstructionChecker.getLabel(SAMPLE_INSTRUCTION_1);
+        String label = InstructionChecker.parseLabel(SAMPLE_INSTRUCTION_1);
         assertEquals("somelabel", label);
 
-        label = InstructionChecker.getLabel(SAMPLE_INSTRUCTION_2);
+        label = InstructionChecker.parseLabel(SAMPLE_INSTRUCTION_2);
         assertEquals("doThis", label);
 
-        label = InstructionChecker.getLabel(SAMPLE_INSTRUCTION_3);
+        label = InstructionChecker.parseLabel(SAMPLE_INSTRUCTION_3);
         assertEquals("try_to_work", label);
 
-        label = InstructionChecker.getLabel(SAMPLE_INSTRUCTION_4);
+        label = InstructionChecker.parseLabel(SAMPLE_INSTRUCTION_4);
         assertEquals("___Something_weird", label);
     }
 

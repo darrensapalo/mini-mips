@@ -1,9 +1,12 @@
 package dlsu.advcarc.parser;
 
+import dlsu.advcarc.dependency.DependencyChecker;
+
 /**
  * Created by Darren on 11/9/2015.
  */
 public class Parameter {
+    private final Instruction instruction;
     private Writable parameter;
 
     public enum DependencyType {
@@ -11,9 +14,14 @@ public class Parameter {
     }
 
     public Parameter(String param, Instruction instruction) {
+        this.instruction = instruction;
         parameter = getParameter(param);
-        // todo: find out type of dependency
-        parameter.addDependency(instruction, DependencyType.read);
+
+    }
+
+    public void analyzeDependency(){
+        DependencyType type = DependencyChecker.check(parameter, instruction);
+        parameter.addDependency(instruction, type);
     }
 
     private Writable getParameter(String parameter){
@@ -24,6 +32,10 @@ public class Parameter {
 
     public Instruction peekDependency(DependencyType type){
         return parameter.peekDependency(type);
+    }
+
+    public Writable getParameter() {
+        return parameter;
     }
 
     @Override

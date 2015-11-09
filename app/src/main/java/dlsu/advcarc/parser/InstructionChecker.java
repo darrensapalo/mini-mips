@@ -17,7 +17,7 @@ public class InstructionChecker {
         return null;
     }
 
-    public static String getLabel(String mes) {
+    public static String parseLabel(String mes) {
         if (mes == null)
             return null;
 
@@ -42,7 +42,7 @@ public class InstructionChecker {
         mes = mes.trim();
 
         // Remove label if it exists
-        String label = getLabel(mes);
+        String label = parseLabel(mes);
         if (label != null)
             mes = mes.substring(label.length() + 1);
 
@@ -58,7 +58,7 @@ public class InstructionChecker {
 
     public static ArrayList<Parameter> getParameters(String mes, Instruction instruction){
         mes = mes.trim();
-        String label = getLabel(mes);
+        String label = parseLabel(mes);
 
         if (label != null)
             mes = mes.substring(label.length() + 1);

@@ -8,6 +8,7 @@ import java.util.ArrayList;
 public class Instruction {
     private String input;
     private String instruction;
+    private String label;
     private Stage stage;
     private ArrayList<Parameter> parameters = new ArrayList<>();
 
@@ -17,10 +18,12 @@ public class Instruction {
 
     public Instruction(String line) {
         this.input = line;
+        this.label = InstructionChecker.parseLabel(line);
         this.instruction = InstructionChecker.parseInstruction(line);
         this.parameters = InstructionChecker.getParameters(line, this);
-
     }
+
+
 
     @Override
     public String toString() {
