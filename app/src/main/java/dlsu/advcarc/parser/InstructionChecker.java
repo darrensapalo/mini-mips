@@ -69,7 +69,9 @@ public class InstructionChecker {
         mes = mes.trim();
 
         mes = mes.substring(inst.length()).trim();
-        String[] split = mes.split("[ ,]+");
+
+        mes = mes.replace(";", "").replace(")", "");
+        String[] split = mes.split("[ ,\\(]+");
 
         ArrayList<Parameter> params = new ArrayList<>();
 

@@ -11,6 +11,8 @@ public class InstructionCheckerTest extends TestCase {
     public static final String SAMPLE_INSTRUCTION_2 = "doThis: DADDU R1";
     public static final String SAMPLE_INSTRUCTION_3 = "try_to_work: BNE R1, R2, doThis";
     public static final String SAMPLE_INSTRUCTION_4 = "___Something_weird: J somelabel;";
+    public static final String SAMPLE_INSTRUCTION_5 = "LW R1, 1000(R2);";
+    public static final String SAMPLE_INSTRUCTION_6 = "SW R3, 0000(R0)";
 
     public void testValidateInstruction() throws Exception {
 
@@ -103,6 +105,15 @@ public class InstructionCheckerTest extends TestCase {
         assertEquals("R1", instruction.getParameters().get(0).toString());
         assertEquals("R2", instruction.getParameters().get(1).toString());
         assertEquals("R3", instruction.getParameters().get(2).toString());
+
+        instruction = InstructionChecker.getInstruction(SAMPLE_INSTRUCTION_5);
+        assertEquals("LW", instruction.getInstruction());
+
+        assertEquals("R1", instruction.getParameters().get(0).toString());
+        assertEquals("1000", instruction.getParameters().get(1).toString());
+        assertEquals("R2", instruction.getParameters().get(2).toString());
+
+
     }
 
     public void testInstruction() throws Exception {
@@ -136,11 +147,13 @@ public class InstructionCheckerTest extends TestCase {
 
         // References to parameters should be the same object; singleton pattern
         Parameter param1 = instruction.getParameters().get(0);
+        param1.analyzeDependency();
+
         Parameter param2 = instruction2.getParameters().get(0);
 
-        Instruction peekDependency = param2.peekDependency(Parameter.DependencyType.read);
+        Instruction peekDependency = param2.peekDependency(Parameter.DependencyType.write);
         boolean equals = peekDependency.equals(instruction);
 
-        assertTrue("That the instruction depends on the previous one", equals);
+        assertTrue("That the instruction depends on the previous one, because they both write", equals);
     }
 }
