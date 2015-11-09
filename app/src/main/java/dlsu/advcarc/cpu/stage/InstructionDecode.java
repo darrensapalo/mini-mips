@@ -7,8 +7,11 @@ import dlsu.advcarc.cpu.CPU;
  */
 public class InstructionDecode extends Stage {
     private CPU cpu;
-    public InstructionDecode(CPU cpu) {
+    private InstructionFetch instructionFetchStage;
+
+    public InstructionDecode(CPU cpu, InstructionFetch instructionFetchStage) {
         this.cpu = cpu;
+        this.instructionFetchStage = instructionFetchStage;
     }
 
     @Override
@@ -18,6 +21,6 @@ public class InstructionDecode extends Stage {
 
     @Override
     public void execute() {
-
+        // instructionFetchStage.get code, get from registers
     }
 }

@@ -7,9 +7,11 @@ import dlsu.advcarc.cpu.CPU;
  */
 public class Memory extends Stage {
     private CPU cpu;
+    private Execute executeStage;
 
-    public Memory(CPU cpu) {
+    public Memory(CPU cpu, Execute executeStage) {
         this.cpu = cpu;
+        this.executeStage = executeStage;
     }
 
     @Override

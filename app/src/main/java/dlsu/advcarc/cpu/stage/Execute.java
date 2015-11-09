@@ -7,9 +7,11 @@ import dlsu.advcarc.cpu.CPU;
  */
 public class Execute extends Stage {
     private final CPU cpu;
+    private InstructionDecode instructionDecodeStage;
 
-    public Execute(CPU cpu) {
+    public Execute(CPU cpu, InstructionDecode instructionDecodeStage) {
         this.cpu = cpu;
+        this.instructionDecodeStage = instructionDecodeStage;
     }
 
     @Override

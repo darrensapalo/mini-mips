@@ -7,11 +7,11 @@ import dlsu.advcarc.parser.ProgramCode;
  * Created by Darren on 11/9/2015.
  */
 public class CPU {
-    Stage instructionFetchStage = null;
-    Stage instructionDecodeStage = null;
-    Stage executeStage = null;
-    Stage memoryStage = null;
-    Stage writeBackStage = null;
+    InstructionFetch instructionFetchStage = null;
+    InstructionDecode instructionDecodeStage = null;
+    Execute executeStage = null;
+    Memory memoryStage = null;
+    WriteBack writeBackStage = null;
 
     private ProgramCode code;
 
@@ -22,9 +22,9 @@ public class CPU {
         programCounter = code.InitialProgramCounter();
 
         instructionFetchStage = new InstructionFetch(this, code);
-        instructionDecodeStage = new InstructionDecode(this);
-        executeStage = new Execute(this);
-        memoryStage = new Memory(this);
+        instructionDecodeStage = new InstructionDecode(this, instructionFetchStage);
+        executeStage = new Execute(this, instructionDecodeStage);
+        memoryStage = new Memory(this, executeStage);
         writeBackStage = new WriteBack(this);
     }
 

@@ -1,5 +1,6 @@
 package dlsu.advcarc.parser;
 
+import java.util.Iterator;
 import java.util.LinkedList;
 
 /**
@@ -10,6 +11,7 @@ public class ProgramCode {
     private static int StartingMemoryAddress = 0;
 
     public void addInstruction(String line) {
+        line = line.trim();
         code.add(new Code(line, getNextAvailableAddress()));
     }
 
@@ -27,6 +29,16 @@ public class ProgramCode {
 
     public void setInitialProgramCounter(int start){
         StartingMemoryAddress = start;
+    }
+
+    public String getCode(int programCounter) {
+        Iterator<Code> iterator = code.iterator();
+        while (iterator.hasNext()){
+            Code next = iterator.next();
+            if (next.getMemoryLocation() == programCounter)
+                return next.getLine();
+        }
+        return null;
     }
 
     public class Code {

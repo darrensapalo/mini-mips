@@ -10,6 +10,9 @@ public class InstructionFetch extends Stage {
 
     private CPU cpu;
     private ProgramCode code;
+
+    private String fetchedLine;
+
     public InstructionFetch(CPU cpu, ProgramCode code) {
         this.cpu = cpu;
         this.code = code;
@@ -22,6 +25,7 @@ public class InstructionFetch extends Stage {
 
     @Override
     public void execute() {
-        cpu.getProgramCounter();
+        int programCounter = cpu.getProgramCounter();
+        fetchedLine = code.getCode(programCounter);
     }
 }
