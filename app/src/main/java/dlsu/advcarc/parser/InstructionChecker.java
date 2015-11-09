@@ -1,5 +1,6 @@
 package dlsu.advcarc.parser;
 
+import java.util.ArrayList;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -16,7 +17,7 @@ public class InstructionChecker {
         return null;
     }
 
-    public String getLabel(String mes) {
+    public static String getLabel(String mes) {
         if (mes == null)
             return null;
 
@@ -29,9 +30,11 @@ public class InstructionChecker {
         return null;
     }
 
-    public String getInstruction(String mes) {
+    public static Instruction getInstruction(String mes){
+        return new Instruction(mes);
+    }
 
-
+    public static String parseInstruction(String mes) {
         if (mes == null)
             return null;
 
@@ -53,23 +56,31 @@ public class InstructionChecker {
         return null;
     }
 
-    public String[] getParameters(String mes){
+    public static ArrayList<Parameter> getParameters(String mes, Instruction instruction){
         mes = mes.trim();
         String label = getLabel(mes);
 
         if (label != null)
             mes = mes.substring(label.length() + 1);
 
-        String instruction = getInstruction(mes);
-        if (instruction == null) return null;
+        String inst = parseInstruction(mes);
+        if (inst == null) return null;
 
         mes = mes.trim();
 
-        mes = mes.substring(instruction.length()).trim();
-        return mes.split("[ ,]+");
+        mes = mes.substring(inst.length()).trim();
+        String[] split = mes.split("[ ,]+");
+
+        ArrayList<Parameter> params = new ArrayList<>();
+
+        for (String param : split) {
+            params.add(new Parameter(param, instruction));
+        }
+
+        return params;
     }
 
-    public boolean validateInstruction(String mes) {
+    public static boolean validateInstruction(String mes) {
         switch (mes.toUpperCase()) {
             case "DADDU":
             case "DMULT":
