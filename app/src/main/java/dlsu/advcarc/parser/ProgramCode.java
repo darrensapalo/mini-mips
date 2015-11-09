@@ -1,7 +1,10 @@
 package dlsu.advcarc.parser;
 
+import java.io.File;
+import java.io.FileNotFoundException;
 import java.util.Iterator;
 import java.util.LinkedList;
+import java.util.Scanner;
 
 /**
  * Created by Darren on 11/9/2015.
@@ -62,5 +65,24 @@ public class ProgramCode {
         public String toString() {
             return memoryLocation + ": " + line;
         }
+    }
+
+    public static ProgramCode readFile(String filename){
+        ProgramCode programCode = new ProgramCode();
+
+        // Read file
+        try {
+            File file = new File(filename);
+            Scanner scanner = new Scanner(file);
+            while (scanner.hasNext()) {
+                programCode.addInstruction(scanner.nextLine());
+            }
+        }catch (FileNotFoundException e){
+            throw new IllegalStateException("Could not find input program at " + filename);
+        }
+        catch (Exception e) {
+            e.printStackTrace();
+        }
+        return programCode;
     }
 }
