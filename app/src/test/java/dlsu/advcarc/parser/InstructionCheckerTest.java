@@ -113,6 +113,13 @@ public class InstructionCheckerTest extends TestCase {
         assertEquals("1000", instruction.getParameters().get(1).toString());
         assertEquals("R2", instruction.getParameters().get(2).toString());
 
+        instruction = InstructionChecker.getInstruction(SAMPLE_INSTRUCTION_6);
+        assertEquals("SW", instruction.getInstruction());
+
+        assertEquals("R3", instruction.getParameters().get(0).toString());
+        assertEquals("0000", instruction.getParameters().get(1).toString());
+        assertEquals("R0", instruction.getParameters().get(2).toString());
+
 
     }
 
