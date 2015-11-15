@@ -1,5 +1,5 @@
       .data
-F:    .word 2
+F:    .word 2.2
 A:    .word 25
       .word 5
       .word 15

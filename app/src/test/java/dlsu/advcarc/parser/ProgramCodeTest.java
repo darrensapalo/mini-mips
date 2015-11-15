@@ -41,5 +41,13 @@ public class ProgramCodeTest {
     public void testInput() throws Exception {
         ProgramCode programCode = ProgramCode.readFile("../input.txt");
         programCode.initialize();
+
+        Memory instance = Memory.getInstance("0");
+
+        String asBinary = instance.getAsBinary();
+        assertEquals("10", asBinary);
+
+        String asHex = instance.getAsHex();
+        assertEquals("2", asHex);
     }
 }

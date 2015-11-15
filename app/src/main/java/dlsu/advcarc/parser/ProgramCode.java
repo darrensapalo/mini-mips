@@ -42,7 +42,7 @@ public class ProgramCode {
             return;
         }
 
-        container = ((currentSection == Section.Data) ? code : data);
+        container = ((currentSection == Section.Data) ? data : code);
 
         Code code = new Code(line, getNextAvailableAddress());
         container.add(code);
@@ -54,8 +54,8 @@ public class ProgramCode {
 
     private int getNextAvailableAddress() {
         if (currentSection == Section.Data)
-            return StartingMemoryAddress + code.size() * 4;
-        return StartingProgramAddress + data.size() * 4;
+            return StartingMemoryAddress + data.size() * 4;
+        return StartingProgramAddress + code.size() * 4;
     }
 
     public int InitialProgramCounter() {
@@ -81,22 +81,42 @@ public class ProgramCode {
     }
 
     public void initialize() {
+        compactify(data);
         initializeData();
 
+        compactify(code);
+    }
+
+    private void compactify(LinkedList<Code> codeList) {
+        Code rememberPrevious = null;
+        Iterator<Code> iterator = codeList.iterator();
+
+        while(iterator.hasNext()){
+            Code current = iterator.next();
+
+            if (current.getLine().isEmpty() && !current.getLabel().isEmpty()) {
+                rememberPrevious = current;
+                iterator.remove();
+                continue;
+            }
+
+            if (rememberPrevious != null){
+                current.setLabel(rememberPrevious.getLabel());
+                rememberPrevious = null;
+            }
+        }
     }
 
     private void initializeData() {
-        Iterator<Code> iterator = code.iterator();
-        boolean proceed = false;
-
-        while (iterator.hasNext()) {
-            Code next = iterator.next();
-            String currentLine = next.getLine();
-            if (currentLine.contains(".data"))
-                proceed = true;
-
-
+        Iterator<Code> iterator = data.iterator();
+        while (iterator.hasNext()){
+            Code current = iterator.next();
+            String[] split = current.getLine().split(" ");
+            String memoryLocationHex = current.getMemoryLocationHex();
+            Memory instance = Memory.getInstance(memoryLocationHex);
+            instance.write(split[1]);
         }
+        // use iterator, initialize memory modules
     }
 
     public class Code {
@@ -122,6 +142,14 @@ public class ProgramCode {
             return Integer.toHexString(memoryLocation).toUpperCase();
         }
 
+        public String getLabel() {
+            return label;
+        }
+
+        public void setLabel(String label){
+            this.label = label;
+        }
+
         @Override
         public String toString() {
             return getMemoryLocationHex() + ": " + line;
@@ -134,7 +162,6 @@ public class ProgramCode {
         // Read file
         try {
             File file = new File(filename);
-            System.out.println(file.getAbsolutePath());
             Scanner scanner = new Scanner(file);
             while (scanner.hasNext()) {
 
@@ -142,8 +169,8 @@ public class ProgramCode {
                 line = line.trim();
 
                 // Ignore comments and whitespace
-                if (line.startsWith(";") == true) continue;
-                if (line.isEmpty() == true) continue;
+                if (line.startsWith(";")) continue;
+                if (line.isEmpty()) continue;
 
                 int i = line.indexOf(';');
 
