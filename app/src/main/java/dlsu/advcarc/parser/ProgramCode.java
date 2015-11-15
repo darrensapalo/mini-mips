@@ -112,9 +112,12 @@ public class ProgramCode {
         while (iterator.hasNext()){
             Code current = iterator.next();
             String[] split = current.getLine().split(" ");
+
             String memoryLocationHex = current.getMemoryLocationHex();
             Memory instance = Memory.getInstance(memoryLocationHex);
-            instance.write(split[1]);
+            String value = split[1];
+
+            instance.write(value);
         }
         // use iterator, initialize memory modules
     }

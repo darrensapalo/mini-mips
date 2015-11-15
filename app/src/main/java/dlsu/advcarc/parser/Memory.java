@@ -9,7 +9,7 @@ import java.util.LinkedList;
 public class Memory implements Writable {
     private static HashMap<String, Memory> cache = new HashMap<>();
     private String memory;
-    private Long value;
+    private StringBinary value;
 
     public LinkedList<Instruction> writeDependency = new LinkedList<>();
     public LinkedList<Instruction> readDependency = new LinkedList<>();
@@ -34,20 +34,12 @@ public class Memory implements Writable {
 
     @Override
     public void write(String value) {
-        try {
-            // Try to read as radix 10
-            this.value = new Long(value);
-        }catch (NumberFormatException e){
-            // Try to read as radix 16
-            this.value = Long.parseLong(value, 16);
-        }
-
-
+        this.value = new StringBinary(value);
     }
 
     @Override
     public String read() {
-        return Long.toHexString(value);
+        return value.toString();
     }
 
     @Override
@@ -56,17 +48,15 @@ public class Memory implements Writable {
     }
 
     public String getAsBinary(){
-        if (value == null)
-            return "0";
-        return Long.toBinaryString(value);
+        return read();
     }
 
     public Long getAsLong(){
-        return value;
+        return null;
     }
 
     public String getAsHex(){
-        return read();
+        return null;
     }
 
     @Override
