@@ -17,6 +17,8 @@ public class Instruction {
     }
 
     public Instruction(String line) {
+        if (line == null)
+            throw new IllegalArgumentException("Cannot create an instruction that is null.");
         this.input = line;
         this.label = InstructionChecker.parseLabel(line);
         this.instruction = InstructionChecker.parseInstruction(line);

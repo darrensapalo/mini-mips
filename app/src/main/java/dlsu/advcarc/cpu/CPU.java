@@ -35,7 +35,10 @@ public class CPU {
             executeStage.execute();
             memoryStage.execute();
             writeBackStage.execute();
-        }catch (NullPointerException e){
+        }catch (IllegalArgumentException e){
+            e.printStackTrace();
+        }
+        catch (NullPointerException e){
             throw new IllegalStateException("Cannot run the CPU when the resources are not yet initialized. Please input a ProgramCode.");
         }
     }

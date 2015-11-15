@@ -1,5 +1,6 @@
 import dlsu.advcarc.cpu.CPU;
 import dlsu.advcarc.parser.ProgramCode;
+import dlsu.advcarc.view.MiniMipsFrame;
 
 /**
  * Created by Darren on 11/6/2015.
@@ -14,6 +15,7 @@ public class Driver {
         // Initialize program counter
         programCode.setInitialProgramCounter(4000);
 
+        MiniMipsFrame miniMipsFrame = new MiniMipsFrame();
 
         // Set up cpu and input code
         CPU cpu = new CPU();

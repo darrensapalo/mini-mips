@@ -36,4 +36,10 @@ public class ProgramCodeTest {
         assertEquals(code.getLine(), SAMPLE_INSTRUCTION_2);
         assertEquals(code.getMemoryLocation(), 4);
     }
+
+    @Test
+    public void testInput() throws Exception {
+        ProgramCode programCode = ProgramCode.readFile("../input.txt");
+        programCode.initialize();
+    }
 }

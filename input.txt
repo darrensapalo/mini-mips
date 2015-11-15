@@ -1,0 +1,102 @@
+      .data
+F:    .word 2
+A:    .word 25
+      .word 5
+      .word 15
+      .word 6
+      .word 47
+      .word 4
+      .word 88
+      .word 3
+
+B:    .word 0
+
+
+      .text
+main:
+
+; Initialization
+; r30 must have a value of n * 8, where n is the no. of elements in A
+
+      daddui r30,r0,64   ; When does the dataset A end? 
+
+; The first run must skip the increment
+      j 12               ; jump to SKIPINCREMENT
+
+; MAINLOOP:
+; r1 must be incremented when the next element from A will be added
+
+      daddui r1,r1,8     ; [MAINLOOP] Increment r1 (the idx to select from A)
+
+
+      lw r11,A(r1)       ; [SKIPINCREMENT] r11 = A[r1]
+
+
+
+
+; If the data you are reading reaches the dataset B, then end the program
+; r1 is the index for reading A. If it reaches the dataset for B, then it should end
+
+      beq r1,r30,84      ; if r1 = r30, jump to END
+
+      sw r11,B(r15)      ; B[r15] = r11
+
+      daddu r2,r15,r0    ; r2 = r15
+
+      daddui r15,r15,8   ; r15 = r15 - 1
+      
+; r16 is a shallow copy of r1. It needed a copy because we need to decrement it later (as r16)
+      daddu r16,r1,r0    ; r16 = r1
+
+
+; COMPAREUSINGB
+; This is a branch. The condition we need is r2 > 0, but the available 
+; instruction is only 'slt' or 'store 1 if less than'
+
+      slt r31,r2,r0      ; [COMPAREUSINGB] r31 = (int)(r2 < 0)
+
+
+; To perform r2 > 0, we check the negation of this condition.
+; First we check if r2 == 0
+
+      beq r2,r0,8        ; if r2 == 0, then jump to MAINLOOP
+
+; Then we check if r31 == 1. It can also be read as r2 < 0
+
+      bne r31,r0,8       ; if r2  < 0, then jump to MAINLOOP
+
+
+; Decrement r2 so that the next run will compare the next elements
+
+      daddui r2,r2,-8    ; r2 = r2 - 1
+
+
+; Get the values of the elements to be compared
+
+      lw r12,B(r2)       ; r12 = B[r2]
+      lw r11,B(r16)      ; r11 = B[r16]
+
+; Check if r11 < r12
+
+      slt r10,r11,r12    ; r10 = (int) (r11 < r12)
+
+; 
+      beq r10,r0,76      ; if r10 == 0, then jump to SKIPSWAP
+
+; Perform the swap
+
+      sw r12,B(r16)      ; B[r16] = r12
+      sw r11,B(r2)       ; B[r2]  = r11
+
+; SKIPSWAP
+; Decrement r16 so that all elements of B
+; can be compared with the current element
+; to be inserted
+
+      daddui r16,r16,-8  ; [SKIPSWAP] r16 = r16 - 1
+
+      j 36               ; jump to COMPAREUSINGB
+
+; END
+; End of the program
+      halt               ; [END]
