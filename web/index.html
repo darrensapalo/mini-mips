@@ -4,6 +4,7 @@
   <title>Layouts &raquo; Hero Sidebar</title>
   <link rel="stylesheet" type="text/css" href="../../lib/bootstrap/dist/css/bootstrap.min.css" />
   <link rel="stylesheet" type="text/css" href="../../css/keen-dashboards.css" />
+  <link rel="stylesheet" type="text/css" href="../../css/mips.css" />
 </head>
 <body class="application">
 
@@ -19,7 +20,7 @@
         <a class="navbar-brand" href="../">
           <span class="glyphicon glyphicon-chevron-left"></span>
         </a>
-        <a class="navbar-brand" href="./">Layouts &raquo; Hero Sidebar</a>
+        <a class="navbar-brand" href="./">Mini-Mips Simulator</a>
       </div>
       <div class="navbar-collapse collapse">
       
@@ -30,20 +31,48 @@
   <div class="container-fluid">
 
     <div class="row">
-      <div class="col-sm-3">
-        <div class="chart-wrapper">
-          <div class="chart-title">
-            Cell Title
+
+
+
+      <div class="col-sm-4">
+          <div class="panel panel-primary">
+            <div class="panel-heading">MIPS Code Input</div>
+            <div class="panel-body">
+              <div class="row">
+                <div class="col-sm-12">
+                <textarea id="textarea-code" autofocus> </textarea>
+                </div>
+              </div> <!-- End of the Text Area Column-->
+
+              
+              <div class="row">
+                <div class="col-sm-12 table-responsive">
+                  <table class="table table-condensed">
+                    <thead>
+                      <tr>
+                        <th>Mem</th>
+                        <th>Opcode</th>
+                        <th>Instruction</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                    
+                    </tbody>
+                  </table>
+                </div>
+              </div> <!-- End of the Table Column-->
+
+              
+
+
+            </div>
+            <div class="panel-footer"><button type="button" class="btn btn-primary">Go!</button></div>
           </div>
-          <div class="chart-stage">
-            <img data-src="holder.js/100%x650/white">
-          </div>
-          <div class="chart-notes">
-            Notes about this chart
-          </div>
-        </div>
-      </div>
-      <div class="col-sm-9">
+      </div> <!-- End of the Left group of Panels-->
+
+
+
+      <div class="col-sm-8">
        
         <div class="row">
           <div class="col-sm-6">
@@ -89,17 +118,17 @@
             </div>
           </div>
         </div>
-          
-        
-      </div>
-    </div>
+      </div> <!-- End of the Right group of Panels-->
+
+
+    </div> <!-- End of the Whole Big Row-->
   </div>
 
 
 
     <hr>
 
-    <p class="small text-muted">Built with &#9829; by <a href="https://keen.io">Keen IO</a></p>
+    <p class="small text-muted">Built with &#9829; by Alron Lam & Darren Sapalo</a></p>
 
   </div>
 
@@ -113,6 +142,7 @@
 
   <script type="text/javascript" src="../../lib/keen-js/dist/keen.min.js"></script>
   <script type="text/javascript" src="../../js/meta.js"></script>
+  <script type="text/javascript" src="../../js/d3.min.js"></script>
 
 </body>
 </html>

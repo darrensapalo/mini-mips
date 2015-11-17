@@ -18,11 +18,11 @@ public class HttpRequestHandler implements Handler<HttpServerRequest> {
     @Override
     public void handle(final HttpServerRequest request) {
         //System.out.println("Got a request with path: "+request.path());
-        if(request.path().equals("/mips")) {
+        if(request.path().equals("/")) {
             request.response().sendFile("web/index.html");
         }
         else{
-            request.response().sendFile("web"+request.path().replace("mips", ""));
+            request.response().sendFile("web"+request.path());
         }
     }
 
