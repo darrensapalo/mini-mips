@@ -1,3 +1,4 @@
+app/target/
 gen/
 *.idea
 *.vertx

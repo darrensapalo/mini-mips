@@ -131,7 +131,9 @@
     <p class="small text-muted">Built with &#9829; by Alron Lam & Darren Sapalo</a></p>
 
   </div>
-
+  
+  <script type="text/javascript" src="../../js/sockjs-1.0.3.min.js"></script>
+  <script type="text/javascript" src="../../js/vertxbus-3.1.0.js"></script>
   <script type="text/javascript" src="../../lib/jquery/dist/jquery.min.js"></script>
   <script type="text/javascript" src="../../lib/bootstrap/dist/js/bootstrap.min.js"></script>
 
@@ -143,6 +145,25 @@
   <script type="text/javascript" src="../../lib/keen-js/dist/keen.min.js"></script>
   <script type="text/javascript" src="../../js/meta.js"></script>
   <script type="text/javascript" src="../../js/d3.min.js"></script>
+  <script>
 
+
+      var SERVER_IP_ADDRESS = $(location).attr('origin');
+      var eb = new EventBus(SERVER_IP_ADDRESS+"/eventbus");
+      var connectionOpened = false;
+ 
+      eb.onopen = function(){
+        connectionOpened = true;
+      };
+     
+      
+      //Used to close a connection to the event bus
+      function closeConn(){
+        if(eb)
+          eb.close();
+      }
+      
+  </script>
+  
 </body>
 </html>

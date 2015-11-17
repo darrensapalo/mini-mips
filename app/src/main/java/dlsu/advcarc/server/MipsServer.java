@@ -15,8 +15,7 @@ public class MipsServer {
 
     public static void main(String[] args) {
         // Create an HTTP server which simply returns "Hello World!" to each request.
-        Vertx instance = Vertx.factory.vertx();
-        HttpRequestHandler httpRequestHandler = new HttpRequestHandler(instance);
-        instance.createHttpServer().requestHandler(httpRequestHandler).listen(8080);
+        Vertx vertx = Vertx.factory.vertx();
+        vertx.deployVerticle(new MipsVerticle());
     }
 }
