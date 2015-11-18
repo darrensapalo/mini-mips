@@ -54,12 +54,33 @@ function sendCodeToBackend(){
     $('#button-go').button('reset');
 
     if(!msg.body){
-      alert("Input code is invalid. Please double check your syntax.");
+      alert('Input code is invalid. Please double check your syntax.');
     }
 
 
+    console.log(msg.body);
+    populateTable('#table-opcode', msg.body);
+
   });
 
+}
+
+
+function populateTable(tableID, data){
+
+  var tableRows = d3.select(tableID).select('tbody').selectAll('tr').data(data);
+  tableRows.remove();
+  tableRows.exit().remove();
+
+  tableRows = d3.select(tableID).select('tbody').selectAll('tr').data(data);
+
+  tableRows.enter()
+    .append('tr')
+      .selectAll('td')
+      .data(function(d){return d3.values(d);})
+      .enter()
+      .append('td')
+      .text(function(d){return d;});
 }
 
 

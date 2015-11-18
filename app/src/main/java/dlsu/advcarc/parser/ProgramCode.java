@@ -1,6 +1,8 @@
 package dlsu.advcarc.parser;
 
 import dlsu.advcarc.cpu.stage.InstructionFetch;
+import io.vertx.core.json.JsonArray;
+import io.vertx.core.json.JsonObject;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -87,8 +89,12 @@ public class ProgramCode {
         compactify(code);
     }
 
-    public String toJsonString(){
-        return code.size()+" lines of code.";
+    public JsonArray toJsonArray(){
+        JsonArray jsonArray = new JsonArray();
+        for (Code codeEntry: code) {
+            jsonArray.add(codeEntry.toJsonObject());
+        }
+        return jsonArray;
     }
 
     private void compactify(LinkedList<Code> codeList) {
@@ -161,6 +167,15 @@ public class ProgramCode {
         public String toString() {
             return getMemoryLocationHex() + ": " + line;
         }
+
+        public JsonObject toJsonObject(){
+            JsonObject jsonObject = new JsonObject();
+            jsonObject.put("mem", getMemoryLocationHex());
+            jsonObject.put("opcode", "00000000"); //TODO generate correct opcode
+            jsonObject.put("instruction", line);
+            return jsonObject;
+        }
+
     }
 
     public static ProgramCode readFile(String filename) {

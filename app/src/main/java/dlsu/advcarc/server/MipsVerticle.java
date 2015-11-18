@@ -1,9 +1,7 @@
 package dlsu.advcarc.server;
 
 import dlsu.advcarc.parser.ProgramCode;
-import dlsu.advcarc.server.handlers.HttpRequestHandler;
 import io.vertx.core.AbstractVerticle;
-import io.vertx.core.json.JsonObject;
 import io.vertx.ext.web.Router;
 import io.vertx.ext.web.handler.StaticHandler;
 import io.vertx.ext.web.handler.sockjs.BridgeOptions;
@@ -45,7 +43,7 @@ public class MipsVerticle extends AbstractVerticle {
 
             ProgramCode programCode = ProgramCode.readCodeString(message.body().toString());
 
-            message.reply(programCode != null ? programCode.toJsonString() : false);
+            message.reply(programCode != null ? programCode.toJsonArray() : false);
         });
     }
 
