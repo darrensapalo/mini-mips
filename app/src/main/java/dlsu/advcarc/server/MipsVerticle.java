@@ -1,6 +1,7 @@
 package dlsu.advcarc.server;
 
 import dlsu.advcarc.parser.ProgramCode;
+import dlsu.advcarc.server.handlers.InputCodeHandler;
 import io.vertx.core.AbstractVerticle;
 import io.vertx.ext.web.Router;
 import io.vertx.ext.web.handler.StaticHandler;
@@ -36,20 +37,12 @@ public class MipsVerticle extends AbstractVerticle {
         router.route().handler(StaticHandler.create("web"));
 
         vertx.createHttpServer().requestHandler(router::accept).listen(8080);
-
-        vertx.eventBus().consumer(Addresses.CODE_INPUT, message -> {
-            System.out.println("Received message.body() = "
-                    + message.body());
-
-            ProgramCode programCode = ProgramCode.readCodeString(message.body().toString());
-
-            message.reply(programCode != null ? programCode.toJsonArray() : false);
-        });
+        vertx.eventBus().consumer(Addresses.CODE_INPUT, new InputCodeHandler());
     }
 
     @Override
     public void stop() throws Exception {
-        System.out.println("BasicVerticle stopped");
+        System.out.println("Verticle stopped");
     }
 
 }

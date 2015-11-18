@@ -57,8 +57,6 @@ function sendCodeToBackend(){
       alert('Input code is invalid. Please double check your syntax.');
     }
 
-
-    console.log(msg.body);
     populateTable('#table-opcode', msg.body);
 
   });
