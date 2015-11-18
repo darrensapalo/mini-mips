@@ -1,5 +1,6 @@
 package dlsu.advcarc.server;
 
+import dlsu.advcarc.parser.ProgramCode;
 import dlsu.advcarc.server.handlers.HttpRequestHandler;
 import io.vertx.core.AbstractVerticle;
 import io.vertx.core.json.JsonObject;
@@ -41,8 +42,10 @@ public class MipsVerticle extends AbstractVerticle {
         vertx.eventBus().consumer(Addresses.CODE_INPUT, message -> {
             System.out.println("Received message.body() = "
                     + message.body());
-            //TODO validate code and reply if valid or not.
-            message.reply(true);
+
+            ProgramCode programCode = ProgramCode.readCodeString(message.body().toString());
+
+            message.reply(programCode != null ? programCode.toJsonString() : false);
         });
     }
 

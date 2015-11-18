@@ -87,11 +87,15 @@ public class ProgramCode {
         compactify(code);
     }
 
+    public String toJsonString(){
+        return code.size()+" lines of code.";
+    }
+
     private void compactify(LinkedList<Code> codeList) {
         Code rememberPrevious = null;
         Iterator<Code> iterator = codeList.iterator();
 
-        while(iterator.hasNext()){
+        while (iterator.hasNext()) {
             Code current = iterator.next();
 
             if (current.getLine().isEmpty() && !current.getLabel().isEmpty()) {
@@ -100,7 +104,7 @@ public class ProgramCode {
                 continue;
             }
 
-            if (rememberPrevious != null){
+            if (rememberPrevious != null) {
                 current.setLabel(rememberPrevious.getLabel());
                 rememberPrevious = null;
             }
@@ -109,7 +113,7 @@ public class ProgramCode {
 
     private void initializeData() {
         Iterator<Code> iterator = data.iterator();
-        while (iterator.hasNext()){
+        while (iterator.hasNext()) {
             Code current = iterator.next();
             String[] split = current.getLine().split(" ");
 
@@ -149,7 +153,7 @@ public class ProgramCode {
             return label;
         }
 
-        public void setLabel(String label){
+        public void setLabel(String label) {
             this.label = label;
         }
 
@@ -188,5 +192,35 @@ public class ProgramCode {
             e.printStackTrace();
         }
         return programCode;
+    }
+
+    public static ProgramCode readCodeString(String codeString) {
+        try {
+
+            ProgramCode programCode = new ProgramCode();
+
+            Scanner scanner = new Scanner(codeString);
+            while (scanner.hasNext()) {
+
+                String line = scanner.nextLine();
+                line = line.trim();
+
+                // Ignore comments and whitespace
+                if (line.startsWith(";")) continue;
+                if (line.isEmpty()) continue;
+
+                int i = line.indexOf(';');
+
+                if (i != -1)
+                    line = line.substring(0, i).trim();
+
+                programCode.addInstruction(line);
+            }
+
+            return programCode;
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return null;
     }
 }

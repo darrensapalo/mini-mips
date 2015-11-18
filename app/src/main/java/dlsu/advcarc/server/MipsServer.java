@@ -15,8 +15,8 @@ import java.util.concurrent.Future;
 public class MipsServer {
 
     public static void main(String[] args) {
-        Properties properties = System.getProperties();
-        properties.setProperty("vertx.disableFileCaching", "true");
+//        Properties properties = System.getProperties();
+//        properties.setProperty("vertx.disableFileCaching", "true");
 
         // Create an HTTP server which simply returns "Hello World!" to each request.
         Vertx vertx = Vertx.factory.vertx();

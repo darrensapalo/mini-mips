@@ -16,6 +16,10 @@ eb.onopen = function(){
   $('button').removeClass('disabled');
 };
 
+eb.onclose = function(){
+  window.location.reload(true);
+}
+
 //Used to close a connection to the event bus
 function closeConn(){
   if(eb)
@@ -43,16 +47,19 @@ function sendCodeToBackend(){
   if(!validateEbState())
     return;
   
-  $("#button-go").button('loading');
+  $('#button-go').button('loading');
 
-  eb.send(CODE_INPUT_ADDRESS, $('#textarea-code').val().trim(), function(err, msg){
+  eb.send(CODE_INPUT_ADDRESS, '.text\r\n'.concat($('#textarea-code').val().trim()), function(err, msg){
+
+    $('#button-go').button('reset');
 
     if(!msg.body){
-      alert("Problem sending code to server. Please try again.");
+      alert("Input code is invalid. Please double check your syntax.");
     }
 
-    $("#button-go").button('reset');
 
   });
 
 }
+
+
