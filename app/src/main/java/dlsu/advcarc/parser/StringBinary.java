@@ -1,5 +1,7 @@
 package dlsu.advcarc.parser;
 
+import dlsu.advcarc.utils.RadixHelper;
+
 /**
  * Created by Darren on 11/16/2015.
  */
@@ -22,11 +24,11 @@ public class StringBinary {
     }
 
     public String toHexString(){
-        return Long.toHexString(Long.valueOf(value, 2)).toUpperCase();
+        return RadixHelper.convertBinaryToHexString(value);
     }
 
     public String toString(){
-        return toHexString();
+        return RadixHelper.padWithZero(value, 64);
     }
 
 }

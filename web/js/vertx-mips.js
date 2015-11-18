@@ -98,8 +98,8 @@ function updateRegisterValue(regName , regValue){
   eb.send(REGISTER_UPDATE_ADDRESS, data, function(err, msg){
     if(err || !msg.body){
       alert("Invalid register value.");
-      requestForRegisterValues();
     }
+    requestForRegisterValues();
 
   });
 
@@ -138,11 +138,11 @@ function populateTable(tableID, data){
 //////////////////////////
 //   Event Listeners   //
 ////////////////////////
-$('#table-r-registers').on('keydown', onTDChange);
-$('#table-f-registers').on('keydown', onTDChange);
+$('#table-r-registers').on('keydown', onRTableTDChange);
+$('#table-f-registers').on('keydown', onFTableTDChange);
 
 
-function onTDChange(event) {
+function onRTableTDChange(event) {
   var esc = event.which == 27,
       nl = event.which == 13,
       el = event.target,
@@ -161,6 +161,35 @@ function onTDChange(event) {
       var row = td.parent().index() + 1;
     
       var regName = $("#table-r-registers tr:nth-child("+row+") td:first-child").text();
+      var regValue = el.innerHTML;
+
+      updateRegisterValue(regName, regValue);
+
+      el.blur();
+      event.preventDefault();
+    }
+  }
+}
+
+function onFTableTDChange(event) {
+  var esc = event.which == 27,
+      nl = event.which == 13,
+      el = event.target,
+      input = el.nodeName =='TD',
+      data = {};
+
+  if (input) {
+    if (esc) {
+      // restore state
+      document.execCommand('undo');
+      el.blur();
+    } else if (nl) {
+    
+      var td = $(event.target);
+      var col = td.index() + 1;
+      var row = td.parent().index() + 1;
+    
+      var regName = $("#table-f-registers tr:nth-child("+row+") td:first-child").text();
       var regValue = el.innerHTML;
 
       updateRegisterValue(regName, regValue);
