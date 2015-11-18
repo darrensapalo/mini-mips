@@ -6,6 +6,7 @@ import io.vertx.core.Vertx;
 
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.util.Properties;
 import java.util.concurrent.Future;
 
 /**
@@ -14,6 +15,9 @@ import java.util.concurrent.Future;
 public class MipsServer {
 
     public static void main(String[] args) {
+        Properties properties = System.getProperties();
+        properties.setProperty("vertx.disableFileCaching", "true");
+
         // Create an HTTP server which simply returns "Hello World!" to each request.
         Vertx vertx = Vertx.factory.vertx();
         vertx.deployVerticle(new MipsVerticle());

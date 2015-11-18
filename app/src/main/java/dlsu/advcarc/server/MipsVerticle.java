@@ -2,6 +2,7 @@ package dlsu.advcarc.server;
 
 import dlsu.advcarc.server.handlers.HttpRequestHandler;
 import io.vertx.core.AbstractVerticle;
+import io.vertx.core.json.JsonObject;
 import io.vertx.ext.web.Router;
 import io.vertx.ext.web.handler.StaticHandler;
 import io.vertx.ext.web.handler.sockjs.BridgeOptions;
@@ -40,6 +41,8 @@ public class MipsVerticle extends AbstractVerticle {
         vertx.eventBus().consumer(Addresses.CODE_INPUT, message -> {
             System.out.println("Received message.body() = "
                     + message.body());
+            //TODO validate code and reply if valid or not.
+            message.reply(true);
         });
     }
 

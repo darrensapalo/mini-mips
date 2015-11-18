@@ -35,16 +35,17 @@
 
 
       <div class="col-sm-4">
+
           <div class="panel panel-primary">
             <div class="panel-heading">MIPS Code Input</div>
             <div class="panel-body">
+
               <div class="row">
                 <div class="col-sm-12">
                 <textarea id="textarea-code" autofocus> </textarea>
                 </div>
-              </div> <!-- End of the Text Area Column-->
+              </div> <!-- End of the Text Area Row-->
 
-              
               <div class="row">
                 <div class="col-sm-12 table-responsive">
                   <table class="table table-condensed">
@@ -55,18 +56,14 @@
                         <th>Instruction</th>
                       </tr>
                     </thead>
-                    <tbody>
-                    
-                    </tbody>
                   </table>
                 </div>
-              </div> <!-- End of the Table Column-->
-
-              
-
+              </div> <!-- End of the Table Row-->
 
             </div>
-            <div class="panel-footer"><button type="button" class="btn btn-primary">Go!</button></div>
+            <div class="panel-footer">
+              <button type="button" id="button-go" class="btn btn-primary disabled" onclick="sendCodeToBackend()">Go!</button>
+            </div>
           </div>
       </div> <!-- End of the Left group of Panels-->
 
@@ -145,25 +142,7 @@
   <script type="text/javascript" src="../../lib/keen-js/dist/keen.min.js"></script>
   <script type="text/javascript" src="../../js/meta.js"></script>
   <script type="text/javascript" src="../../js/d3.min.js"></script>
-  <script>
+  <script type="text/javascript" src="../../js/vertx-mips.js"></script>
 
-
-      var SERVER_IP_ADDRESS = $(location).attr('origin');
-      var eb = new EventBus(SERVER_IP_ADDRESS+"/eventbus");
-      var connectionOpened = false;
- 
-      eb.onopen = function(){
-        connectionOpened = true;
-      };
-     
-      
-      //Used to close a connection to the event bus
-      function closeConn(){
-        if(eb)
-          eb.close();
-      }
-      
-  </script>
-  
 </body>
 </html>
