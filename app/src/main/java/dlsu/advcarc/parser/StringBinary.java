@@ -17,4 +17,12 @@ public class StringBinary {
 
         this.value = value;
     }
+
+    public String getBinaryValue(){
+        return value;
+    }
+
+    public String toHexString(){
+        return Integer.toHexString(Integer.valueOf(value, 2));
+    }
 }

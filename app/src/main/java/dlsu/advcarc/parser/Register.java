@@ -1,7 +1,10 @@
 package dlsu.advcarc.parser;
 
-import java.util.HashMap;
-import java.util.LinkedList;
+import io.vertx.core.json.Json;
+import io.vertx.core.json.JsonArray;
+import io.vertx.core.json.JsonObject;
+
+import java.util.*;
 
 /**
  * Created by Darren on 11/9/2015.
@@ -9,6 +12,7 @@ import java.util.LinkedList;
 public class Register implements Writable{
     private static HashMap<String, Register> cache = new HashMap<>();
     private String register;
+    private StringBinary value;
 
     public LinkedList<Instruction> writeDependency = new LinkedList<>();
     public LinkedList<Instruction> readDependency = new LinkedList<>();
@@ -29,6 +33,40 @@ public class Register implements Writable{
 
     public static boolean validateRegister(String register) throws IllegalArgumentException {
         return true;
+    }
+
+    public static JsonObject getJsonArrays(){
+
+        JsonArray rArray = new JsonArray();
+        JsonArray fArray = new JsonArray();
+
+        List<String> registerNames = new ArrayList<String>();
+        for(String registerName: cache.keySet()) {
+            registerNames.add(registerName);
+        }
+
+        Collections.sort(registerNames);
+
+        for(String registerName: registerNames){
+            JsonObject jsonObject = cache.get(registerName).toJsonObject();
+
+            if(registerName.contains("R"))
+                rArray.add(jsonObject);
+            else
+                fArray.add(jsonObject);
+        }
+
+        JsonObject jsonObject = new JsonObject();
+        jsonObject.put("r-registers", rArray);
+        jsonObject.put("f-registers", fArray);
+        return jsonObject;
+    }
+
+    public JsonObject toJsonObject(){
+        JsonObject jsonObject = new JsonObject();
+        jsonObject.put("name", register);
+        jsonObject.put("value", value.toHexString());
+        return jsonObject;
     }
 
     @Override

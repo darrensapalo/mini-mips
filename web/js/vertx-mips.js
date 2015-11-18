@@ -4,6 +4,8 @@
 
 var SERVER_IP_ADDRESS = $(location).attr('origin');
 var CODE_INPUT_ADDRESS = 'code.input';
+var REGISTER_REQUEST_ADDRESS = 'register.request_values';
+var REGISTER_UPDATE_ADDRESS = 'register.update_values';
 
 
 //////////////////////////
@@ -14,6 +16,7 @@ var eb = new EventBus(SERVER_IP_ADDRESS+"/eventbus");
 
 eb.onopen = function(){
   $('button').removeClass('disabled');
+  requestForRegisterValues();
 };
 
 eb.onclose = function(){
@@ -21,7 +24,7 @@ eb.onclose = function(){
 }
 
 //Used to close a connection to the event bus
-function closeConn(){
+function closeEbConnection(){
   if(eb)
     eb.close();
 }
@@ -39,7 +42,7 @@ function initHandlers(){
 }
 
 //////////////////////////
-//      On Click       //
+//      Messages       //
 ////////////////////////
 
 function sendCodeToBackend(){
@@ -63,6 +66,35 @@ function sendCodeToBackend(){
 
 }
 
+function requestForRegisterValues(){
+
+  if(!validateEbState())
+    return;
+
+  eb.send(REGISTER_REQUEST_ADDRESS, '', function(err, msg){
+
+    if(err){
+      alert("Failed to get register values from server.");
+    }
+
+    console.log(msg.body);
+
+    var rArray = msg.body['r-registers'];
+    var fArray = msg.body['f-registers'];
+
+    populateTable('#table-r-registers', rArray);
+    populateTable('#table-f-registers', fArray);
+    
+  });
+
+}
+
+
+
+
+//////////////////////////
+//      Utility        //
+////////////////////////
 
 function populateTable(tableID, data){
 

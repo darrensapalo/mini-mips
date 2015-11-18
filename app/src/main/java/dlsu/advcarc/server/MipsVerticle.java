@@ -1,7 +1,9 @@
 package dlsu.advcarc.server;
 
+import com.sun.jndi.cosnaming.IiopUrl;
 import dlsu.advcarc.parser.ProgramCode;
 import dlsu.advcarc.server.handlers.InputCodeHandler;
+import dlsu.advcarc.server.handlers.RegisterRequestHandler;
 import io.vertx.core.AbstractVerticle;
 import io.vertx.ext.web.Router;
 import io.vertx.ext.web.handler.StaticHandler;
@@ -20,10 +22,27 @@ public class MipsVerticle extends AbstractVerticle {
     @Override
     public void start() throws Exception {
         Router router = Router.router(vertx);
+        router.route("/eventbus/*").handler(SockJSHandler.create(vertx)
+                .bridge(createBridgePermissions()));
+        router.route().handler(StaticHandler.create("web"));
 
-        /* Inbound/Outbound Traffic Permissions */
+        registerEventBusHandlers();
+
+        vertx.createHttpServer().requestHandler(router::accept).listen(8080);
+    }
+
+    private void registerEventBusHandlers(){
+        vertx.eventBus().consumer(Addresses.CODE_INPUT, new InputCodeHandler());
+        vertx.eventBus().consumer(Addresses.REGISTER_REQUEST, new RegisterRequestHandler());
+    }
+
+    private BridgeOptions createBridgePermissions(){
         List<PermittedOptions> permittedOptionsList = new ArrayList<PermittedOptions>();
-        permittedOptionsList.add(new PermittedOptions().setAddress(Addresses.CODE_INPUT));
+
+        List<String> addresses = Addresses.getAllAddresses();
+
+        for(String address: addresses)
+            permittedOptionsList.add(new PermittedOptions().setAddress(address));
 
         BridgeOptions bridgeOptions = new BridgeOptions();
         for(PermittedOptions permittedOption: permittedOptionsList) {
@@ -31,13 +50,7 @@ public class MipsVerticle extends AbstractVerticle {
             bridgeOptions.addInboundPermitted(permittedOption);
         }
 
-        router.route("/eventbus/*").handler(SockJSHandler.create(vertx)
-                .bridge(bridgeOptions));
-
-        router.route().handler(StaticHandler.create("web"));
-
-        vertx.createHttpServer().requestHandler(router::accept).listen(8080);
-        vertx.eventBus().consumer(Addresses.CODE_INPUT, new InputCodeHandler());
+        return bridgeOptions;
     }
 
     @Override
