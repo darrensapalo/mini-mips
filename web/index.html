@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Mini MIPS Simulator</title>
+  <link rel="stylesheet" type="text/css" href="../../lib/bootstrap/dist/css/bootstrap.min.css" />
+  <link rel="stylesheet" type="text/css" href="../../css/mips.css" />
+</head>
+<body class="application">
+
+  <div class="container-fluid">
+
+    <div class="row">
+
+
+
+      <div class="col-sm-4">
+
+          <div class="panel panel-primary" id="panel-code">
+            <div class="panel-heading">MIPS Code Input</div>
+            <div class="panel-body">
+
+              <div class="row">
+                <div class="col-sm-12">
+                <textarea id="textarea-code" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"autofocus> </textarea>
+                </div>
+              </div> <!-- End of the Text Area Row-->
+
+              <div class="row">
+                <div class="col-sm-12 table-responsive">
+                  <table class="table table-condensed" id="table-opcode">
+                    <thead>
+                      <tr>
+                        <th>Mem</th>
+                        <th>Opcode</th>
+                        <th>Instruction</th>
+                      </tr>
+                    </thead>
+                    <tbody></tbody>
+                  </table>
+                </div>
+              </div> <!-- End of the Table Row-->
+
+            </div>
+            <div class="panel-footer">
+              <button type="button" id="button-go" class="btn btn-primary disabled" onclick="sendCodeToBackend()">Go!</button>
+            </div>
+          </div>
+      </div> <!-- End of the Left group of Panels-->
+
+
+
+      <div class="col-sm-8">
+       
+
+        <div class="row">
+
+          <div class="col-sm-7">
+            <div class="panel panel-primary" id="panel-registers">
+              <div class="panel-heading">Registers</div>
+              <div class="panel-body">
+                
+                <div class="col-sm-6 table-responsive">
+                  <table class="table table-condensed" id="table-r-registers">
+                    <thead>
+                      <tr>
+                        <th>Register</th>
+                        <th>Value</th>
+                      </tr>
+                    </thead>
+                    <tbody></tbody>
+                  </table>
+                </div>
+
+                <div class="col-sm-6 table-responsive">
+                  <table class="table table-condensed" id="table-f-registers">
+                    <thead>
+                      <tr>
+                        <th>Register</th>
+                        <th>Value</th>
+                      </tr>
+                    </thead>
+                    <tbody></tbody>
+                  </table>
+                </div>
+
+              </div>
+            </div>
+          </div>
+
+          <div class="col-sm-5">
+              <div class="panel panel-primary" id="panel-memory">
+                <div class="panel-heading">Memory</div>
+                <div class="panel-body">
+                </div>
+              </div>
+          </div>
+
+        </div>
+          
+
+         <div class="row">
+          <div class="col-sm-12">
+            <div class="panel panel-primary" id="panel-pipeline">
+                <div class="panel-heading">Pipeline</div>
+                <div class="panel-body">
+                </div>
+              </div>
+          </div>
+        </div>
+      </div> <!-- End of the Right group of Panels-->
+
+
+    </div> <!-- End of the Whole Big Row-->
+
+  
+  <script type="text/javascript" src="../../js/sockjs-1.0.3.min.js"></script>
+  <script type="text/javascript" src="../../js/vertxbus-3.1.0.js"></script>
+  <script type="text/javascript" src="../../lib/jquery/dist/jquery.min.js"></script>
+  <script type="text/javascript" src="../../lib/bootstrap/dist/js/bootstrap.min.js"></script>
+
+  <script type="text/javascript" src="../../lib/holderjs/holder.js"></script>
+  <script>
+    Holder.add_theme("white", { background:"#fff", foreground:"#a7a7a7", size:10 });
+  </script>
+
+  <script type="text/javascript" src="../../js/d3.min.js"></script>
+  <script type="text/javascript" src="../../js/vertx-mips.js"></script>
+
+</body>
+</html>

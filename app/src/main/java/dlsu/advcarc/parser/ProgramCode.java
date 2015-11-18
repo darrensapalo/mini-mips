@@ -1,6 +1,10 @@
 package dlsu.advcarc.parser;
 
-import dlsu.advcarc.cpu.stage.InstructionFetch;
+import dlsu.advcarc.memory.Memory;
+import dlsu.advcarc.memory.MemoryManager;
+import dlsu.advcarc.utils.RadixHelper;
+import io.vertx.core.json.JsonArray;
+import io.vertx.core.json.JsonObject;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -87,11 +91,19 @@ public class ProgramCode {
         compactify(code);
     }
 
+    public JsonArray toJsonArray(){
+        JsonArray jsonArray = new JsonArray();
+        for (Code codeEntry: code) {
+            jsonArray.add(codeEntry.toJsonObject());
+        }
+        return jsonArray;
+    }
+
     private void compactify(LinkedList<Code> codeList) {
         Code rememberPrevious = null;
         Iterator<Code> iterator = codeList.iterator();
 
-        while(iterator.hasNext()){
+        while (iterator.hasNext()) {
             Code current = iterator.next();
 
             if (current.getLine().isEmpty() && !current.getLabel().isEmpty()) {
@@ -100,7 +112,7 @@ public class ProgramCode {
                 continue;
             }
 
-            if (rememberPrevious != null){
+            if (rememberPrevious != null) {
                 current.setLabel(rememberPrevious.getLabel());
                 rememberPrevious = null;
             }
@@ -109,12 +121,12 @@ public class ProgramCode {
 
     private void initializeData() {
         Iterator<Code> iterator = data.iterator();
-        while (iterator.hasNext()){
+        while (iterator.hasNext()) {
             Code current = iterator.next();
             String[] split = current.getLine().split(" ");
 
             String memoryLocationHex = current.getMemoryLocationHex();
-            Memory instance = Memory.getInstance(memoryLocationHex);
+            Memory instance = MemoryManager.instance().getInstance(memoryLocationHex);
             String value = split[1];
 
             instance.write(value);
@@ -142,14 +154,14 @@ public class ProgramCode {
         }
 
         public String getMemoryLocationHex() {
-            return Integer.toHexString(memoryLocation).toUpperCase();
+            return RadixHelper.padWithZero(Integer.toHexString(memoryLocation).toUpperCase(),4);
         }
 
         public String getLabel() {
             return label;
         }
 
-        public void setLabel(String label){
+        public void setLabel(String label) {
             this.label = label;
         }
 
@@ -157,6 +169,15 @@ public class ProgramCode {
         public String toString() {
             return getMemoryLocationHex() + ": " + line;
         }
+
+        public JsonObject toJsonObject(){
+            JsonObject jsonObject = new JsonObject();
+            jsonObject.put("mem", getMemoryLocationHex());
+            jsonObject.put("opcode", "00000000"); //TODO generate correct opcode
+            jsonObject.put("instruction", line);
+            return jsonObject;
+        }
+
     }
 
     public static ProgramCode readFile(String filename) {
@@ -188,5 +209,35 @@ public class ProgramCode {
             e.printStackTrace();
         }
         return programCode;
+    }
+
+    public static ProgramCode readCodeString(String codeString) {
+        try {
+
+            ProgramCode programCode = new ProgramCode();
+
+            Scanner scanner = new Scanner(codeString);
+            while (scanner.hasNext()) {
+
+                String line = scanner.nextLine();
+                line = line.trim();
+
+                // Ignore comments and whitespace
+                if (line.startsWith(";")) continue;
+                if (line.isEmpty()) continue;
+
+                int i = line.indexOf(';');
+
+                if (i != -1)
+                    line = line.substring(0, i).trim();
+
+                programCode.addInstruction(line);
+            }
+
+            return programCode;
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return null;
     }
 }

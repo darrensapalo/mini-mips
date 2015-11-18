@@ -1,4 +1,11 @@
-package dlsu.advcarc.parser;
+package dlsu.advcarc.memory;
+
+import dlsu.advcarc.parser.Instruction;
+import dlsu.advcarc.parser.Parameter;
+import dlsu.advcarc.parser.StringBinary;
+import dlsu.advcarc.parser.Writable;
+import dlsu.advcarc.utils.RadixHelper;
+import io.vertx.core.json.JsonObject;
 
 import java.util.HashMap;
 import java.util.LinkedList;
@@ -7,9 +14,8 @@ import java.util.LinkedList;
  * Created by Darren on 11/9/2015.
  */
 public class Memory implements Writable {
-    private static HashMap<String, Memory> cache = new HashMap<>();
     private String memory;
-    private StringBinary value;
+    private StringBinary value = new StringBinary("0");
 
     public LinkedList<Instruction> writeDependency = new LinkedList<>();
     public LinkedList<Instruction> readDependency = new LinkedList<>();
@@ -18,18 +24,8 @@ public class Memory implements Writable {
         this.memory = memory;
     }
 
-    public static Memory getInstance(String memory) throws IllegalArgumentException {
-        validateMemory(memory);
-        Memory mem = cache.get(memory);
-        if (mem != null) return mem;
-
-        mem = new Memory(memory);
-        cache.put(memory, mem);
-        return mem;
-    }
-
-    public static boolean validateMemory(String memory) throws IllegalArgumentException {
-        return true;
+    public static boolean validate(String memory) throws IllegalArgumentException {
+        return memory.matches("[0-9A-Fa-f]{4}") && Integer.valueOf(memory, 16) % 4 == 0;
     }
 
     @Override
@@ -44,19 +40,30 @@ public class Memory implements Writable {
 
     @Override
     public String toString() {
-        return memory;
+        return memory+": "+getAsHex();
+    }
+
+    public JsonObject toJsonObject(){
+        JsonObject jsonObject = new JsonObject();
+        jsonObject.put("location", memory);
+        jsonObject.put("value", getAsHex());
+        return jsonObject;
     }
 
     public String getAsBinary(){
         return read();
     }
 
-    public Long getAsLong(){
-        return null;
+    public long getAsLong(){
+        return value.getAsLong();
+    }
+
+    public double getAsDouble(){
+        return value.getAsDouble();
     }
 
     public String getAsHex(){
-        return null;
+        return value.toHexString();
     }
 
     @Override
@@ -84,7 +91,4 @@ public class Memory implements Writable {
         return null;
     }
 
-    public static void clear() {
-        cache.clear();
-    }
 }

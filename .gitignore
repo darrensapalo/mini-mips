@@ -1,3 +1,5 @@
+app/target/
 gen/
-*.iml
 *.idea
+*.vertx
+input.txt

@@ -1,14 +1,20 @@
-package dlsu.advcarc.parser;
+package dlsu.advcarc.register;
 
-import java.util.HashMap;
-import java.util.LinkedList;
+import dlsu.advcarc.parser.Instruction;
+import dlsu.advcarc.parser.Parameter;
+import dlsu.advcarc.parser.StringBinary;
+import dlsu.advcarc.parser.Writable;
+import io.vertx.core.json.JsonArray;
+import io.vertx.core.json.JsonObject;
+
+import java.util.*;
 
 /**
  * Created by Darren on 11/9/2015.
  */
-public class Register implements Writable{
-    private static HashMap<String, Register> cache = new HashMap<>();
+public class Register implements Writable {
     private String register;
+    private StringBinary value = new StringBinary("0");
 
     public LinkedList<Instruction> writeDependency = new LinkedList<>();
     public LinkedList<Instruction> readDependency = new LinkedList<>();
@@ -17,18 +23,31 @@ public class Register implements Writable{
         this.register = register;
     }
 
-    public static Register getInstance(String register) throws IllegalArgumentException {
-        validateRegister(register);
-        Register reg = cache.get(register);
-        if (reg != null) return reg;
-
-        reg = new Register(register);
-        cache.put(register, reg);
-        return reg;
+    public static String getType(String registerName){
+        return registerName.charAt(0)+"";
     }
 
-    public static boolean validateRegister(String register) throws IllegalArgumentException {
-        return true;
+    public static int getNumber(String registerName){
+       return Integer.parseInt(registerName.substring(1));
+    }
+
+    public static boolean validate(String register) throws IllegalArgumentException {
+        return register.matches("(R|F)[0-9]{1,2}");
+    }
+
+    public StringBinary getValue(){
+        return value;
+    }
+
+    public void setValue(StringBinary value){
+        this.value = value;
+    }
+
+    public JsonObject toJsonObject(){
+        JsonObject jsonObject = new JsonObject();
+        jsonObject.put("name", register);
+        jsonObject.put("value", value.toHexString());
+        return jsonObject;
     }
 
     @Override
@@ -71,7 +90,4 @@ public class Register implements Writable{
         return null;
     }
 
-    public static void clear(){
-        cache.clear();
-    }
 }

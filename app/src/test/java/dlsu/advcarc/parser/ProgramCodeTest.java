@@ -1,5 +1,7 @@
 package dlsu.advcarc.parser;
 
+import dlsu.advcarc.memory.Memory;
+import dlsu.advcarc.memory.MemoryManager;
 import org.junit.Test;
 
 import java.util.LinkedList;
@@ -42,7 +44,7 @@ public class ProgramCodeTest {
         ProgramCode programCode = ProgramCode.readFile("../input.txt");
         programCode.initialize();
 
-        Memory instance = Memory.getInstance("0");
+        Memory instance = MemoryManager.instance().getInstance("0");
 
         String asBinary = instance.getAsBinary();
         assertEquals("10", asBinary);
