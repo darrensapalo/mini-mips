@@ -1,6 +1,7 @@
 package dlsu.advcarc.parser;
 
 import dlsu.advcarc.cpu.stage.InstructionFetch;
+import dlsu.advcarc.utils.RadixHelper;
 import io.vertx.core.json.JsonArray;
 import io.vertx.core.json.JsonObject;
 
@@ -152,7 +153,7 @@ public class ProgramCode {
         }
 
         public String getMemoryLocationHex() {
-            return Integer.toHexString(memoryLocation).toUpperCase();
+            return RadixHelper.padWithZero(Integer.toHexString(memoryLocation).toUpperCase(),4);
         }
 
         public String getLabel() {
