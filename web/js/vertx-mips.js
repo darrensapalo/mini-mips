@@ -89,6 +89,21 @@ function requestForRegisterValues(){
 
 }
 
+function updateRegisterValue(regName , regValue){
+
+  data = {}
+  data['name'] = regName;
+  data['value'] = regValue;
+
+  eb.send(REGISTER_UPDATE_ADDRESS, data, function(err, mgs){
+    if(err){
+      alert("Invalid register value.");
+      requestForRegisterValues();
+    }
+
+  });
+
+}
 
 
 
@@ -110,7 +125,48 @@ function populateTable(tableID, data){
       .data(function(d){return d3.values(d);})
       .enter()
       .append('td')
-      .text(function(d){return d;});
+        .text(function(d){return d;})
+        .attr('class', 'text-nowrap')
+        .attr('contenteditable', function(d){
+            if(d[0] != 'R' && d[0] !='F')
+              return true;
+            else
+              return false;
+        });
 }
 
+//////////////////////////
+//   Event Listeners   //
+////////////////////////
+$('#table-r-registers').on('keydown', onTDChange);
+$('#table-f-registers').on('keydown', onTDChange);
 
+
+function onTDChange(event) {
+  var esc = event.which == 27,
+      nl = event.which == 13,
+      el = event.target,
+      input = el.nodeName =='TD',
+      data = {};
+
+  if (input) {
+    if (esc) {
+      // restore state
+      document.execCommand('undo');
+      el.blur();
+    } else if (nl) {
+    
+      var td = $(event.target);
+      var col = td.index() + 1;
+      var row = td.parent().index() + 1;
+    
+      var regName = $("#table-r-registers tr:nth-child("+row+") td:first-child").text();
+      var regValue = el.innerHTML;
+
+      updateRegisterValue(regName, regValue);
+
+      el.blur();
+      event.preventDefault();
+    }
+  }
+}
