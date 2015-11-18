@@ -3,30 +3,9 @@
 <head>
   <title>Mini MIPS Simulator</title>
   <link rel="stylesheet" type="text/css" href="../../lib/bootstrap/dist/css/bootstrap.min.css" />
-  <link rel="stylesheet" type="text/css" href="../../css/keen-dashboards.css" />
   <link rel="stylesheet" type="text/css" href="../../css/mips.css" />
 </head>
 <body class="application">
-
-  <div class="navbar navbar-inverse navbar-fixed-top" role="navigation">
-    <div class="container-fluid">
-      <div class="navbar-header">
-        <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
-          <span class="sr-only">Toggle navigation</span>
-          <span class="icon-bar"></span>
-          <span class="icon-bar"></span>
-          <span class="icon-bar"></span>
-        </button>
-        <a class="navbar-brand" href="../">
-          <span class="glyphicon glyphicon-chevron-left"></span>
-        </a>
-        <a class="navbar-brand" href="./">Mini-Mips Simulator</a>
-      </div>
-      <div class="navbar-collapse collapse">
-      
-      </div>
-    </div>
-  </div>
 
   <div class="container-fluid">
 
@@ -36,7 +15,7 @@
 
       <div class="col-sm-4">
 
-          <div class="panel panel-primary">
+          <div class="panel panel-primary" id="panel-code">
             <div class="panel-heading">MIPS Code Input</div>
             <div class="panel-body">
 
@@ -75,8 +54,8 @@
 
         <div class="row">
 
-          <div class="col-sm-6">
-            <div class="panel panel-primary">
+          <div class="col-sm-7">
+            <div class="panel panel-primary" id="panel-registers">
               <div class="panel-heading">Registers</div>
               <div class="panel-body">
                 
@@ -108,18 +87,12 @@
             </div>
           </div>
 
-          <div class="col-sm-6">
-            <div class="chart-wrapper">
-              <div class="chart-title">
-                Cell Title
+          <div class="col-sm-5">
+              <div class="panel panel-primary" id="panel-memory">
+                <div class="panel-heading">Memory</div>
+                <div class="panel-body">
+                </div>
               </div>
-              <div class="chart-stage">
-                <img data-src="holder.js/100%x120/white">
-              </div>
-              <div class="chart-notes">
-                Notes about this chart
-              </div>
-            </div>
           </div>
 
         </div>
@@ -127,32 +100,18 @@
 
          <div class="row">
           <div class="col-sm-12">
-            <div class="chart-wrapper">
-              <div class="chart-title">
-                Cell Title
+            <div class="panel panel-primary" id="panel-pipeline">
+                <div class="panel-heading">Pipeline</div>
+                <div class="panel-body">
+                </div>
               </div>
-              <div class="chart-stage">
-                <img data-src="holder.js/100%x240/white">
-              </div>
-              <div class="chart-notes">
-                Notes about this chart
-              </div>
-            </div>
           </div>
         </div>
       </div> <!-- End of the Right group of Panels-->
 
 
     </div> <!-- End of the Whole Big Row-->
-  </div>
 
-
-
-    <hr>
-
-    <p class="small text-muted">Built with &#9829; by Alron Lam & Darren Sapalo</a></p>
-
-  </div>
   
   <script type="text/javascript" src="../../js/sockjs-1.0.3.min.js"></script>
   <script type="text/javascript" src="../../js/vertxbus-3.1.0.js"></script>
@@ -164,8 +123,6 @@
     Holder.add_theme("white", { background:"#fff", foreground:"#a7a7a7", size:10 });
   </script>
 
-  <script type="text/javascript" src="../../lib/keen-js/dist/keen.min.js"></script>
-  <script type="text/javascript" src="../../js/meta.js"></script>
   <script type="text/javascript" src="../../js/d3.min.js"></script>
   <script type="text/javascript" src="../../js/vertx-mips.js"></script>
 

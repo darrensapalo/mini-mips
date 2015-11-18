@@ -11,8 +11,7 @@ public class StringBinary {
         if (value.length() > 64)
             throw new NumberFormatException("Invalid amount; Cannot write more than 64 bits.");
 
-        String others = value.replaceAll("[^01]+", "");
-        if (others.length() != value.length())
+        if(!value.matches("[01]+"))
             throw new NumberFormatException("Invalid format; Should only use 1s or 0s.");
 
         this.value = value;
@@ -23,6 +22,6 @@ public class StringBinary {
     }
 
     public String toHexString(){
-        return Integer.toHexString(Integer.valueOf(value, 2));
+        return Long.toHexString(Long.valueOf(value, 2)).toUpperCase();
     }
 }

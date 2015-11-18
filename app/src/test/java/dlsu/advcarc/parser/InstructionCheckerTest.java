@@ -1,5 +1,7 @@
 package dlsu.advcarc.parser;
 
+import dlsu.advcarc.register.Register;
+import dlsu.advcarc.register.RegisterManager;
 import junit.framework.TestCase;
 
 /**
@@ -147,7 +149,7 @@ public class InstructionCheckerTest extends TestCase {
 
     public void testDependencies() throws Exception {
         Memory.clear();
-        Register.clear();
+        RegisterManager.instance().clear();
 
         Instruction instruction = InstructionChecker.getInstruction(SAMPLE_INSTRUCTION_1);
         Instruction instruction2 = InstructionChecker.getInstruction(SAMPLE_INSTRUCTION_2);

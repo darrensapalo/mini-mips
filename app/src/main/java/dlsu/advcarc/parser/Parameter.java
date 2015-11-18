@@ -1,6 +1,8 @@
 package dlsu.advcarc.parser;
 
 import dlsu.advcarc.dependency.DependencyChecker;
+import dlsu.advcarc.register.Register;
+import dlsu.advcarc.register.RegisterManager;
 
 /**
  * Created by Darren on 11/9/2015.
@@ -26,7 +28,7 @@ public class Parameter {
 
     private Writable getParameter(String parameter){
         if (parameter.startsWith("R"))
-            return Register.getInstance(parameter);
+            return RegisterManager.instance().getInstance(parameter);
         return Memory.getInstance(parameter);
     }
 

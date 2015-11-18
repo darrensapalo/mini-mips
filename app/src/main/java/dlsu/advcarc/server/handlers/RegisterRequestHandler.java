@@ -1,6 +1,7 @@
 package dlsu.advcarc.server.handlers;
 
-import dlsu.advcarc.parser.Register;
+import dlsu.advcarc.register.Register;
+import dlsu.advcarc.register.RegisterManager;
 import io.vertx.core.Handler;
 import io.vertx.core.eventbus.Message;
 
@@ -10,7 +11,6 @@ import io.vertx.core.eventbus.Message;
 public class RegisterRequestHandler implements Handler<Message<Object>> {
     @Override
     public void handle(Message message) {
-        System.out.println(Register.getJsonArrays().toString());
-        message.reply(Register.getJsonArrays());
+        message.reply(RegisterManager.instance().toJsonObject());
     }
 }
