@@ -1,6 +1,7 @@
 package dlsu.advcarc.server;
 
 import com.sun.net.httpserver.HttpServer;
+import dlsu.advcarc.memory.MemoryManager;
 import io.vertx.core.Vertx;
 
 import java.io.FileInputStream;

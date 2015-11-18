@@ -1,7 +1,8 @@
 package dlsu.advcarc.parser;
 
 import dlsu.advcarc.dependency.DependencyChecker;
-import dlsu.advcarc.register.Register;
+import dlsu.advcarc.memory.Memory;
+import dlsu.advcarc.memory.MemoryManager;
 import dlsu.advcarc.register.RegisterManager;
 
 /**
@@ -29,7 +30,7 @@ public class Parameter {
     private Writable getParameter(String parameter){
         if (parameter.startsWith("R"))
             return RegisterManager.instance().getInstance(parameter);
-        return Memory.getInstance(parameter);
+        return MemoryManager.instance().getInstance(parameter);
     }
 
     public Instruction peekDependency(DependencyType type){

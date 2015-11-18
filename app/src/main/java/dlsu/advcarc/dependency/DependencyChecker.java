@@ -1,5 +1,6 @@
 package dlsu.advcarc.dependency;
 
+import dlsu.advcarc.memory.Memory;
 import dlsu.advcarc.parser.*;
 import dlsu.advcarc.register.Register;
 

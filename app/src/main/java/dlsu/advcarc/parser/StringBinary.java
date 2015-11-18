@@ -2,6 +2,8 @@ package dlsu.advcarc.parser;
 
 import dlsu.advcarc.utils.RadixHelper;
 
+import java.math.BigInteger;
+
 /**
  * Created by Darren on 11/16/2015.
  */
@@ -23,6 +25,14 @@ public class StringBinary {
         return value;
     }
 
+    public long getAsLong(){
+        return Long.valueOf(value, 2);
+    }
+
+    public double getAsDouble(){
+        return Double.longBitsToDouble(new BigInteger(value, 2).longValue());
+    }
+
     public String toHexString(){
         return RadixHelper.convertBinaryToHexString(value);
     }
@@ -30,5 +40,7 @@ public class StringBinary {
     public String toString(){
         return RadixHelper.padWithZero(value, 64);
     }
+
+
 
 }

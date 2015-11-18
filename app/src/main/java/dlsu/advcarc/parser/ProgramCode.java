@@ -1,6 +1,7 @@
 package dlsu.advcarc.parser;
 
-import dlsu.advcarc.cpu.stage.InstructionFetch;
+import dlsu.advcarc.memory.Memory;
+import dlsu.advcarc.memory.MemoryManager;
 import dlsu.advcarc.utils.RadixHelper;
 import io.vertx.core.json.JsonArray;
 import io.vertx.core.json.JsonObject;
@@ -125,7 +126,7 @@ public class ProgramCode {
             String[] split = current.getLine().split(" ");
 
             String memoryLocationHex = current.getMemoryLocationHex();
-            Memory instance = Memory.getInstance(memoryLocationHex);
+            Memory instance = MemoryManager.instance().getInstance(memoryLocationHex);
             String value = split[1];
 
             instance.write(value);

@@ -29,6 +29,10 @@ public class RadixHelper {
         return RadixHelper.padWithZero(hexString, 16).toUpperCase();
     }
 
+    public static String convertLongToHexString(long n){
+        return padWithZero(Long.toHexString(n), 4).toUpperCase();
+    }
+
     public static String padWithZero(String string, int desiredLength){
         int zeroesToAdd = desiredLength - string.length();
         for(int i=0; i<zeroesToAdd; i++)
