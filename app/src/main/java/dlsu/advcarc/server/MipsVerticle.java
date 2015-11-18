@@ -4,6 +4,7 @@ import com.sun.jndi.cosnaming.IiopUrl;
 import dlsu.advcarc.parser.ProgramCode;
 import dlsu.advcarc.server.handlers.InputCodeHandler;
 import dlsu.advcarc.server.handlers.RegisterRequestHandler;
+import dlsu.advcarc.server.handlers.RegisterUpdateHandler;
 import io.vertx.core.AbstractVerticle;
 import io.vertx.ext.web.Router;
 import io.vertx.ext.web.handler.StaticHandler;
@@ -34,6 +35,8 @@ public class MipsVerticle extends AbstractVerticle {
     private void registerEventBusHandlers(){
         vertx.eventBus().consumer(Addresses.CODE_INPUT, new InputCodeHandler());
         vertx.eventBus().consumer(Addresses.REGISTER_REQUEST, new RegisterRequestHandler());
+        vertx.eventBus().consumer(Addresses.REGISTER_UPDATE, new RegisterUpdateHandler());
+
     }
 
     private BridgeOptions createBridgePermissions(){

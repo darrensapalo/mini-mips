@@ -95,8 +95,8 @@ function updateRegisterValue(regName , regValue){
   data['name'] = regName;
   data['value'] = regValue;
 
-  eb.send(REGISTER_UPDATE_ADDRESS, data, function(err, mgs){
-    if(err){
+  eb.send(REGISTER_UPDATE_ADDRESS, data, function(err, msg){
+    if(err || !msg.body){
       alert("Invalid register value.");
       requestForRegisterValues();
     }

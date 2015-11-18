@@ -35,6 +35,14 @@ public class Register implements Writable {
         return register.matches("(R|F)[0-9]{1,2}");
     }
 
+    public StringBinary getValue(){
+        return value;
+    }
+
+    public void setValue(StringBinary value){
+        this.value = value;
+    }
+
     public JsonObject toJsonObject(){
         JsonObject jsonObject = new JsonObject();
         jsonObject.put("name", register);

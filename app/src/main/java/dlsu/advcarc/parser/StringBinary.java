@@ -24,4 +24,9 @@ public class StringBinary {
     public String toHexString(){
         return Long.toHexString(Long.valueOf(value, 2)).toUpperCase();
     }
+
+    public String toString(){
+        return toHexString();
+    }
+
 }

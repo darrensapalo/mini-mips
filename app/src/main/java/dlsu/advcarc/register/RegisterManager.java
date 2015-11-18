@@ -1,5 +1,6 @@
 package dlsu.advcarc.register;
 
+import dlsu.advcarc.parser.StringBinary;
 import io.vertx.core.json.JsonArray;
 import io.vertx.core.json.JsonObject;
 
@@ -47,6 +48,11 @@ public class RegisterManager {
         }
 
         return null;
+    }
+
+    public void updateRegister(String registerName, StringBinary newValue){
+        Register register = getInstance(registerName);
+        register.setValue(newValue);
     }
 
     public void clear(){

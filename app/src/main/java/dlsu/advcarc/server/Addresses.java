@@ -13,13 +13,13 @@ public class Addresses {
 
     public static final String CODE_INPUT = "code.input";
     public static final String REGISTER_REQUEST = "register.request_values";
-    public static final String UPDATE_REQUEST = "register.update_values";
+    public static final String REGISTER_UPDATE = "register.update_values";
 
     public static List<String> getAllAddresses(){
         List<String> addresses = new ArrayList<String>();
         addresses.add(CODE_INPUT);
         addresses.add(REGISTER_REQUEST);
-        addresses.add(UPDATE_REQUEST);
+        addresses.add(REGISTER_UPDATE);
         return addresses;
     }
 
