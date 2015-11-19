@@ -16,7 +16,7 @@ public class MemoryUpdateHandler implements Handler<Message<JsonObject>> {
 
     @Override
     public void handle(Message<JsonObject> message) {
-        String memoryLocation = message.body().getString("location");
+        String memoryLocation = message.body().getString("address");
         String newValueString = message.body().getString("value");
 
         try {
@@ -36,7 +36,7 @@ public class MemoryUpdateHandler implements Handler<Message<JsonObject>> {
             MemoryManager.instance().updateMemory(memoryLocation, newValue);
 
             //verify if the value was indeed changed
-            if(MemoryManager.instance().getInstance(memoryLocation).getAsHex().equals(newValue.toHexString()))
+            if(!MemoryManager.instance().getInstance(memoryLocation).getAsHex().equals(newValue.toHexString()))
                 throw new Exception();
 
             message.reply(true);

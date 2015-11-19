@@ -6,7 +6,8 @@ var SERVER_IP_ADDRESS = $(location).attr('origin');
 var CODE_INPUT_ADDRESS = 'code.input';
 var REGISTER_REQUEST_ADDRESS = 'register.request_values';
 var REGISTER_UPDATE_ADDRESS = 'register.update_values';
-
+var MEMORY_REQUEST_ADDRESS = "memory.request_values";
+var MEMORY_UPDATE_ADDRESS = "memory.update_values";
 
 //////////////////////////
 //      VERTX          //
@@ -17,6 +18,7 @@ var eb = new EventBus(SERVER_IP_ADDRESS+"/eventbus");
 eb.onopen = function(){
   $('button').removeClass('disabled');
   requestForRegisterValues();
+  requestForMemoryValues('data');
 };
 
 eb.onclose = function(){
@@ -77,8 +79,6 @@ function requestForRegisterValues(){
       alert("Failed to get register values from server.");
     }
 
-    console.log(msg.body);
-
     var rArray = msg.body['r-registers'];
     var fArray = msg.body['f-registers'];
 
@@ -93,7 +93,7 @@ function updateRegisterValue(regName , regValue){
 
   data = {}
   data['name'] = regName;
-  data['value'] = regValue;
+  data['value'] = regValue.trim();
 
   eb.send(REGISTER_UPDATE_ADDRESS, data, function(err, msg){
     if(err || !msg.body){
@@ -105,6 +105,34 @@ function updateRegisterValue(regName , regValue){
 
 }
 
+function requestForMemoryValues(type){
+  if(!validateEbState())
+    return;
+
+  eb.send(MEMORY_REQUEST_ADDRESS, type, function(err, msg){
+
+    if(err){
+      alert("Failed to get data memory values from server.");
+    }
+
+    var array = msg.body;
+
+    populateTable('#table-memory', array);
+  });
+}
+
+function updateMemoryValue(memAddress, memValue){
+  data = {}
+  data['address'] = memAddress;
+  data['value'] = memValue.trim();
+
+  eb.send(MEMORY_UPDATE_ADDRESS, data, function(err, msg){
+    if(err || !msg.body){
+      alert("Invalid memory value.");
+    }
+    requestForMemoryValues('data');
+  });
+}
 
 
 //////////////////////////
@@ -128,21 +156,20 @@ function populateTable(tableID, data){
         .text(function(d){return d;})
         .attr('class', 'text-nowrap')
         .attr('contenteditable', function(d){
-            if(d[0] != 'R' && d[0] !='F')
-              return true;
-            else
-              return false;
+          if(d.length == 16 && d.indexOf(' ') < 0)
+            return true;
+          return false;
         });
 }
 
 //////////////////////////
 //   Event Listeners   //
 ////////////////////////
-$('#table-r-registers').on('keydown', onRTableTDChange);
-$('#table-f-registers').on('keydown', onFTableTDChange);
+$('#table-r-registers').on('keydown', onRegTableTDChange);
+$('#table-f-registers').on('keydown', onRegTableTDChange);
+$('#table-memory').on('keydown', onMemTableTDChange);
 
-
-function onRTableTDChange(event) {
+function onMemTableTDChange(event) {
   var esc = event.which == 27,
       nl = event.which == 13,
       el = event.target,
@@ -160,10 +187,10 @@ function onRTableTDChange(event) {
       var col = td.index() + 1;
       var row = td.parent().index() + 1;
     
-      var regName = $("#table-r-registers tr:nth-child("+row+") td:first-child").text();
-      var regValue = el.innerHTML;
+      var memAddress = td.parent().children()[1].innerHTML;
+      var memValue = el.innerHTML;
 
-      updateRegisterValue(regName, regValue);
+      updateMemoryValue(memAddress, memValue);
 
       el.blur();
       event.preventDefault();
@@ -171,7 +198,8 @@ function onRTableTDChange(event) {
   }
 }
 
-function onFTableTDChange(event) {
+
+function onRegTableTDChange(event) {
   var esc = event.which == 27,
       nl = event.which == 13,
       el = event.target,
@@ -188,8 +216,8 @@ function onFTableTDChange(event) {
       var td = $(event.target);
       var col = td.index() + 1;
       var row = td.parent().index() + 1;
-    
-      var regName = $("#table-f-registers tr:nth-child("+row+") td:first-child").text();
+
+      var regName = td.parent().children()[0].innerHTML;
       var regValue = el.innerHTML;
 
       updateRegisterValue(regName, regValue);

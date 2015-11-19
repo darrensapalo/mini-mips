@@ -49,7 +49,7 @@ public class Memory implements Writable {
 
     public JsonObject toJsonObject(){
         JsonObject jsonObject = new JsonObject();
-        jsonObject.put("location", memory);
+        jsonObject.put("address", memory);
         jsonObject.put("value", getAsHex());
         return jsonObject;
     }
