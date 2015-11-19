@@ -49,30 +49,6 @@ function initHandlers(){
 //      Messages       //
 ////////////////////////
 
-function sendCodeToBackend(){
-
-  if(!validateEbState())
-    return;
-  
-  $('#button-go').button('loading');
-
-  eb.send(CODE_UPDATE_ADDRESS, $('#textarea-code').val().trim(), function(err, msg){
-    
-    $('#button-go').button('reset');
-
-    if(!msg.body || !msg.body['isSuccessful']){
-      $('#span-code-error').html(msg.body['errors']);
-      $('#div-code-error').show();    
-    }
-    else{
-      $('#div-code-error').hide();   
-      requestForCode(); // to refresh the opcode table
-    }
-
-  });
-
-}
-
 function requestForCode(){
   if(!validateEbState())
     return;
@@ -93,6 +69,30 @@ function requestForCode(){
     }
 
   });
+}
+
+function updateCode(code){
+
+  if(!validateEbState())
+    return;
+  
+  $('#button-go').button('loading');
+
+  eb.send(CODE_UPDATE_ADDRESS, code, function(err, msg){
+    
+    $('#button-go').button('reset');
+
+    if(!msg.body || !msg.body['isSuccessful']){
+      $('#span-code-error').html(msg.body['errors']);
+      $('#div-code-error').show();    
+    }
+    else{
+      $('#div-code-error').hide();   
+      requestForCode(); // to refresh the opcode table
+    }
+
+  });
+
 }
 
 function requestForRegisterValues(){
@@ -195,6 +195,7 @@ function populateTable(tableID, data){
 $('#table-r-registers').on('keydown', onRegTableTDChange);
 $('#table-f-registers').on('keydown', onRegTableTDChange);
 $('#table-memory').on('keydown', onMemTableTDChange);
+$('#button-go').on('click', onExecuteClick);
 
 function onMemTableTDChange(event) {
   var esc = event.which == 27,
@@ -253,4 +254,8 @@ function onRegTableTDChange(event) {
       event.preventDefault();
     }
   }
+}
+
+function onExecuteClick(){
+  updateCode($('#textarea-code').val().trim());
 }
