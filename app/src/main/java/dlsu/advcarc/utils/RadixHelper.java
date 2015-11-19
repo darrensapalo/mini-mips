@@ -25,8 +25,12 @@ public class RadixHelper {
             hexString = currHexChar + hexString;
         }
 
-        /* Enforce 16 hex digits and make it uppercase */
-        return RadixHelper.padWithZero(hexString, 16).toUpperCase();
+        /* Make it uppercase */
+        return hexString.toUpperCase();
+    }
+
+    public static StringBinary convertHexToStringBinary(String value){
+        return convertLongToStringBinary(Long.valueOf(value, 16));
     }
 
     public static String convertLongToHexString(long n){

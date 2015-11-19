@@ -19,6 +19,8 @@ public class MipsParser {
 
     public static final String IMM_REGEX = "[0-9]{4}";
     public static final String LABEL_REGEX = "L[0-9]+:";
+    public static final String LABEL_REGEX_NO_COLON = "L[0-9]+";
+
 
     public static ProgramCode parseCodeString(String codeString) throws Exception {
         Scanner scanner = new Scanner(codeString);
@@ -48,7 +50,6 @@ public class MipsParser {
         return programCode;
 
     }
-
 
     public static ProgramCode parseFile(String fileName) throws Exception {
 
@@ -152,12 +153,12 @@ public class MipsParser {
             case "BEQ":
                 regexes.add(R_REGISTER_REGEX);
                 regexes.add(R_REGISTER_REGEX);
-                regexes.add(LABEL_REGEX);
+                regexes.add(LABEL_REGEX_NO_COLON);
 
                 break;
 
             case "J":
-                regexes.add(LABEL_REGEX);
+                regexes.add(LABEL_REGEX_NO_COLON);
                 break;
         }
         return regexes;
@@ -181,6 +182,7 @@ public class MipsParser {
             case "S.S":
             case "ANDI":
             case "DADDIU":
+            case "J":
                 return  true;
 
             default: return false;
