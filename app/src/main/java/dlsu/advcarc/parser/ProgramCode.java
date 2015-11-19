@@ -27,6 +27,7 @@ public class ProgramCode {
     private LinkedList<Code> data = new LinkedList<>();
 
     private String codeString;
+    private String parsingErrors;
 
     private static int StartingMemoryAddress = 0;
     private static int StartingProgramAddress = 0;
@@ -34,7 +35,7 @@ public class ProgramCode {
     private Section currentSection;
 
     public ProgramCode(String codeString) {
-        currentSection = Section.Data;
+        currentSection = Section.Program;
         this.codeString = codeString;
     }
 
@@ -44,22 +45,7 @@ public class ProgramCode {
 
     public void addInstruction(String line) {
         line = line.trim();
-        LinkedList<Code> container;
-
-        if (line.equals(".data")) {
-            currentSection = Section.Data;
-            return;
-        }
-
-        if (line.equals(".text")) {
-            currentSection = Section.Program;
-            return;
-        }
-
-        container = ((currentSection == Section.Data) ? data : code);
-
-        Code code = new Code(line, getNextAvailableAddress());
-        container.add(code);
+        code.add(new Code(line, getNextAvailableAddress()));
     }
 
     public LinkedList<Code> getProgram() {
@@ -84,6 +70,18 @@ public class ProgramCode {
         StartingMemoryAddress = start;
     }
 
+    public void setParsingErrors(String parsingErrors) {
+        this.parsingErrors = parsingErrors;
+    }
+
+    public boolean isValid() {
+        return parsingErrors == null || parsingErrors.isEmpty();
+    }
+
+    public String getParsingErrors() {
+        return parsingErrors;
+    }
+
     public String getCode(int programCounter) {
         Iterator<Code> iterator = code.iterator();
         while (iterator.hasNext()) {
@@ -101,7 +99,7 @@ public class ProgramCode {
         compactify(code);
     }
 
-    public JsonObject toJsonObject(){
+    public JsonObject toJsonObject() {
         JsonObject jsonObject = new JsonObject();
         jsonObject.put("text", codeString.replaceAll(".text", "").trim());
         jsonObject.put("array", toJsonArray(true));

@@ -16,7 +16,7 @@ public class Code {
 
     public Code(String line, int memoryLocation) {
         this.label = InstructionChecker.parseLabel(line);
-        this.line = ((label == null) ? line : line.substring(this.label.length() + 1).trim());
+        this.line = ((label == null) ? line : line.replace(label+":", "").trim());
         this.memoryLocation = memoryLocation;
     }
 
@@ -56,7 +56,8 @@ public class Code {
         jsonObject.put("mem", getMemoryLocationHex());
         jsonObject.put("opcode", getOpcode());
         if(includeInstruction)
-            jsonObject.put("instruction", line);
+            jsonObject.put("instruction", (label != null) ? label + ": "+line :  line);
+
         return jsonObject;
     }
 

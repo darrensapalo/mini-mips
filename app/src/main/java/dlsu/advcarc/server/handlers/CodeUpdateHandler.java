@@ -2,9 +2,12 @@ package dlsu.advcarc.server.handlers;
 
 import dlsu.advcarc.cpu.ExecutionManager;
 import dlsu.advcarc.memory.MemoryManager;
+import dlsu.advcarc.parser.MipsParser;
 import dlsu.advcarc.parser.ProgramCode;
 import io.vertx.core.Handler;
 import io.vertx.core.eventbus.Message;
+import io.vertx.core.json.Json;
+import io.vertx.core.json.JsonObject;
 
 /**
  * Created by user on 11/18/2015.
@@ -13,17 +16,27 @@ public class CodeUpdateHandler implements Handler<Message<String>> {
     @Override
     public void handle(Message<String> message) {
 
+        ProgramCode programCode;
+
         try {
-            ProgramCode programCode = ProgramCode.readCodeString(message.body());
-            if(programCode == null)
-                throw new Exception("Invalid code: "+message.body());
+            programCode = MipsParser.parseCodeString(message.body());
 
-            ExecutionManager.instance().inputProgramCode(programCode);
-            message.reply(true);
+            if (programCode.isValid())
+                ExecutionManager.instance().inputProgramCode(programCode);
 
-        }catch(Exception e){
+            JsonObject jsonObject = new JsonObject();
+            jsonObject.put("isSuccessful", programCode.isValid());
+            jsonObject.put("errors", programCode.getParsingErrors());
+            message.reply(jsonObject);
+
+        } catch (Exception e) {
             e.printStackTrace();
-            message.reply(false);
+
+            // Some generic, unknown error occurred
+            JsonObject jsonObject = new JsonObject();
+            jsonObject.put("isSuccessful", false);
+            jsonObject.put("errors", e.getMessage());
+            message.reply(jsonObject);
         }
     }
 }
