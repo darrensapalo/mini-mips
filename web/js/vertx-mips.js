@@ -58,9 +58,6 @@ function sendCodeToBackend(){
 
   eb.send(CODE_UPDATE_ADDRESS, $('#textarea-code').val().trim(), function(err, msg){
     
-    console.log(msg.body);
-
-
     $('#button-go').button('reset');
 
     if(!msg.body || !msg.body['isSuccessful']){
