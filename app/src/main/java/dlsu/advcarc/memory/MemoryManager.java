@@ -1,24 +1,32 @@
 package dlsu.advcarc.memory;
 
+import dlsu.advcarc.cpu.ExecutionManager;
+import dlsu.advcarc.parser.Code;
+import dlsu.advcarc.parser.ProgramCode;
 import dlsu.advcarc.utils.RadixHelper;
 import io.vertx.core.json.JsonArray;
 import io.vertx.core.json.JsonObject;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 /**
  * Created by user on 11/19/2015.
  */
 public class MemoryManager {
 
+    /* Singleton */
     private static MemoryManager instance;
-
     public static MemoryManager instance() {
         if(instance == null)
             instance = new MemoryManager();
         return instance;
     }
+
+    /* Class */
+
+    public static final int DATA_SEGMENT_SIZE = 8192;
 
     private List<Memory> ram = new ArrayList<Memory>();
 
@@ -29,7 +37,7 @@ public class MemoryManager {
     private void initRam(){
         ram.clear();
         for(int i=0;i<2048;i++){
-            long memLocation = 8192 + 4 * i;
+            long memLocation = DATA_SEGMENT_SIZE + 4 * i;
             ram.add(new Memory(RadixHelper.convertLongToHexString(memLocation)));
         }
     }
@@ -38,7 +46,7 @@ public class MemoryManager {
         if(!Memory.validate(memory))
             throw new IllegalArgumentException("Invalid memory format: "+memory);
 
-        int memoryIndex = (Integer.valueOf(memory, 16) - 8192) / 4;
+        int memoryIndex = (Integer.valueOf(memory, 16) - DATA_SEGMENT_SIZE) / 4;
         return ram.get(memoryIndex);
     }
 
@@ -46,18 +54,17 @@ public class MemoryManager {
         ram.clear();
     }
 
-    public JsonObject toJsonObject(){
+    private JsonArray getCodeJsonArray(){
+        JsonArray codeMemoryArray = ExecutionManager.instance().getProgramCode().toJsonArray(false);
 
-        JsonObject jsonObject = new JsonObject();
+        int numLinesOfCode = codeMemoryArray.size();
+        int numLinesMissing = DATA_SEGMENT_SIZE / 4 - numLinesOfCode;
+        int startAddingCodeAt = numLinesOfCode * 4;
 
-        // get code memory
-        // TODO get this from ProgramCode
-
-        // get data memory
-        JsonArray dataMemoryArray = getDataJsonArray();
-
-        jsonObject.put("data", dataMemoryArray);
-        return jsonObject;
+        for(int i=0;i<numLinesMissing;i++){
+            codeMemoryArray.add(Code.createNOP(startAddingCodeAt + i*4).toJsonObject(false));
+        }
+        return codeMemoryArray;
     }
 
     private JsonArray getDataJsonArray(){

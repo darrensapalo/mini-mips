@@ -27,8 +27,8 @@ public class ProgramCodeTest {
         programCode.addInstruction(SAMPLE_INSTRUCTION_3);
         programCode.addInstruction(SAMPLE_INSTRUCTION_4);
 
-        LinkedList<ProgramCode.Code> program = programCode.getProgram();
-        ProgramCode.Code code = program.get(0);
+        LinkedList<Code> program = programCode.getProgram();
+        Code code = program.get(0);
 
         assertEquals(code.getLine(), SAMPLE_INSTRUCTION_1);
         assertEquals(code.getMemoryLocation(), 0);
