@@ -53,9 +53,15 @@ public class ProgramCode {
     }
 
     private int getNextAvailableAddress() {
-        if (currentSection == Section.Data)
-            return StartingMemoryAddress + data.size() * 4;
         return StartingProgramAddress + code.size() * 4;
+    }
+
+    public String getHexAddressOfLabel(String label){
+        for(Code codeEntry: code){
+            if(label.equals(codeEntry.getLabel()))
+                return codeEntry.getMemoryLocationHex();
+        }
+        return null;
     }
 
     public int InitialProgramCounter() {
