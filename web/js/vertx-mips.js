@@ -3,7 +3,8 @@
 ////////////////////////
 
 var SERVER_IP_ADDRESS = $(location).attr('origin');
-var CODE_INPUT_ADDRESS = 'code.input';
+var CODE_REQUEST_ADDRESS = 'code.request';
+var CODE_UPDATE_ADDRESS = 'code.update';
 var REGISTER_REQUEST_ADDRESS = 'register.request_values';
 var REGISTER_UPDATE_ADDRESS = 'register.update_values';
 var MEMORY_REQUEST_ADDRESS = "memory.request_values";
@@ -17,6 +18,7 @@ var eb = new EventBus(SERVER_IP_ADDRESS+"/eventbus");
 
 eb.onopen = function(){
   $('button').removeClass('disabled');
+  requestForCode();
   requestForRegisterValues();
   requestForMemoryValues('data');
 };
@@ -54,18 +56,39 @@ function sendCodeToBackend(){
   
   $('#button-go').button('loading');
 
-  eb.send(CODE_INPUT_ADDRESS, '.text\r\n'.concat($('#textarea-code').val().trim()), function(err, msg){
-
-    $('#button-go').button('reset');
-
+  eb.send(CODE_UPDATE_ADDRESS, '.text\r\n'.concat($('#textarea-code').val().trim()), function(err, msg){
+    
     if(!msg.body){
       alert('Input code is invalid. Please double check your syntax.');
     }
 
-    populateTable('#table-opcode', msg.body);
+    $('#button-go').button('reset');
 
+    requestForCode();
   });
 
+}
+
+function requestForCode(){
+  if(!validateEbState())
+    return;
+
+  eb.send(CODE_REQUEST_ADDRESS, '', function(err, msg){
+
+    if(err){
+      alert("Failed to get code from server.");
+    }
+
+    // if this is false, it means there is no code yet
+    if(msg.body){
+      var text = msg.body['text'];
+      var array = msg.body['array'];
+
+      $('#textarea-code').val(text);
+      populateTable('#table-opcode', array);
+    }
+
+  });
 }
 
 function requestForRegisterValues(){
@@ -75,7 +98,7 @@ function requestForRegisterValues(){
 
   eb.send(REGISTER_REQUEST_ADDRESS, '', function(err, msg){
 
-    if(err){
+    if(err || !msg.body){
       alert("Failed to get register values from server.");
     }
 
@@ -111,7 +134,7 @@ function requestForMemoryValues(type){
 
   eb.send(MEMORY_REQUEST_ADDRESS, type, function(err, msg){
 
-    if(err){
+    if(err || !msg.body){
       alert("Failed to get data memory values from server.");
     }
 

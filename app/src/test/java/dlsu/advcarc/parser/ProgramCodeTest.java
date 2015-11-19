@@ -21,7 +21,7 @@ public class ProgramCodeTest {
 
     @Test
     public void testAddInstruction() throws Exception {
-        ProgramCode programCode = new ProgramCode();
+        ProgramCode programCode = new ProgramCode(SAMPLE_INSTRUCTION_1+"\n"+SAMPLE_INSTRUCTION_2+"\n"+SAMPLE_INSTRUCTION_3+"\n"+SAMPLE_INSTRUCTION_4);
         programCode.addInstruction(SAMPLE_INSTRUCTION_1);
         programCode.addInstruction(SAMPLE_INSTRUCTION_2);
         programCode.addInstruction(SAMPLE_INSTRUCTION_3);

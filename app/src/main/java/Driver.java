@@ -2,13 +2,15 @@ import dlsu.advcarc.cpu.CPU;
 import dlsu.advcarc.parser.ProgramCode;
 import dlsu.advcarc.view.MiniMipsFrame;
 
+import java.io.IOException;
+
 /**
  * Created by Darren on 11/6/2015.
  */
 public class Driver {
 
 
-    public static void main(String[] args) {
+    public static void main(String[] args) throws IOException {
 
         ProgramCode programCode = ProgramCode.readFile("input.txt");
 

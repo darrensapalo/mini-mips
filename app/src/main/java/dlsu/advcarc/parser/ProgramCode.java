@@ -4,11 +4,16 @@ import dlsu.advcarc.memory.Memory;
 import dlsu.advcarc.memory.MemoryManager;
 import dlsu.advcarc.parser.Code;
 import dlsu.advcarc.utils.RadixHelper;
+import io.vertx.core.json.Json;
 import io.vertx.core.json.JsonArray;
 import io.vertx.core.json.JsonObject;
 
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.nio.charset.Charset;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.Scanner;
@@ -18,16 +23,19 @@ import java.util.Scanner;
  * Created by Darren on 11/9/2015.
  */
 public class ProgramCode {
-    public LinkedList<Code> code = new LinkedList<>();
-    public LinkedList<Code> data = new LinkedList<>();
+    private LinkedList<Code> code = new LinkedList<>();
+    private LinkedList<Code> data = new LinkedList<>();
+
+    private String codeString;
 
     private static int StartingMemoryAddress = 0;
     private static int StartingProgramAddress = 0;
 
     private Section currentSection;
 
-    public ProgramCode() {
+    public ProgramCode(String codeString) {
         currentSection = Section.Data;
+        this.codeString = codeString;
     }
 
     public enum Section {
@@ -93,10 +101,17 @@ public class ProgramCode {
         compactify(code);
     }
 
+    public JsonObject toJsonObject(){
+        JsonObject jsonObject = new JsonObject();
+        jsonObject.put("text", codeString.replaceAll(".text", "").trim());
+        jsonObject.put("array", toJsonArray(true));
+        return jsonObject;
+    }
+
     public JsonArray toJsonArray(boolean includeInstruction) {
         JsonArray jsonArray = new JsonArray();
         for (Code codeEntry : code) {
-            jsonArray.add(codeEntry.toJsonObject(includeInstruction));
+            jsonArray.add(codeEntry.toJsonObject(includeInstruction/**/));
         }
         return jsonArray;
     }
@@ -136,41 +151,20 @@ public class ProgramCode {
         // use iterator, initialize memory modules
     }
 
-    public static ProgramCode readFile(String filename) {
-        ProgramCode programCode = new ProgramCode();
+    public static ProgramCode readFile(String fileName) throws IOException {
 
-        // Read file
-        try {
-            File file = new File(filename);
-            Scanner scanner = new Scanner(file);
-            while (scanner.hasNext()) {
+        byte[] encoded = Files.readAllBytes(Paths.get(fileName));
+        String codeString = new String(encoded, Charset.defaultCharset());
 
-                String line = scanner.nextLine();
-                line = line.trim();
-
-                // Ignore comments and whitespace
-                if (line.startsWith(";")) continue;
-                if (line.isEmpty()) continue;
-
-                int i = line.indexOf(';');
-
-                if (i != -1)
-                    line = line.substring(0, i).trim();
-
-                programCode.addInstruction(line);
-            }
-        } catch (FileNotFoundException e) {
-            throw new IllegalStateException("Could not find input program at " + filename);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        return programCode;
+        return readCodeString(codeString);
     }
 
     public static ProgramCode readCodeString(String codeString) {
         try {
 
-            ProgramCode programCode = new ProgramCode();
+            codeString = codeString.trim();
+
+            ProgramCode programCode = new ProgramCode(codeString);
 
             Scanner scanner = new Scanner(codeString);
             while (scanner.hasNext()) {

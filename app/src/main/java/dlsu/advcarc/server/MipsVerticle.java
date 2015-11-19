@@ -10,7 +10,6 @@ import io.vertx.ext.web.handler.sockjs.SockJSHandler;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.logging.MemoryHandler;
 
 /**
  * Created by user on 11/18/2015.
@@ -30,7 +29,8 @@ public class MipsVerticle extends AbstractVerticle {
     }
 
     private void registerEventBusHandlers(){
-        vertx.eventBus().consumer(Addresses.CODE_INPUT, new InputCodeHandler());
+        vertx.eventBus().consumer(Addresses.CODE_REQUEST, new CodeRequestHandler());
+        vertx.eventBus().consumer(Addresses.CODE_UPDATE, new CodeUpdateHandler());
         vertx.eventBus().consumer(Addresses.REGISTER_REQUEST, new RegisterRequestHandler());
         vertx.eventBus().consumer(Addresses.REGISTER_UPDATE, new RegisterUpdateHandler());
         vertx.eventBus().consumer(Addresses.MEMORY_REQUEST, new MemoryRequestHandler());

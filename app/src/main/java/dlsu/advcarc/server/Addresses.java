@@ -8,7 +8,8 @@ import java.util.List;
  */
 public class Addresses {
 
-    public static final String CODE_INPUT = "code.input";
+    public static final String CODE_REQUEST = "code.request";
+    public static final String CODE_UPDATE = "code.update";
     public static final String REGISTER_REQUEST = "register.request_values";
     public static final String REGISTER_UPDATE = "register.update_values";
     public static final String MEMORY_REQUEST = "memory.request_values";
@@ -17,7 +18,8 @@ public class Addresses {
 
     public static List<String> getAllAddresses(){
         List<String> addresses = new ArrayList<String>();
-        addresses.add(CODE_INPUT);
+        addresses.add(CODE_REQUEST);
+        addresses.add(CODE_UPDATE);
         addresses.add(REGISTER_REQUEST);
         addresses.add(REGISTER_UPDATE);
         addresses.add(MEMORY_REQUEST);
