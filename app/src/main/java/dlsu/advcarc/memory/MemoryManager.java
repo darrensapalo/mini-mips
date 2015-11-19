@@ -3,6 +3,7 @@ package dlsu.advcarc.memory;
 import dlsu.advcarc.cpu.ExecutionManager;
 import dlsu.advcarc.parser.Code;
 import dlsu.advcarc.parser.ProgramCode;
+import dlsu.advcarc.parser.StringBinary;
 import dlsu.advcarc.utils.RadixHelper;
 import io.vertx.core.json.JsonArray;
 import io.vertx.core.json.JsonObject;
@@ -42,19 +43,24 @@ public class MemoryManager {
         }
     }
 
-    public Memory getInstance(String memory) throws IllegalArgumentException {
-        if(!Memory.validate(memory))
-            throw new IllegalArgumentException("Invalid memory format: "+memory);
+    public Memory getInstance(String memoryLocation) throws IllegalArgumentException {
+        if(!Memory.validate(memoryLocation))
+            throw new IllegalArgumentException("Invalid memory format: "+memoryLocation);
 
-        int memoryIndex = (Integer.valueOf(memory, 16) - DATA_SEGMENT_SIZE) / 4;
+        int memoryIndex = (Integer.valueOf(memoryLocation, 16) - DATA_SEGMENT_SIZE) / 4;
         return ram.get(memoryIndex);
+    }
+
+    public void updateMemory(String memoryLocation, StringBinary newValue){
+        Memory memory = getInstance(memoryLocation);
+        memory.setValue(newValue);
     }
 
     public void clear() {
         ram.clear();
     }
 
-    private JsonArray getCodeJsonArray(){
+    public JsonArray getCodeJsonArray(){
         JsonArray codeMemoryArray = ExecutionManager.instance().getProgramCode().toJsonArray(false);
 
         int numLinesOfCode = codeMemoryArray.size();
@@ -67,7 +73,7 @@ public class MemoryManager {
         return codeMemoryArray;
     }
 
-    private JsonArray getDataJsonArray(){
+    public JsonArray getDataJsonArray(){
         JsonArray jsonArray = new JsonArray();
         for(Memory memory: ram)
             jsonArray.add(memory.toJsonObject());

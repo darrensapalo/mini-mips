@@ -28,6 +28,10 @@ public class Memory implements Writable {
         return memory.matches("[0-9A-Fa-f]{4}") && Integer.valueOf(memory, 16) % 4 == 0;
     }
 
+    public void setValue(StringBinary value){
+        this.value = value;
+    }
+
     @Override
     public void write(String value) {
         this.value = new StringBinary(value);
@@ -45,7 +49,7 @@ public class Memory implements Writable {
 
     public JsonObject toJsonObject(){
         JsonObject jsonObject = new JsonObject();
-        jsonObject.put("location", memory);
+        jsonObject.put("address", memory);
         jsonObject.put("value", getAsHex());
         return jsonObject;
     }

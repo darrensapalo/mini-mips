@@ -1,10 +1,6 @@
 package dlsu.advcarc.server;
 
-import com.sun.jndi.cosnaming.IiopUrl;
-import dlsu.advcarc.parser.ProgramCode;
-import dlsu.advcarc.server.handlers.InputCodeHandler;
-import dlsu.advcarc.server.handlers.RegisterRequestHandler;
-import dlsu.advcarc.server.handlers.RegisterUpdateHandler;
+import dlsu.advcarc.server.handlers.*;
 import io.vertx.core.AbstractVerticle;
 import io.vertx.ext.web.Router;
 import io.vertx.ext.web.handler.StaticHandler;
@@ -14,6 +10,7 @@ import io.vertx.ext.web.handler.sockjs.SockJSHandler;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.MemoryHandler;
 
 /**
  * Created by user on 11/18/2015.
@@ -36,7 +33,8 @@ public class MipsVerticle extends AbstractVerticle {
         vertx.eventBus().consumer(Addresses.CODE_INPUT, new InputCodeHandler());
         vertx.eventBus().consumer(Addresses.REGISTER_REQUEST, new RegisterRequestHandler());
         vertx.eventBus().consumer(Addresses.REGISTER_UPDATE, new RegisterUpdateHandler());
-
+        vertx.eventBus().consumer(Addresses.MEMORY_REQUEST, new MemoryRequestHandler());
+        vertx.eventBus().consumer(Addresses.MEMORY_UPDATE, new MemoryUpdateHandler());
     }
 
     private BridgeOptions createBridgePermissions(){
