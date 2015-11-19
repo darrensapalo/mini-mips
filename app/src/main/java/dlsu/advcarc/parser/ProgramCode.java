@@ -2,6 +2,7 @@ package dlsu.advcarc.parser;
 
 import dlsu.advcarc.memory.Memory;
 import dlsu.advcarc.memory.MemoryManager;
+import dlsu.advcarc.parser.Code;
 import dlsu.advcarc.utils.RadixHelper;
 import io.vertx.core.json.JsonArray;
 import io.vertx.core.json.JsonObject;
@@ -11,6 +12,7 @@ import java.io.FileNotFoundException;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.Scanner;
+
 
 /**
  * Created by Darren on 11/9/2015.
@@ -91,10 +93,10 @@ public class ProgramCode {
         compactify(code);
     }
 
-    public JsonArray toJsonArray(){
+    public JsonArray toJsonArray(boolean includeInstruction) {
         JsonArray jsonArray = new JsonArray();
-        for (Code codeEntry: code) {
-            jsonArray.add(codeEntry.toJsonObject());
+        for (Code codeEntry : code) {
+            jsonArray.add(codeEntry.toJsonObject(includeInstruction));
         }
         return jsonArray;
     }
@@ -132,52 +134,6 @@ public class ProgramCode {
             instance.write(value);
         }
         // use iterator, initialize memory modules
-    }
-
-    public class Code {
-        private String label;
-        private String line;
-        private int memoryLocation;
-
-        public Code(String line, int memoryLocation) {
-            this.label = InstructionChecker.parseLabel(line);
-            this.line = ((label == null) ? line : line.substring(this.label.length() + 1).trim());
-            this.memoryLocation = memoryLocation;
-        }
-
-        public String getLine() {
-            return line;
-        }
-
-        public int getMemoryLocation() {
-            return memoryLocation;
-        }
-
-        public String getMemoryLocationHex() {
-            return RadixHelper.padWithZero(Integer.toHexString(memoryLocation).toUpperCase(),4);
-        }
-
-        public String getLabel() {
-            return label;
-        }
-
-        public void setLabel(String label) {
-            this.label = label;
-        }
-
-        @Override
-        public String toString() {
-            return getMemoryLocationHex() + ": " + line;
-        }
-
-        public JsonObject toJsonObject(){
-            JsonObject jsonObject = new JsonObject();
-            jsonObject.put("mem", getMemoryLocationHex());
-            jsonObject.put("opcode", "00000000"); //TODO generate correct opcode
-            jsonObject.put("instruction", line);
-            return jsonObject;
-        }
-
     }
 
     public static ProgramCode readFile(String filename) {
