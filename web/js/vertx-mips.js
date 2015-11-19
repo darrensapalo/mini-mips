@@ -56,15 +56,22 @@ function sendCodeToBackend(){
   
   $('#button-go').button('loading');
 
-  eb.send(CODE_UPDATE_ADDRESS, '.text\r\n'.concat($('#textarea-code').val().trim()), function(err, msg){
+  eb.send(CODE_UPDATE_ADDRESS, $('#textarea-code').val().trim(), function(err, msg){
     
-    if(!msg.body){
-      alert('Input code is invalid. Please double check your syntax.');
-    }
+    console.log(msg.body);
+
 
     $('#button-go').button('reset');
 
-    requestForCode();
+    if(!msg.body || !msg.body['isSuccessful']){
+      $('#span-code-error').html(msg.body['errors']);
+      $('#div-code-error').show();    
+    }
+    else{
+      $('#div-code-error').hide();   
+      requestForCode(); // to refresh the opcode table
+    }
+
   });
 
 }

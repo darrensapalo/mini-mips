@@ -21,11 +21,10 @@ public class InstructionChecker {
         if (mes == null)
             return null;
 
-        Pattern pattern = Pattern.compile("([a-zA-Z_])*:");
+        Pattern pattern = Pattern.compile(MipsParser.LABEL_REGEX);
         Matcher matcher = pattern.matcher(mes);
-        if (matcher.find()) {
+        if (matcher.find())
             return matcher.group().replace(":", "");
-        }
 
         return null;
     }
