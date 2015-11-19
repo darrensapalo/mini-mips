@@ -149,43 +149,4 @@ public class ProgramCode {
         // use iterator, initialize memory modules
     }
 
-    public static ProgramCode readFile(String fileName) throws IOException {
-
-        byte[] encoded = Files.readAllBytes(Paths.get(fileName));
-        String codeString = new String(encoded, Charset.defaultCharset());
-
-        return readCodeString(codeString);
-    }
-
-    public static ProgramCode readCodeString(String codeString) {
-        try {
-
-            codeString = codeString.trim();
-
-            ProgramCode programCode = new ProgramCode(codeString);
-
-            Scanner scanner = new Scanner(codeString);
-            while (scanner.hasNext()) {
-
-                String line = scanner.nextLine();
-                line = line.trim();
-
-                // Ignore comments and whitespace
-                if (line.startsWith(";")) continue;
-                if (line.isEmpty()) continue;
-
-                int i = line.indexOf(';');
-
-                if (i != -1)
-                    line = line.substring(0, i).trim();
-
-                programCode.addInstruction(line);
-            }
-
-            return programCode;
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        return null;
-    }
 }

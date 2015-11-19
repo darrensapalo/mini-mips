@@ -20,6 +20,8 @@ public class ExecutionManager {
     private ProgramCode programCode;
     private CPU cpu = new CPU();
 
+    private ExecutionManager(){}
+
     public void clockOnce() {
         cpu.clock();
     }

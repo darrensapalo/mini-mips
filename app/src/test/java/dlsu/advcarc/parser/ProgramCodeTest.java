@@ -41,7 +41,7 @@ public class ProgramCodeTest {
 
     @Test
     public void testInput() throws Exception {
-        ProgramCode programCode = ProgramCode.readFile("../input.txt");
+        ProgramCode programCode = MipsParser.parseFile("../input.txt");
         programCode.initialize();
 
         Memory instance = MemoryManager.instance().getInstance("0");

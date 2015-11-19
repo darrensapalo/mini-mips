@@ -1,4 +1,6 @@
 import dlsu.advcarc.cpu.CPU;
+import dlsu.advcarc.cpu.ExecutionManager;
+import dlsu.advcarc.parser.MipsParser;
 import dlsu.advcarc.parser.ProgramCode;
 import dlsu.advcarc.view.MiniMipsFrame;
 
@@ -10,22 +12,21 @@ import java.io.IOException;
 public class Driver {
 
 
-    public static void main(String[] args) throws IOException {
+    public static void main(String[] args) throws Exception {
 
-        ProgramCode programCode = ProgramCode.readFile("input.txt");
+        ProgramCode programCode = MipsParser.parseFile("input.txt");
 
         // Initialize program counter
         programCode.setInitialProgramCounter(4000);
 
-        MiniMipsFrame miniMipsFrame = new MiniMipsFrame();
 
         // Set up cpu and input code
-        CPU cpu = new CPU();
-        cpu.input(programCode);
+        ExecutionManager.instance().inputProgramCode(programCode);
+
 
         // Perform 5 clock cycles
         for (int i = 0; i < 5; i++) {
-            cpu.clock();
+            ExecutionManager.instance().clockOnce();
 
             try {
                 Thread.sleep(10000);
