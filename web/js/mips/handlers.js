@@ -2,6 +2,21 @@
 //      Handlers       //
 ////////////////////////
 
+function handleCodeBroadcast(err, msg){
+
+	 if(msg.body){
+		var text = msg.body['text'];
+		var array = msg.body['array'];
+
+		$('#textarea-code').val(text);
+		populateTable('#table-opcode', array);
+    }
+    else{
+    	$('#textarea-code').val('');
+		populateTable('#table-opcode', []);
+    }
+}
+
 function handleRegisterBroadcast(err, msg){
 
 	// if this is false, it means there is no code
