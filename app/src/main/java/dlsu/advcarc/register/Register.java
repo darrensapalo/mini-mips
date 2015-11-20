@@ -4,6 +4,7 @@ import dlsu.advcarc.parser.Instruction;
 import dlsu.advcarc.parser.Parameter;
 import dlsu.advcarc.parser.StringBinary;
 import dlsu.advcarc.parser.Writable;
+import dlsu.advcarc.utils.RadixHelper;
 import io.vertx.core.json.JsonArray;
 import io.vertx.core.json.JsonObject;
 
@@ -46,7 +47,7 @@ public class Register implements Writable {
     public JsonObject toJsonObject(){
         JsonObject jsonObject = new JsonObject();
         jsonObject.put("name", register);
-        jsonObject.put("value", value.toHexString());
+        jsonObject.put("value", RadixHelper.padWithZero(value.toHexString(), 16));
         return jsonObject;
     }
 
