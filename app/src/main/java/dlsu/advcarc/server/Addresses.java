@@ -15,6 +15,11 @@ public class Addresses {
     public static final String MEMORY_REQUEST = "memory.request_values";
     public static final String MEMORY_UPDATE = "memory.update_values";
 
+    public static final String CODE_BROADCAST = "code.broadcast";
+    public static final String REGISTER_BROADCAST = "register.broadcast";
+    public static final String MEMORY_BROADCAST = "memory.broadcast";
+
+
 
     public static List<String> getAllAddresses(){
         List<String> addresses = new ArrayList<String>();
@@ -24,6 +29,11 @@ public class Addresses {
         addresses.add(REGISTER_UPDATE);
         addresses.add(MEMORY_REQUEST);
         addresses.add(MEMORY_UPDATE);
+
+        addresses.add(CODE_BROADCAST);
+        addresses.add(REGISTER_BROADCAST);
+        addresses.add(MEMORY_BROADCAST);
+
         return addresses;
     }
 

@@ -50,7 +50,7 @@ public class Memory implements Writable {
     public JsonObject toJsonObject(){
         JsonObject jsonObject = new JsonObject();
         jsonObject.put("address", memory);
-        jsonObject.put("value", getAsHex());
+        jsonObject.put("value", RadixHelper.padWithZero(getAsHex(), 16));
         return jsonObject;
     }
 

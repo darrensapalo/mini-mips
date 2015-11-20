@@ -1,6 +1,9 @@
 package dlsu.advcarc.cpu;
 
 import dlsu.advcarc.parser.ProgramCode;
+import dlsu.advcarc.register.RegisterManager;
+import dlsu.advcarc.server.Addresses;
+import dlsu.advcarc.server.EventBusHolder;
 
 /**
  * Created by user on 11/19/2015.
@@ -34,6 +37,13 @@ public class ExecutionManager {
     public void inputProgramCode(ProgramCode programCode) {
         this.programCode = programCode;
         cpu.input(programCode);
+
+        /* Broadcast the Updated Register Values */
+        EventBusHolder.instance()
+                .getEventBus()
+                .publish(Addresses.CODE_BROADCAST,
+                        programCode.toJsonObject()
+                );
     }
 
     public ProgramCode getProgramCode(){
