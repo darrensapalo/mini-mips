@@ -49,4 +49,6 @@ function validateEbState(){
 function initHandlers(){
   // register handlers for diff addresses here
   eb.registerHandler(REGISTER_BROADCAST_ADDRESS, handleRegisterBroadcast);
+  eb.registerHandler(MEMORY_BROADCAST_ADDRESS, handleMemoryBroadcast);
+  
 }

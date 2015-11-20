@@ -4,6 +4,9 @@ import dlsu.advcarc.cpu.ExecutionManager;
 import dlsu.advcarc.parser.Code;
 import dlsu.advcarc.parser.ProgramCode;
 import dlsu.advcarc.parser.StringBinary;
+import dlsu.advcarc.register.RegisterManager;
+import dlsu.advcarc.server.Addresses;
+import dlsu.advcarc.server.EventBusHolder;
 import dlsu.advcarc.utils.RadixHelper;
 import io.vertx.core.json.JsonArray;
 import io.vertx.core.json.JsonObject;
@@ -54,6 +57,14 @@ public class MemoryManager {
     public void updateMemory(String memoryLocation, StringBinary newValue){
         Memory memory = getInstance(memoryLocation);
         memory.setValue(newValue);
+
+          /* Broadcast the Updated Memory Values */
+        EventBusHolder.instance()
+                .getEventBus()
+                .publish(Addresses.MEMORY_BROADCAST,
+                        MemoryManager.instance().getDataJsonArray()
+                );
+
     }
 
     public void clear() {

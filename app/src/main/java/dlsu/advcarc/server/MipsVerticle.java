@@ -29,7 +29,7 @@ public class MipsVerticle extends AbstractVerticle {
         EventBusHolder.instance().setEventBus(vertx.eventBus());
 
         vertx.createHttpServer().requestHandler(router::accept).listen(8080);
-        
+
     }
 
     private void registerEventBusHandlers(){
