@@ -37,9 +37,16 @@ public class StringBinary {
         return Double.longBitsToDouble(new BigInteger(value, 2).longValue());
     }
 
+
+    public int getAsInt() {
+        return Integer.parseUnsignedInt(value, 2);
+    }
+
     public String toHexString(){
         return toHexString(null);
     }
+
+
 
     public String toHexString(Integer desiredLength){
         String hex =  RadixHelper.convertBinaryToHexString(value);
@@ -71,6 +78,24 @@ public class StringBinary {
 
     public static StringBinary valueOf(long n){
         return new StringBinary(Long.toBinaryString(n));
+    }
+
+    public StringBinary and(StringBinary b) {
+        // todo: and both strings
+        return this;
+    }
+
+    /**
+     * Shifting by a negative amount is effectively a shift-left
+     * @param amount the number of bits to shift
+     * @return the shifted binary
+     */
+    public StringBinary shiftRight(int amount) {
+        return this;
+    }
+
+    public StringBinary or(StringBinary b) {
+        return this;
     }
 
 }
