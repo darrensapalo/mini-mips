@@ -81,8 +81,17 @@ public class StringBinary {
     }
 
     public StringBinary and(StringBinary b) {
-        // todo: and both strings
-        return this;
+        String thisBinary = padBinaryValue(64);
+        String thatBinary = b.padBinaryValue(64);
+        StringBuilder builder = new StringBuilder();
+        for (int i = 0; i < 64; i++)
+        {
+            if (thisBinary.charAt(i) == '1' && thatBinary.charAt(i) == '1')
+                builder.append("1");
+            else
+                builder.append("0");
+        }
+        return new StringBinary(builder.toString());
     }
 
     /**
@@ -91,11 +100,29 @@ public class StringBinary {
      * @return the shifted binary
      */
     public StringBinary shiftRight(int amount) {
-        return this;
+        String thisBinary = padBinaryValue(64);
+        if (amount > 0) {
+            for (int i = 0; i < amount; i++)
+                thisBinary = "0" + thisBinary.substring(0, 63);
+        }else if (amount < 0){
+            for (int i = amount; i < 0; i++)
+                thisBinary = thisBinary.substring(1, 64) + "0";
+        }
+        return new StringBinary(thisBinary);
     }
 
     public StringBinary or(StringBinary b) {
-        return this;
+        String thisBinary = padBinaryValue(64);
+        String thatBinary = b.padBinaryValue(64);
+        StringBuilder builder = new StringBuilder();
+        for (int i = 0; i < 64; i++)
+        {
+            if (thisBinary.charAt(i) == '1' || thatBinary.charAt(i) == '1')
+                builder.append("1");
+            else
+                builder.append("0");
+        }
+        return new StringBinary(builder.toString());
     }
 
 }
