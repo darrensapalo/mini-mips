@@ -122,8 +122,34 @@
          <div class="row">
           <div class="col-sm-12">
             <div class="panel panel-primary" id="panel-pipeline">
-                <div class="panel-heading">Pipeline</div>
+                <div class="panel-heading">Pipeline<button type="button" id="button-clock-once" class="btn btn-primary">Clock Once</button></div>
                 <div class="panel-body">
+
+                  <div class="col-sm-4 table-responsive">
+                    <table class="table table-condensed" id="table-cpu-registers">
+                      <thead>
+                        <tr>
+                          <th>Register</th>
+                          <th>Value</th>
+                        </tr>
+                      </thead>
+                      <tbody></tbody>
+                    </table>
+                  </div>
+
+                <div class="col-sm-8 table-responsive">
+                  <table class="table table-condensed" id="table-cpu-pipeline">
+                    <thead>
+                      <tr>
+                        <th>Instruction</th>
+                        <th>Pipeline Map</th>
+                      </tr>
+                    </thead>
+                    <tbody></tbody>
+                  </table>
+                </div>
+
+
                 </div>
               </div>
           </div>

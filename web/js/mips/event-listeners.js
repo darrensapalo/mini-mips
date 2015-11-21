@@ -6,6 +6,8 @@ $('#table-f-registers').on('keydown', onRegTableTDChange);
 $('#table-memory').on('keydown', onMemTableTDChange);
 $('#button-go').on('click', onExecuteClick);
 
+$('#button-clock-once').on('click', onClockOnceClick);
+
 function onMemTableTDChange(event) {
   var esc = event.which == 27,
       nl = event.which == 13,
@@ -67,4 +69,8 @@ function onRegTableTDChange(event) {
 
 function onExecuteClick(){
   updateCode($('#textarea-code').val().trim());
+}
+
+function onClockOnceClick(){
+  clock(false);
 }

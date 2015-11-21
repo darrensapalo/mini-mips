@@ -44,3 +44,10 @@ function handleMemoryBroadcast(err, msg){
 	    populateTable('#table-memory', []);
 
 }
+
+function handleCPUBroadcast(err, msg){
+	if(msg.body){
+		var array = msg.body;
+      	populateTable('#table-cpu-registers', array);
+    }
+}

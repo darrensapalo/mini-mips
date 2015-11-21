@@ -18,6 +18,9 @@ public class Addresses {
     public static final String CODE_BROADCAST = "code.broadcast";
     public static final String REGISTER_BROADCAST = "register.broadcast";
     public static final String MEMORY_BROADCAST = "memory.broadcast";
+    public static final String CPU_BROADCAST = "cpu.broadcast";
+
+    public static final String CPU_CLOCK = "cpu.clock";
 
 
 
@@ -33,6 +36,9 @@ public class Addresses {
         addresses.add(CODE_BROADCAST);
         addresses.add(REGISTER_BROADCAST);
         addresses.add(MEMORY_BROADCAST);
+        addresses.add(CPU_BROADCAST);
+        addresses.add(CPU_CLOCK);
+
 
         return addresses;
     }
