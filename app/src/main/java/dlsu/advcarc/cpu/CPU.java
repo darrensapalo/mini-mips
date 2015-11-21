@@ -112,11 +112,15 @@ public class CPU {
     public JsonObject toJsonObject(){
         return new JsonObject()
                 .put("registers", getRegistersJsonArray())
-                .put("pipeline", cycleTracker.toJsonArray());
+                .put("pipeline", cycleTracker == null? new JsonArray() : cycleTracker.toJsonArray());
     }
 
 
     public JsonArray getRegistersJsonArray(){
+
+        if(instructionFetchStage == null)
+            return new JsonArray();
+
         return new JsonArray()
                 .addAll(instructionFetchStage.toJsonArray())
                 .addAll(instructionDecodeStage.toJsonArray())

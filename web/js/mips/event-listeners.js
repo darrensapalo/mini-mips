@@ -26,7 +26,7 @@ function onMemTableTDChange(event) {
       var col = td.index() + 1;
       var row = td.parent().index() + 1;
     
-      var memAddress = td.parent().children()[1].innerHTML;
+      var memAddress = td.parent().children()[0].innerHTML;
       var memValue = el.innerHTML;
 
       updateMemoryValue(memAddress, memValue);
