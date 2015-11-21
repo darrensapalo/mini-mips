@@ -45,8 +45,6 @@ public class CPU {
 
     public void clock() {
 
-        cycleTracker.nextCycle();
-
         try {
             if (dataDependencyBlock <= 0) {
                 instructionFetchStage.execute();
@@ -99,6 +97,8 @@ public class CPU {
 
         instructionDecodeStage.housekeeping();
         instructionFetchStage.housekeeping();
+
+        cycleTracker.nextCycle();
 
         EventBusHolder.instance().getEventBus()
                 .publish(Addresses.CPU_BROADCAST, this.toJsonObject());

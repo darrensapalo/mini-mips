@@ -10,7 +10,7 @@ import java.util.List;
  */
 public class CPUCycleTracker {
 
-    private int cycleNumber = 0;
+    private int cycleNumber = 1;
 
     private List<CycleRecord> cycleRecords;
     private CycleRecord currCycleRecord;
@@ -18,12 +18,13 @@ public class CPUCycleTracker {
 
     public CPUCycleTracker(){
         cycleRecords = new ArrayList<CycleRecord>();
+        currCycleRecord = new CycleRecord(cycleNumber);
     }
 
     public void nextCycle(){
         if(currCycleRecord != null)
             cycleRecords.add(currCycleRecord);
-        currCycleRecord = new CycleRecord(++cycleNumber);
+        currCycleRecord = new CycleRecord(cycleNumber++);
     }
 
     public void setIfInstruction(String ifInstruction) {
