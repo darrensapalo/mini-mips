@@ -10,18 +10,16 @@ import dlsu.advcarc.utils.RadixHelper;
 /**
  * Created by Darren on 11/9/2015.
  */
-public class InstructionFetch extends Stage {
+public class InstructionFetchStage extends Stage {
 
     private CPU cpu;
     private ProgramCode code;
 
-    private String fetchedLine;
-
     private dlsu.advcarc.memory.Memory IFID_IR;
     private StringBinary IFID_NPC;
-    private Execute executeStage;
+    private ExecuteStage executeStage;
 
-    public InstructionFetch(CPU cpu, ProgramCode code) {
+    public InstructionFetchStage(CPU cpu, ProgramCode code) {
         this.cpu = cpu;
         this.code = code;
     }
@@ -34,7 +32,6 @@ public class InstructionFetch extends Stage {
     @Override
     public void execute() {
         int programCounter = cpu.getProgramCounter();
-        fetchedLine = code.getCode(programCounter);
 
         // IF/ID.IR = Mem[PC]
         String memoryLocation = RadixHelper.convertLongToHexString(programCounter);
@@ -43,12 +40,7 @@ public class InstructionFetch extends Stage {
         // IF/ID.NPC, PC = (EX/MEM.Cond) ? EX/MEM.ALUOutput : PC + 4;
         IFID_NPC = executeStage.getEXMEM_Cond().equals("1") ? executeStage.getEXMEM_ALUOutput() : new StringBinary(Integer.toBinaryString(programCounter + 4));
     }
-
-    public String getFetchedLine() {
-        return fetchedLine;
-    }
-
-    public void setExecuteStage(Execute executeStage) {
+    public void setExecuteStage(ExecuteStage executeStage) {
         this.executeStage = executeStage;
     }
 
