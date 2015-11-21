@@ -29,19 +29,23 @@ public class MipsParser {
         while(scanner.hasNext()) {
 
             String rawLineOfCode = scanner.nextLine();
-            String lineOfCode = rawLineOfCode.replaceAll("[\\(\\),;]"," ");
 
-            String rawParsingErrors = validateLineOfCode(lineOfCode);
+            if (!rawLineOfCode.trim().isEmpty()) {
 
-            // Stop parsing if errors were encountered.
-            if(!rawParsingErrors.isEmpty()){
-                String modifiedParsingErrors = "Invalid line ("+rawLineOfCode+") - "+rawParsingErrors;
-                programCode.setParsingErrors(modifiedParsingErrors);
-                break;
+                String lineOfCode = rawLineOfCode.replaceAll("[\\(\\),;]", " ");
+
+                String rawParsingErrors = validateLineOfCode(lineOfCode);
+
+                // Stop parsing if errors were encountered.
+                if (!rawParsingErrors.isEmpty()) {
+                    String modifiedParsingErrors = "Invalid line (" + rawLineOfCode + ") - " + rawParsingErrors;
+                    programCode.setParsingErrors(modifiedParsingErrors);
+                    break;
+                }
+
+                // if line is valid, add to the programcode
+                programCode.addInstruction(rawLineOfCode);
             }
-
-            // if line is valid, add to the programcode
-            programCode.addInstruction(rawLineOfCode);
         }
 
 
