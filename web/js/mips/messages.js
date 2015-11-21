@@ -33,12 +33,12 @@ function updateCode(code){
 
   eb.send(CODE_UPDATE_ADDRESS, code, function(err, msg){
     
-    // $('#button-go').button('reset');
+    $('#button-go').button('reset');
 
-    // if(!msg.body || !msg.body['isSuccessful']){
-    //   $('#span-code-error').html(msg.body['errors']);
-    //   $('#div-code-error').show();    
-    // }
+    if(!msg.body || !msg.body['isSuccessful']){
+      $('#span-code-error').html(msg.body['errors']);
+      $('#div-code-error').show();    
+    }
     // else{
     //   $('#div-code-error').hide();   
     //   requestForCode(); // to refresh the opcode table

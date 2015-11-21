@@ -16,42 +16,44 @@
       <div class="col-sm-4">
 
           <div class="panel panel-primary" id="panel-code">
-            <div class="panel-heading">MIPS Code Input</div>
-            <div class="panel-body">
+            <div class="panel-heading"><a data-toggle="collapse" href="#collapse1">MIPS Code Input</a></div>
+            <div id="collapse1" class="panel-collapse">
+              <div class="panel-body" id="panel-code-body">
 
-              <div id="div-code-error" class="alert alert-danger collapse" role="alert">
-                <!-- <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-                  <span aria-hidden="true">&times;</span>
-                </button> -->
-                <span id="span-code-error"></span>
+                <div id="div-code-error" class="alert alert-danger collapse" role="alert">
+                  <!-- <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                  </button> -->
+                  <span id="span-code-error"></span>
+                </div>
+
+
+                <div class="row">
+                  <div class="col-sm-12">
+                  <textarea id="textarea-code" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"autofocus></textarea>
+                  </div>
+                </div> <!-- End of the Text Area Row-->
+
+                <div class="row">
+                  <div class="col-sm-12 table-responsive">
+                    <table class="table table-condensed" id="table-opcode">
+                      <thead>
+                        <tr>
+                          <th>Mem</th>
+                          <th>Opcode</th>
+                          <th>Instruction</th>
+                        </tr>
+                      </thead>
+                      <tbody></tbody>
+                    </table>
+                  </div>
+                </div> <!-- End of the Table Row-->
+
               </div>
-
-
-              <div class="row">
-                <div class="col-sm-12">
-                <textarea id="textarea-code" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"autofocus></textarea>
-                </div>
-              </div> <!-- End of the Text Area Row-->
-
-              <div class="row">
-                <div class="col-sm-12 table-responsive">
-                  <table class="table table-condensed" id="table-opcode">
-                    <thead>
-                      <tr>
-                        <th>Mem</th>
-                        <th>Opcode</th>
-                        <th>Instruction</th>
-                      </tr>
-                    </thead>
-                    <tbody></tbody>
-                  </table>
-                </div>
-              </div> <!-- End of the Table Row-->
-
-            </div>
-            <div class="panel-footer">
-              <button type="button" id="button-go" class="btn btn-primary disabled">Go!</button>
-            </div>
+              <div class="panel-footer">
+                <button type="button" id="button-go" class="btn btn-primary disabled">Go!</button>
+              </div>
+            </div> <!-- End of collapsible panel -->
           </div>
       </div> <!-- End of the Left group of Panels-->
 
