@@ -33,16 +33,16 @@ function updateCode(code){
 
   eb.send(CODE_UPDATE_ADDRESS, code, function(err, msg){
     
-    $('#button-go').button('reset');
+    // $('#button-go').button('reset');
 
-    if(!msg.body || !msg.body['isSuccessful']){
-      $('#span-code-error').html(msg.body['errors']);
-      $('#div-code-error').show();    
-    }
-    else{
-      $('#div-code-error').hide();   
-      requestForCode(); // to refresh the opcode table
-    }
+    // if(!msg.body || !msg.body['isSuccessful']){
+    //   $('#span-code-error').html(msg.body['errors']);
+    //   $('#div-code-error').show();    
+    // }
+    // else{
+    //   $('#div-code-error').hide();   
+    //   requestForCode(); // to refresh the opcode table
+    // }
 
   });
 
@@ -76,10 +76,10 @@ function updateRegisterValue(regName , regValue){
   data['value'] = regValue.trim();
 
   eb.send(REGISTER_UPDATE_ADDRESS, data, function(err, msg){
-    if(err || !msg.body){
-      alert("Invalid register value.");
-    }
-    requestForRegisterValues();
+    // if(err || !msg.body){
+    //   alert("Invalid register value.");
+    // }
+    // requestForRegisterValues();
 
   });
 
@@ -107,9 +107,9 @@ function updateMemoryValue(memAddress, memValue){
   data['value'] = memValue.trim();
 
   eb.send(MEMORY_UPDATE_ADDRESS, data, function(err, msg){
-    if(err || !msg.body){
-      alert("Invalid memory value.");
-    }
-    requestForMemoryValues('data');
+    // if(err || !msg.body){
+    //   alert("Invalid memory value.");
+    // }
+    // requestForMemoryValues('data');
   });
 }
