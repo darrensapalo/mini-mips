@@ -2,14 +2,20 @@
 //      Utility        //
 ////////////////////////
 
-function populateTable(tableID, data){
+var opcodeColumns = ['mem', 'opcode', 'instruction'];
+var registerColumns = ['register', 'value'];
+var memoryColumns = ['value', 'address'];
+var pipelineColumns = ['cycle', 'if', 'id', 'ex', 'mem', 'wb'];
 
-  var th = d3.select(tableID).select("thead").selectAll("th").data(d3.keys(data[0]));
+
+function populateTable(tableID, data, columns){
+
+  var th = d3.select(tableID).select("thead").selectAll("th").data(columns);
   th.remove();
   th.exit().remove();
 
   d3.select(tableID).select("thead").selectAll("th")
-  .data(d3.keys(data[0]))
+  .data(columns)
   .enter().append("th").text(function(d){return d});
 
 
@@ -22,7 +28,17 @@ function populateTable(tableID, data){
   tableRows.enter()
     .append('tr')
       .selectAll('td')
-      .data(function(d){return d3.values(d);})
+      .data(function(d){
+
+        var row = [];
+
+        for(i=0;i<columns.length;i++){
+          row.push(d[columns[i]]);
+        }
+
+        return row;
+
+      })
       .enter()
       .append('td')
         .text(function(d){return d;})

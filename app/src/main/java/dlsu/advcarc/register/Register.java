@@ -45,10 +45,9 @@ public class Register implements Writable {
     }
 
     public JsonObject toJsonObject() {
-        JsonObject jsonObject = new JsonObject();
-        jsonObject.put("name", register);
-        jsonObject.put("value", RadixHelper.padWithZero(value.toHexString(), 16));
-        return jsonObject;
+        return new JsonObject()
+            .put("register", register)
+            .put("value", RadixHelper.padWithZero(value.toHexString(), 16));
     }
 
     @Override

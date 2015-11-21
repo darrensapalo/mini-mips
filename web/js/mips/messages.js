@@ -18,7 +18,7 @@ function requestForCode(){
       var array = msg.body['array'];
 
       $('#textarea-code').val(text);
-      populateTable('#table-opcode', array);
+      populateTable('#table-opcode', array, opcodeColumns);
     }
 
   });
@@ -62,8 +62,8 @@ function requestForRegisterValues(){
     var rArray = msg.body['r-registers'];
     var fArray = msg.body['f-registers'];
 
-    populateTable('#table-r-registers', rArray);
-    populateTable('#table-f-registers', fArray);
+    populateTable('#table-r-registers', rArray, registerColumns);
+    populateTable('#table-f-registers', fArray, registerColumns);
     
   });
 
@@ -97,7 +97,7 @@ function requestForMemoryValues(type){
 
     var array = msg.body.reverse();
 
-    populateTable('#table-memory', array);
+    populateTable('#table-memory', array, memoryColumns);
   });
 }
 
