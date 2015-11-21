@@ -53,7 +53,7 @@ public class CPU {
                 cycleTracker.setIfInstruction(instructionFetchStage.getInstruction().getInstruction());
             }
         } catch (Exception e) {
-            e.printStackTrace();
+
         }
 
         try {
@@ -62,7 +62,7 @@ public class CPU {
                 cycleTracker.setIdInstruction(instructionDecodeStage.getInstruction().getInstruction());
             }
         } catch (Exception e) {
-            e.printStackTrace();
+
         }
 
         try {
@@ -71,7 +71,7 @@ public class CPU {
                 cycleTracker.setExInstruction(executeStage.getInstruction().getInstruction());
             }
         } catch (Exception e) {
-            e.printStackTrace();
+
         }
 
         try {
@@ -80,7 +80,7 @@ public class CPU {
                 cycleTracker.setMemInstruction(memoryStage.getInstruction().getInstruction());
             }
         } catch (Exception e) {
-            e.printStackTrace();
+
         }
         try {
             if (dataDependencyBlock <= 4) {
@@ -88,7 +88,7 @@ public class CPU {
                 cycleTracker.setWbInstruction(writeBackStage.getInstruction().getInstruction());
             }
         } catch (Exception e) {
-            e.printStackTrace();
+
         }
 
 

@@ -42,7 +42,7 @@ public class InstructionFetchStage extends Stage {
         String memoryLocation = RadixHelper.convertLongToHexString(PC.getAsLong());
         IFID_IR = MemoryManager.instance().getInstance(memoryLocation);
 
-        String lineOfCode = this.code.getCode(Integer.valueOf(memoryLocation, 2));
+        String lineOfCode = this.code.getCode(Integer.valueOf(memoryLocation, 16));
 
         // IF/ID.NPC, PC = (EX/MEM.Cond) ? EX/MEM.ALUOutput : PC + 4;
         IFID_NPC = ("1").equals(executeStage.getEXMEM_Cond()) ? executeStage.getEXMEM_ALUOutput() : StringBinary.valueOf(PC.getAsLong() + 4);

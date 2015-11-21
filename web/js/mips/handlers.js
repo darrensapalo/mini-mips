@@ -36,6 +36,8 @@ function handleRegisterBroadcast(err, msg){
 
 function handleMemoryBroadcast(err, msg){
 
+	console.log(msg.body);
+
 	if(msg.body){
 		var array = msg.body;
       	populateTable('#table-memory', array);
