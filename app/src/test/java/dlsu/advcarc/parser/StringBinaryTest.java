@@ -56,7 +56,58 @@ public class StringBinaryTest {
         thatBinary = new StringBinary("0000000000000000000000000000000000000000000000000000000000001100");
         result = stringBinary.or(thatBinary);
         assertEquals("0000000000000000000000000000000000000000000000000000000000001100", result.getBinaryValue());
+    }
 
 
+    @Test
+    public void testPlus() throws Exception {
+        StringBinary stringBinary = new StringBinary("0000000000000000000000000000000000000000000000000000000000001000");
+        StringBinary thatBinary =   new StringBinary("0000000000000000000000000000000000000000000000000000000000000100");
+        StringBinary result = stringBinary.plus(thatBinary);
+        assertEquals(12, result.getAsInt());
+
+        stringBinary = new StringBinary("0000000000000000000000000000000000000000000000000000000000001000");
+        thatBinary =   new StringBinary("0000000000000000000000000000000000000000000000000000000000001000");
+        result = stringBinary.plus(thatBinary);
+        assertEquals(16, result.getAsInt());
+    }
+
+    @Test
+    public void testMinus() throws Exception {
+        StringBinary stringBinary = new StringBinary("0000000000000000000000000000000000000000000000000000000000001000");
+        StringBinary thatBinary =   new StringBinary("0000000000000000000000000000000000000000000000000000000000000100");
+        StringBinary result = stringBinary.minus(thatBinary);
+        assertEquals(4, result.getAsInt());
+
+        stringBinary = new StringBinary("0000000000000000000000000000000000000000000000000000000000001000");
+        thatBinary =   new StringBinary("0000000000000000000000000000000000000000000000000000000000001000");
+        result = stringBinary.minus(thatBinary);
+        assertEquals(0, result.getAsInt());
+    }
+
+    @Test
+    public void testDivide() throws Exception {
+        StringBinary stringBinary = new StringBinary("0000000000000000000000000000000000000000000000000000000000001000");
+        StringBinary thatBinary =   new StringBinary("0000000000000000000000000000000000000000000000000000000000000100");
+        StringBinary result = stringBinary.plus(thatBinary);
+        assertEquals(12, result.getAsInt());
+
+        stringBinary = new StringBinary("0000000000000000000000000000000000000000000000000000000000001000");
+        thatBinary =   new StringBinary("0000000000000000000000000000000000000000000000000000000000001000");
+        result = stringBinary.plus(thatBinary);
+        assertEquals(16, result.getAsInt());
+    }
+
+    @Test
+    public void testTimes() throws Exception {
+        StringBinary stringBinary = new StringBinary("0000000000000000000000000000000000000000000000000000000000001000");
+        StringBinary thatBinary =   new StringBinary("0000000000000000000000000000000000000000000000000000000000000100");
+        StringBinary result = stringBinary.times(thatBinary);
+        assertEquals(32, result.getAsInt());
+
+        stringBinary = new StringBinary("0000000000000000000000000000000000000000000000000000000000001000");
+        thatBinary =   new StringBinary("0000000000000000000000000000000000000000000000000000000000001000");
+        result = stringBinary.times(thatBinary);
+        assertEquals(64, result.getAsInt());
     }
 }
