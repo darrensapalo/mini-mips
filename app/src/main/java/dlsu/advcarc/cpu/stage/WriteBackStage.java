@@ -106,4 +106,8 @@ public class WriteBackStage extends Stage {
             }
         }
     }
+
+    public Instruction getInstruction() {
+        return instruction;
+    }
 }

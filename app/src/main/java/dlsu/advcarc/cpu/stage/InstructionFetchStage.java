@@ -7,6 +7,8 @@ import dlsu.advcarc.parser.Instruction;
 import dlsu.advcarc.parser.ProgramCode;
 import dlsu.advcarc.parser.StringBinary;
 import dlsu.advcarc.utils.RadixHelper;
+import io.vertx.core.json.JsonArray;
+import io.vertx.core.json.JsonObject;
 
 /**
  * Created by Darren on 11/9/2015.
@@ -40,11 +42,14 @@ public class InstructionFetchStage extends Stage {
         String memoryLocation = RadixHelper.convertLongToHexString(PC.getAsLong());
         IFID_IR = MemoryManager.instance().getInstance(memoryLocation);
 
+        String lineOfCode = this.code.getCode(Integer.valueOf(memoryLocation, 2));
+
         // IF/ID.NPC, PC = (EX/MEM.Cond) ? EX/MEM.ALUOutput : PC + 4;
         IFID_NPC = ("1").equals(executeStage.getEXMEM_Cond()) ? executeStage.getEXMEM_ALUOutput() : StringBinary.valueOf(PC.getAsLong() + 4);
 
+
         // Get references to registers
-        instruction = new Instruction(new StringBinary(IFID_IR.getAsBinary()));
+        instruction = new Instruction(new StringBinary(IFID_IR.getAsBinary()), lineOfCode);
 
 
         PC = IFID_NPC;
@@ -65,5 +70,11 @@ public class InstructionFetchStage extends Stage {
 
     public Instruction getInstruction() {
         return instruction;
+    }
+
+    public JsonArray toJsonArray(){
+        return new JsonArray()
+                .add(new JsonObject().put("IF/ID.IR", IFID_IR == null? "null": IFID_IR.getAsHex()))
+                .add(new JsonObject().put("IF/ID.NPC", IFID_NPC.toHexString()));
     }
 }

@@ -59,11 +59,11 @@ public class MemoryManager {
         memory.setValue(newValue);
 
           /* Broadcast the Updated Memory Values */
-//        EventBusHolder.instance()
-//                .getEventBus()
-//                .publish(Addresses.MEMORY_BROADCAST,
-//                        MemoryManager.instance().getDataJsonArray()
-//                );
+        EventBusHolder.instance()
+                .getEventBus()
+                .publish(Addresses.MEMORY_BROADCAST,
+                        MemoryManager.instance().getDataJsonArray()
+                );
 
     }
 

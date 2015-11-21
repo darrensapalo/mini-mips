@@ -46,8 +46,17 @@ function handleMemoryBroadcast(err, msg){
 }
 
 function handleCPUBroadcast(err, msg){
+
+	console.log(msg.body);
+
 	if(msg.body){
-		var array = msg.body;
+		var array = msg.body['registers'];
       	populateTable('#table-cpu-registers', array);
+
+		var array = msg.body['pipeline'];
+      	populateTable('#table-cpu-pipeline', array);
+
+      	
+
     }
 }

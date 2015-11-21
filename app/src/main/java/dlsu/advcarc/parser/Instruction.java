@@ -15,7 +15,7 @@ public class Instruction {
     private ArrayList<Parameter> parameters = new ArrayList<>();
 
     // generate instruction based on binary
-    public Instruction(StringBinary binary) {
+    public Instruction(StringBinary binary, String lineOfCode) {
         String binaryValue = binary.getBinaryValue();
 
         if (binaryValue.length() == 64) {
@@ -23,7 +23,7 @@ public class Instruction {
             binary = new StringBinary(binaryValue);
         }
 
-        instruction = OpcodeHelper.getInstruction(binary);
+        instruction = lineOfCode;
         String instructionType = OpcodeHelper.getInstructionType(binary);
         switch (instructionType) {
             case "J":
@@ -104,6 +104,8 @@ public class Instruction {
                 break;
 
         }
+
+
     }
 
     public enum Stage {

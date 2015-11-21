@@ -6,6 +6,8 @@ import dlsu.advcarc.opcode.OpcodeHelper;
 import dlsu.advcarc.parser.Instruction;
 import dlsu.advcarc.parser.Parameter;
 import dlsu.advcarc.parser.StringBinary;
+import io.vertx.core.json.JsonArray;
+import io.vertx.core.json.JsonObject;
 
 /**
  * Created by Darren on 11/9/2015.
@@ -71,4 +73,14 @@ public class ExecuteStage extends Stage {
     public Instruction getInstruction() {
         return instruction;
     }
+
+    public JsonArray toJsonArray(){
+        return new JsonArray()
+                .add(new JsonObject().put("EX/MEM.B", getEXMEM_B() == null? "null": getEXMEM_B().getValue()))
+                .add(new JsonObject().put("EX/MEM.ALUOutput", getEXMEM_ALUOutput() == null? "null": getEXMEM_ALUOutput().toHexString()))
+                .add(new JsonObject().put("EX/MEM.Cond", getEXMEM_Cond() == null? "null": getEXMEM_Cond()))
+                .add(new JsonObject().put("EX/MEM.IR", getEXMEM_IR() == null? "null": getEXMEM_IR().getAsHex()));
+
+    }
+
 }

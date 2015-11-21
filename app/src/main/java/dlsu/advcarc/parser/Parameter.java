@@ -79,4 +79,12 @@ public class Parameter {
     public DependencyType getDependencyType() {
         return dependencyType;
     }
+
+    public String getValue(){
+        if(parameter == null)
+            return "null";
+
+        return parameter.read().toHexString();
+    }
+
 }

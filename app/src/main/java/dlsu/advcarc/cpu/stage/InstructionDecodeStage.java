@@ -7,6 +7,8 @@ import dlsu.advcarc.parser.Instruction;
 import dlsu.advcarc.parser.Parameter;
 import dlsu.advcarc.parser.StringBinary;
 import dlsu.advcarc.register.Register;
+import io.vertx.core.json.JsonArray;
+import io.vertx.core.json.JsonObject;
 
 import java.util.ArrayList;
 
@@ -98,5 +100,14 @@ public class InstructionDecodeStage extends Stage {
 
     public Instruction getInstruction() {
         return instruction;
+    }
+
+    public JsonArray toJsonArray(){
+        return new JsonArray()
+            .add(new JsonObject().put("ID/EX.A", getIDEX_A() == null? "null": getIDEX_A().getValue()))
+            .add(new JsonObject().put("ID/EX.B", getIDEX_B() == null? "null": getIDEX_B().getValue()))
+            .add(new JsonObject().put("ID/EX.Imm", getIDEX_IMM() == null? "null": getIDEX_IMM().getValue()))
+            .add(new JsonObject().put("ID/EX.IR", getIDEX_IR() == null? "null": getIDEX_IR().getAsHex()))
+            .add(new JsonObject().put("ID/EX.NPC", getIDEX_NPC() == null? "null": getIDEX_NPC().toHexString()));
     }
 }

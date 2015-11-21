@@ -1,11 +1,14 @@
 package dlsu.advcarc.cpu;
 
 import dlsu.advcarc.cpu.stage.*;
+import dlsu.advcarc.cpu.tracker.CPUCycleTracker;
 import dlsu.advcarc.parser.ProgramCode;
 import dlsu.advcarc.parser.StringBinary;
+import dlsu.advcarc.server.handlers.CPUClockHandler;
 import dlsu.advcarc.utils.RadixHelper;
 import dlsu.advcarc.server.Addresses;
 import dlsu.advcarc.server.EventBusHolder;
+import io.vertx.core.json.JsonArray;
 import io.vertx.core.json.JsonObject;
 
 /**
@@ -24,6 +27,8 @@ public class CPU {
 
     private StringBinary programCounter;
 
+    private CPUCycleTracker cycleTracker;
+
     public void input(ProgramCode code) {
         this.code = code;
         programCounter = RadixHelper.convertLongToStringBinary(code.InitialProgramCounter());
@@ -34,40 +39,54 @@ public class CPU {
         executeStage = new ExecuteStage(instructionDecodeStage, instructionFetchStage);
         memoryStage = new MemoryStage(this, executeStage);
         writeBackStage = new WriteBackStage(this, memoryStage);
+
+        cycleTracker = new CPUCycleTracker();
     }
 
     public void clock() {
 
+        cycleTracker.nextCycle();
+
         try {
-            if (dataDependencyBlock <= 0)
+            if (dataDependencyBlock <= 0) {
                 instructionFetchStage.execute();
+                cycleTracker.setIfInstruction(instructionFetchStage.getInstruction().getInstruction());
+            }
         } catch (Exception e) {
             e.printStackTrace();
         }
 
         try {
-            if (dataDependencyBlock <= 1)
+            if (dataDependencyBlock <= 1) {
                 instructionDecodeStage.execute();
+                cycleTracker.setIdInstruction(instructionDecodeStage.getInstruction().getInstruction());
+            }
         } catch (Exception e) {
             e.printStackTrace();
         }
 
         try {
-            if (dataDependencyBlock <= 2)
+            if (dataDependencyBlock <= 2){
                 executeStage.execute();
+                cycleTracker.setExInstruction(executeStage.getInstruction().getInstruction());
+            }
         } catch (Exception e) {
             e.printStackTrace();
         }
 
         try {
-            if (dataDependencyBlock <= 3)
+            if (dataDependencyBlock <= 3) {
                 memoryStage.execute();
+                cycleTracker.setMemInstruction(memoryStage.getInstruction().getInstruction());
+            }
         } catch (Exception e) {
             e.printStackTrace();
         }
         try {
-            if (dataDependencyBlock <= 4)
+            if (dataDependencyBlock <= 4) {
                 writeBackStage.execute();
+                cycleTracker.setWbInstruction(writeBackStage.getInstruction().getInstruction());
+            }
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -92,26 +111,18 @@ public class CPU {
 
     public JsonObject toJsonObject(){
         return new JsonObject()
-                .put("registers", getRegistersJsonObject());
+                .put("registers", getRegistersJsonArray())
+                .put("pipeline", cycleTracker.toJsonArray());
     }
 
 
-    public JsonObject getRegistersJsonObject(){
-        return new JsonObject()
-                .put("IF/ID.IR", instructionFetchStage.getIFID_IR())
-                .put("IF/ID.NPC", instructionFetchStage.getIFID_NPC())
-                .put("ID/EX.A", instructionDecodeStage.getIDEX_A())
-                .put("ID/EX.B", instructionDecodeStage.getIDEX_B())
-                .put("ID/EX.Imm", instructionDecodeStage.getIDEX_IMM())
-                .put("ID/EX.IR", instructionDecodeStage.getIDEX_IR())
-                .put("ID/EX.NPC", instructionDecodeStage.getIDEX_NPC())
-                .put("EX/MEM.B", executeStage.getEXMEM_B())
-                .put("EX/MEM.ALUOutput", executeStage.getEXMEM_ALUOutput())
-                .put("EX/MEM.Cond", executeStage.getEXMEM_Cond())
-                .put("EX/MEM.IR", executeStage.getEXMEM_IR())
-                .put("MEM/WB.LMD", memoryStage.getMEMWB_LMD())
-                .put("MEM/WB.ALUOutput", memoryStage.getMEMWB_ALUOutput())
-                .put("MEM/WB.IR", memoryStage.getMEMWB_IR());
+    public JsonArray getRegistersJsonArray(){
+        return new JsonArray()
+                .addAll(instructionFetchStage.toJsonArray())
+                .addAll(instructionDecodeStage.toJsonArray())
+                .addAll(executeStage.toJsonArray())
+                .addAll(memoryStage.toJsonArray())
+                ;
     }
 
     public void setProgramCounter(StringBinary programCounter) {

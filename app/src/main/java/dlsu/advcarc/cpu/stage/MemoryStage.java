@@ -8,6 +8,8 @@ import dlsu.advcarc.parser.Instruction;
 import dlsu.advcarc.parser.Parameter;
 import dlsu.advcarc.parser.StringBinary;
 import dlsu.advcarc.register.Register;
+import io.vertx.core.json.JsonArray;
+import io.vertx.core.json.JsonObject;
 
 import java.util.ArrayList;
 
@@ -100,4 +102,14 @@ public class MemoryStage extends Stage {
     public Instruction getInstruction() {
         return instruction;
     }
+
+
+
+    public JsonArray toJsonArray(){
+        return new JsonArray()
+                .add(new JsonObject().put("MEM/WB.LMD", getMEMWB_LMD() == null? "null": getMEMWB_LMD().getAsHex()))
+                .add(new JsonObject().put("MEM/WB.ALUOutput", getMEMWB_ALUOutput() == null? "null": getMEMWB_ALUOutput().toHexString()))
+                .add(new JsonObject().put("MEM/WB.IR", getMEMWB_IR() == null? "null": getMEMWB_IR().getAsHex()));
+    }
+
 }
