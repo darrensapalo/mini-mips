@@ -50,5 +50,8 @@ public class ExecutionManager {
         return programCode;
     }
 
+    public CPU getCPU(){
+        return cpu;
+    }
 
 }

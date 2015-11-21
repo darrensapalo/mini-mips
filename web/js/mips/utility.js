@@ -4,7 +4,7 @@
 
 var opcodeColumns = ['mem', 'opcode', 'instruction'];
 var registerColumns = ['register', 'value'];
-var memoryColumns = ['value', 'address'];
+var memoryColumns = ['address', 'value'];
 var pipelineColumns = ['cycle', 'if', 'id', 'ex', 'mem', 'wb'];
 
 

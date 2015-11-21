@@ -24,7 +24,7 @@ public class CPUCycleTracker {
     public void nextCycle(){
         if(currCycleRecord != null)
             cycleRecords.add(currCycleRecord);
-        currCycleRecord = new CycleRecord(cycleNumber++);
+        currCycleRecord = new CycleRecord(++cycleNumber);
     }
 
     public void setIfInstruction(String ifInstruction) {

@@ -18,6 +18,8 @@ var CPU_BROADCAST_ADDRESS = "cpu.broadcast";
 
 var CPU_CLOCK_ADDRESS = "cpu.clock";
 
+var CPU_REQUEST_ADDRESS = "cpu.request";
+
 //////////////////////////
 //      VERTX          //
 ////////////////////////
@@ -29,6 +31,7 @@ eb.onopen = function(){
   requestForCode();
   requestForRegisterValues();
   requestForMemoryValues('data');
+  requestForCPU();
   initHandlers();
 };
 

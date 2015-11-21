@@ -55,7 +55,5 @@ function handleCPUBroadcast(err, msg){
 		var array = msg.body['pipeline'];
       	populateTable('#table-cpu-pipeline', array, pipelineColumns);
 
-      	
-
     }
 }

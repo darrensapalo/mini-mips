@@ -40,7 +40,7 @@ public class MipsVerticle extends AbstractVerticle {
         vertx.eventBus().consumer(Addresses.MEMORY_REQUEST, new MemoryRequestHandler());
         vertx.eventBus().consumer(Addresses.MEMORY_UPDATE, new MemoryUpdateHandler());
         vertx.eventBus().consumer(Addresses.CPU_CLOCK, new CPUClockHandler());
-
+        vertx.eventBus().consumer(Addresses.CPU_REQUEST, new CPURequestHandler());
     }
 
     private BridgeOptions createBridgePermissions(){

@@ -117,3 +117,23 @@ function updateMemoryValue(memAddress, memValue){
 function clock(isFullExecution){
   eb.send(CPU_CLOCK_ADDRESS, isFullExecution);
 }
+
+function requestForCPU(){
+
+  if(!validateEbState())
+    return;
+
+  eb.send(CPU_REQUEST_ADDRESS, '', function(err, msg){
+
+    if(err || !msg.body){
+      alert("Failed to get CPU state from server.");
+    }
+
+    var array = msg.body['registers'];
+        populateTable('#table-cpu-registers', array, registerColumns);
+
+    var array = msg.body['pipeline'];
+        populateTable('#table-cpu-pipeline', array, pipelineColumns);
+  });
+
+}

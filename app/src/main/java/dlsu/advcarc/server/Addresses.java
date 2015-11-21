@@ -21,6 +21,7 @@ public class Addresses {
     public static final String CPU_BROADCAST = "cpu.broadcast";
 
     public static final String CPU_CLOCK = "cpu.clock";
+    public static final String CPU_REQUEST = "cpu.request";
 
 
 
@@ -38,7 +39,7 @@ public class Addresses {
         addresses.add(MEMORY_BROADCAST);
         addresses.add(CPU_BROADCAST);
         addresses.add(CPU_CLOCK);
-
+        addresses.add(CPU_REQUEST);
 
         return addresses;
     }
