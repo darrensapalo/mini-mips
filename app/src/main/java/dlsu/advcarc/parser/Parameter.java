@@ -28,7 +28,7 @@ public class Parameter {
     }
 
     private Writable getParameter(String parameter){
-        if (parameter.startsWith("R"))
+        if (parameter.startsWith("R") || parameter.startsWith("F"))
             return RegisterManager.instance().getInstance(parameter);
         return MemoryManager.instance().getInstance(parameter);
     }

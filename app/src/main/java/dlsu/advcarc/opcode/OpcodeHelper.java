@@ -1,11 +1,13 @@
 package dlsu.advcarc.opcode;
 
+import dlsu.advcarc.parser.StringBinary;
+
 /**
  * Created by user on 11/20/2015.
  */
 public class OpcodeHelper {
 
-    public static int getOpcodeNumber(String instruction){
+    public static int getOpcodeNumber(String instruction) {
         switch (instruction.toUpperCase()) {
             case "DADDU":
                 return 45;
@@ -41,5 +43,92 @@ public class OpcodeHelper {
                 return 2;
         }
         return -1;
+    }
+
+    public static String getInstructionType(StringBinary ir) {
+        String binaryValue = ir.getBinaryValue();
+        StringBinary opcode = new StringBinary(binaryValue.substring(0, 6));
+
+        switch (opcode.getAsInt()) {
+            // Jump
+            case 2:
+                return "J";
+
+            // Regular R types
+            case 0:
+                return "R";
+
+            // I Types
+            case 4:
+            case 35:
+            case 39:
+            case 43:
+            case 12:
+            case 25:
+            case 49:
+            case 57:
+                return "I";
+
+            // Extended R
+            case 17:
+                return "Rx";
+        }
+        return null;
+    }
+
+    public static String getInstruction(StringBinary ir) {
+        String binaryValue = ir.getBinaryValue();
+        StringBinary opcode = new StringBinary(binaryValue.substring(0, 6));
+        StringBinary func = new StringBinary(binaryValue.substring(26, 31));
+
+        switch (opcode.getAsInt()) {
+
+            // Jump
+            case 2:
+                return "J";
+
+            // Regular R types
+            case 0:
+                switch (func.getAsInt()) {
+                    case 45:
+                        return "DADDU";
+                    case 28:
+                        return "DMULT";
+                    case 37:
+                        return "OR";
+                    case 42:
+                        return "SLT";
+                    case 56:
+                        return "DSLL";
+                }
+
+                // I Types
+            case 4:
+                return "BEQ";
+            case 35:
+                return "LW";
+            case 39:
+                return "LWU";
+            case 43:
+                return "SW";
+            case 12:
+                return "ANDI";
+            case 25:
+                return "DADDIU";
+            case 49:
+                return "L.S";
+            case 57:
+                return "S.S";
+
+            // Extended R
+            case 17:
+                switch (func.getAsInt()) {
+                    case 0:
+                        return "ADD.S";
+                    case 2:
+                        return "MUL.S";
+                }
+        }
+        return null;
     }
 }

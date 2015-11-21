@@ -12,18 +12,16 @@ import java.util.ArrayList;
 /**
  * Created by Darren on 11/9/2015.
  */
-public class InstructionDecode extends Stage {
-    private CPU cpu;
-    private InstructionFetch instructionFetchStage;
-    private Instruction instruction;
-    private String IDEX_A;
-    private String IDEX_B;
-    private String IDEX_IMM;
+public class InstructionDecodeStage extends Stage {
+    private InstructionFetchStage instructionFetchStage;
+
+    private Memory IDEX_A;
+    private Memory IDEX_B;
+    private Memory IDEX_IMM;
     private Memory IDEX_IR;
     private StringBinary IDEX_NPC;
 
-    public InstructionDecode(CPU cpu, InstructionFetch instructionFetchStage) {
-        this.cpu = cpu;
+    public InstructionDecodeStage(InstructionFetchStage instructionFetchStage) {
         this.instructionFetchStage = instructionFetchStage;
     }
 
@@ -36,18 +34,24 @@ public class InstructionDecode extends Stage {
     @Override
     public void execute() {
         // instructionFetchStage.get code
-        dlsu.advcarc.memory.Memory ifid_ir = instructionFetchStage.getIFID_IR();
+        Memory ifid_ir = instructionFetchStage.getIFID_IR();
 
         String ifid_irAsBinary = ifid_ir.getAsBinary();
 
-        IDEX_A = ifid_irAsBinary.substring(6, 10);
-        IDEX_B = ifid_irAsBinary.substring(11, 15);
-        IDEX_IMM = ifid_irAsBinary.substring(16, 31);
+        String raw_A = ifid_irAsBinary.substring(6, 10);
+        StringBinary binary_A = new StringBinary(raw_A);
+        IDEX_A = MemoryManager.instance().getInstance(binary_A.toHexString());
 
-        String fetchedLine = instructionFetchStage.getFetchedLine();
+        String raw_B = ifid_irAsBinary.substring(11, 15);
+        StringBinary binary_B = new StringBinary(raw_B);
+        IDEX_B = MemoryManager.instance().getInstance(binary_B.toHexString());
+
+        String raw_IMM = ifid_irAsBinary.substring(16, 31);
+        StringBinary binary_IMM = new StringBinary(raw_IMM);
+        IDEX_IMM = MemoryManager.instance().getInstance(binary_IMM.toHexString());
 
         // Get references to registers
-        instruction = new Instruction(fetchedLine);
+        Instruction instruction = new Instruction(new StringBinary(ifid_ir.getAsBinary()));
 
         ArrayList<Parameter> parameters = instruction.getParameters();
 
@@ -58,19 +62,15 @@ public class InstructionDecode extends Stage {
         housekeeping();
     }
 
-    public Instruction getInstruction() {
-        return instruction;
-    }
-
-    public String getIDEX_A() {
+    public Memory getIDEX_A() {
         return IDEX_A;
     }
 
-    public String getIDEX_B() {
+    public Memory getIDEX_B() {
         return IDEX_B;
     }
 
-    public String getIDEX_IMM() {
+    public Memory getIDEX_IMM() {
         return IDEX_IMM;
     }
 
