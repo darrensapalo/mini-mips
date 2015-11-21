@@ -107,9 +107,9 @@ public class MemoryStage extends Stage {
 
     public JsonArray toJsonArray(){
         return new JsonArray()
-                .add(new JsonObject().put("MEM/WB.LMD", getMEMWB_LMD() == null? "null": getMEMWB_LMD().getAsHex()))
-                .add(new JsonObject().put("MEM/WB.ALUOutput", getMEMWB_ALUOutput() == null? "null": getMEMWB_ALUOutput().toHexString()))
-                .add(new JsonObject().put("MEM/WB.IR", getMEMWB_IR() == null? "null": getMEMWB_IR().getAsHex()));
+                .add(new JsonObject().put("register", "MEM/WB.LMD").put("value", getMEMWB_LMD() == null? "null": getMEMWB_LMD().getAsHex()))
+                .add(new JsonObject().put("register", "MEM/WB.ALUOutput").put("value", getMEMWB_ALUOutput() == null? "null": getMEMWB_ALUOutput().toHexString()))
+                .add(new JsonObject().put("register", "MEM/WB.IR").put("value", getMEMWB_IR() == null? "null": getMEMWB_IR().getAsHex()));
     }
 
 }

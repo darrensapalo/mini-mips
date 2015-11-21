@@ -1,5 +1,6 @@
 package dlsu.advcarc.cpu.stage;
 
+import com.sun.xml.internal.bind.v2.model.core.ID;
 import dlsu.advcarc.cpu.CPU;
 import dlsu.advcarc.memory.*;
 import dlsu.advcarc.memory.Memory;
@@ -74,7 +75,7 @@ public class InstructionFetchStage extends Stage {
 
     public JsonArray toJsonArray(){
         return new JsonArray()
-                .add(new JsonObject().put("IF/ID.IR", IFID_IR == null? "null": IFID_IR.getAsHex()))
-                .add(new JsonObject().put("IF/ID.NPC", IFID_NPC.toHexString()));
+                .add(new JsonObject().put("register", "IF/ID.IR").put("value", IFID_IR == null? "null": IFID_IR.getAsHex()))
+                .add(new JsonObject().put("register","IF/ID.NPC").put("value", IFID_NPC.toHexString()));
     }
 }

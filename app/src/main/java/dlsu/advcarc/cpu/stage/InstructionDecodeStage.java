@@ -104,10 +104,10 @@ public class InstructionDecodeStage extends Stage {
 
     public JsonArray toJsonArray(){
         return new JsonArray()
-            .add(new JsonObject().put("ID/EX.A", getIDEX_A() == null? "null": getIDEX_A().getValue()))
-            .add(new JsonObject().put("ID/EX.B", getIDEX_B() == null? "null": getIDEX_B().getValue()))
-            .add(new JsonObject().put("ID/EX.Imm", getIDEX_IMM() == null? "null": getIDEX_IMM().getValue()))
-            .add(new JsonObject().put("ID/EX.IR", getIDEX_IR() == null? "null": getIDEX_IR().getAsHex()))
-            .add(new JsonObject().put("ID/EX.NPC", getIDEX_NPC() == null? "null": getIDEX_NPC().toHexString()));
+            .add(new JsonObject().put("register", "ID/EX.A").put("value", getIDEX_A() == null? "null": getIDEX_A().getValue()))
+            .add(new JsonObject().put("register", "ID/EX.B").put("value", getIDEX_B() == null? "null": getIDEX_B().getValue()))
+            .add(new JsonObject().put("register", "ID/EX.Imm").put("value", getIDEX_IMM() == null? "null": getIDEX_IMM().getValue()))
+            .add(new JsonObject().put("register", "ID/EX.IR").put("value", getIDEX_IR() == null? "null": getIDEX_IR().getAsHex()))
+            .add(new JsonObject().put("register", "ID/EX.NPC").put("value", getIDEX_NPC() == null? "null": getIDEX_NPC().toHexString()));
     }
 }

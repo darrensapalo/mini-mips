@@ -76,10 +76,10 @@ public class ExecuteStage extends Stage {
 
     public JsonArray toJsonArray(){
         return new JsonArray()
-                .add(new JsonObject().put("EX/MEM.B", getEXMEM_B() == null? "null": getEXMEM_B().getValue()))
-                .add(new JsonObject().put("EX/MEM.ALUOutput", getEXMEM_ALUOutput() == null? "null": getEXMEM_ALUOutput().toHexString()))
-                .add(new JsonObject().put("EX/MEM.Cond", getEXMEM_Cond() == null? "null": getEXMEM_Cond()))
-                .add(new JsonObject().put("EX/MEM.IR", getEXMEM_IR() == null? "null": getEXMEM_IR().getAsHex()));
+                .add(new JsonObject().put("register", "EX/MEM.B").put("value", getEXMEM_B() == null? "null": getEXMEM_B().getValue()))
+                .add(new JsonObject().put("register", "EX/MEM.ALUOutput").put("value", getEXMEM_ALUOutput() == null? "null": getEXMEM_ALUOutput().toHexString()))
+                .add(new JsonObject().put("register", "EX/MEM.Cond").put("value", getEXMEM_Cond() == null? "null": getEXMEM_Cond()))
+                .add(new JsonObject().put("register", "EX/MEM.IR").put("value", getEXMEM_IR() == null? "null": getEXMEM_IR().getAsHex()));
 
     }
 
