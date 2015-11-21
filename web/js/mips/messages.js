@@ -113,3 +113,7 @@ function updateMemoryValue(memAddress, memValue){
     // requestForMemoryValues('data');
   });
 }
+
+function clock(isFullExecution){
+  eb.send(CPU_CLOCK_ADDRESS, isFullExecution);
+}

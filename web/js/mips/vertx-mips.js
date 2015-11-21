@@ -14,6 +14,10 @@ var REGISTER_BROADCAST_ADDRESS = "register.broadcast";
 var MEMORY_BROADCAST_ADDRESS = "memory.broadcast";
 var CODE_BROADCAST_ADDRESS = "code.broadcast";
 
+var CPU_BROADCAST_ADDRESS = "cpu.broadcast";
+
+var CPU_CLOCK_ADDRESS = "cpu.clock";
+
 //////////////////////////
 //      VERTX          //
 ////////////////////////
@@ -51,4 +55,5 @@ function initHandlers(){
   eb.registerHandler(CODE_BROADCAST_ADDRESS, handleCodeBroadcast);
   eb.registerHandler(REGISTER_BROADCAST_ADDRESS, handleRegisterBroadcast);
   eb.registerHandler(MEMORY_BROADCAST_ADDRESS, handleMemoryBroadcast);
+  eb.registerHandler(CPU_BROADCAST_ADDRESS, handleCPUBroadcast);
 }
