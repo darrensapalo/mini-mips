@@ -161,7 +161,7 @@ public class InstructionCheckerTest extends TestCase {
 
         Parameter param2 = instruction2.getParameters().get(0);
 
-        Instruction peekDependency = param2.peekDependency(Parameter.DependencyType.write);
+        Instruction peekDependency = param2.peekDependency();
         boolean equals = peekDependency.equals(instruction);
 
         assertTrue("That the instruction depends on the previous one, because they both write", equals);

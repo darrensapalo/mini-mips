@@ -40,8 +40,8 @@ public class MemoryManager {
 
     private void initRam(){
         ram.clear();
-        for(int i=0;i<2048;i++){
-            long memLocation = DATA_SEGMENT_SIZE + 4 * i;
+        for(int i=0;i<4096;i++){
+            long memLocation = 4 * i;
             ram.add(new Memory(RadixHelper.convertLongToHexString(memLocation)));
         }
     }
@@ -50,7 +50,7 @@ public class MemoryManager {
         if(!Memory.validate(memoryLocation))
             throw new IllegalArgumentException("Invalid memory format: "+memoryLocation);
 
-        int memoryIndex = (Integer.valueOf(memoryLocation, 16) - DATA_SEGMENT_SIZE) / 4;
+        int memoryIndex = (Integer.valueOf(memoryLocation, 16)) / 4;
         return ram.get(memoryIndex);
     }
 
@@ -59,11 +59,11 @@ public class MemoryManager {
         memory.setValue(newValue);
 
           /* Broadcast the Updated Memory Values */
-        EventBusHolder.instance()
-                .getEventBus()
-                .publish(Addresses.MEMORY_BROADCAST,
-                        MemoryManager.instance().getDataJsonArray()
-                );
+//        EventBusHolder.instance()
+//                .getEventBus()
+//                .publish(Addresses.MEMORY_BROADCAST,
+//                        MemoryManager.instance().getDataJsonArray()
+//                );
 
     }
 

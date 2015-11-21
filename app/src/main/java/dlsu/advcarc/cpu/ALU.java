@@ -2,6 +2,7 @@ package dlsu.advcarc.cpu;
 
 import dlsu.advcarc.immediate.register.Immediate;
 import dlsu.advcarc.memory.Memory;
+import dlsu.advcarc.parser.Parameter;
 import dlsu.advcarc.parser.StringBinary;
 import dlsu.advcarc.register.Register;
 
@@ -10,9 +11,9 @@ import dlsu.advcarc.register.Register;
  */
 public class ALU {
 
-    public static String executeCond(String instruction, Memory EXMEM_IR, Register a, Register b){
-        StringBinary _a = a.getValue();
-        StringBinary _b = b.getValue();
+    public static String executeCond(String instruction, Memory EXMEM_IR, Parameter a, Parameter b){
+        StringBinary _a = a.getParameter().read();
+        StringBinary _b = b.getParameter().read();
 
         switch (instruction){
             case "SLT":
@@ -21,10 +22,10 @@ public class ALU {
         return null;
     }
 
-    public static StringBinary executeALU(String instruction, Memory ir, Register a, Register b, Immediate imm, StringBinary _npc) {
-        StringBinary _a = a.getValue();
-        StringBinary _b = b.getValue();
-        StringBinary _imm = imm.getValue();
+    public static StringBinary executeALU(String instruction, Memory ir, Parameter a, Parameter b, Parameter imm, StringBinary _npc) {
+        StringBinary _a = a.getParameter().read();
+        StringBinary _b = b.getParameter().read();
+        StringBinary _imm = imm.getParameter().read();
 
         switch (instruction){
             case "DADDU":
@@ -41,7 +42,7 @@ public class ALU {
                 return _a.times(_b);
 
             case "DSLL":
-                String shiftAmount = ir.getAsBinary().substring(21, 25);
+                String shiftAmount = ir.getAsBinary().substring(20, 25);
                 StringBinary shiftAmountBinary = new StringBinary(shiftAmount);
                 return _a.shiftRight(shiftAmountBinary.getAsInt());
 

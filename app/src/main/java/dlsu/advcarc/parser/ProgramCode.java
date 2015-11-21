@@ -39,6 +39,15 @@ public class ProgramCode {
         this.codeString = codeString;
     }
 
+    public void writeToMemory() {
+        for (int i = 0 ; i < code.size(); i++) {
+            Memory memory = MemoryManager.instance().getInstance(RadixHelper.convertLongToHexString(i * 4));
+            Code code = this.code.get(i);
+            StringBinary stringBinary = RadixHelper.convertHexToStringBinary(code.getOpcode().toHexString());
+            memory.write(stringBinary.toString());
+        }
+    }
+
     public enum Section {
         Data, Program
     }

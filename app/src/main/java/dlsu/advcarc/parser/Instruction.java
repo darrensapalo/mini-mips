@@ -16,11 +16,18 @@ public class Instruction {
 
     // generate instruction based on binary
     public Instruction(StringBinary binary) {
+        String binaryValue = binary.getBinaryValue();
+
+        if (binaryValue.length() == 64) {
+            binaryValue = binaryValue.substring(32, 64);
+            binary = new StringBinary(binaryValue);
+        }
+
         instruction = OpcodeHelper.getInstruction(binary);
         String instructionType = OpcodeHelper.getInstructionType(binary);
         switch (instructionType) {
             case "J":
-                String label = binary.getBinaryValue().substring(6, 31);
+                String label = binary.getBinaryValue().substring(5, 31);
                 StringBinary stringBinary = new StringBinary(label);
                 String hex = stringBinary.toHexString();
                 Parameter parameter = new Parameter(hex, Parameter.ParameterType.immediate, this);
@@ -28,17 +35,17 @@ public class Instruction {
                 break;
 
             case "R":
-                String rs = binary.getBinaryValue().substring(6, 10);
+                String rs = binary.getBinaryValue().substring(6, 11);
                 StringBinary binary_rs = new StringBinary(rs);
                 Parameter parameter_rs = new Parameter("R" + binary_rs.getAsInt(), Parameter.ParameterType.register, this);
                 parameters.add(parameter_rs);
 
-                String rt = binary.getBinaryValue().substring(11, 15);
+                String rt = binary.getBinaryValue().substring(11, 16);
                 StringBinary binary_rt = new StringBinary(rt);
                 Parameter parameter_rt = new Parameter("R" + binary_rt.getAsInt(), Parameter.ParameterType.register, this);
                 parameters.add(parameter_rt);
 
-                String rd = binary.getBinaryValue().substring(16, 20);
+                String rd = binary.getBinaryValue().substring(16, 21);
                 StringBinary binary_rd = new StringBinary(rd);
                 Parameter parameter_rd = new Parameter("R" + binary_rd.getAsInt(), Parameter.ParameterType.register, this);
                 parameters.add(parameter_rd);
@@ -63,12 +70,12 @@ public class Instruction {
                         parameterTypes = "F";
                         break;
                 }
-                String irs = binary.getBinaryValue().substring(6, 10);
+                String irs = binary.getBinaryValue().substring(6, 11);
                 StringBinary binary_irs = new StringBinary(irs);
                 Parameter parameter_irs = new Parameter(parameterTypes + binary_irs.getAsInt(), Parameter.ParameterType.register, this);
                 parameters.add(parameter_irs);
 
-                String irt = binary.getBinaryValue().substring(11, 15);
+                String irt = binary.getBinaryValue().substring(11, 16);
                 StringBinary binary_irt = new StringBinary(irt);
                 Parameter parameter_irt = new Parameter(parameterTypes + binary_irt.getAsInt(), Parameter.ParameterType.register, this);
                 parameters.add(parameter_irt);
@@ -80,12 +87,12 @@ public class Instruction {
 
             case "Rx":
                 // Always FPR because instruction set is limited to ADD.S and MUL.S
-                String rxs = binary.getBinaryValue().substring(11, 15);
+                String rxs = binary.getBinaryValue().substring(11, 16);
                 StringBinary binary_rxs = new StringBinary(rxs);
                 Parameter parameter_rxs = new Parameter("F" + binary_rxs.getAsInt(), Parameter.ParameterType.register, this);
                 parameters.add(parameter_rxs);
 
-                String rxt = binary.getBinaryValue().substring(16, 20);
+                String rxt = binary.getBinaryValue().substring(16, 21);
                 StringBinary binary_rxt = new StringBinary(rxt);
                 Parameter parameter_rxt = new Parameter("F" + binary_rxt.getAsInt(), Parameter.ParameterType.register, this);
                 parameters.add(parameter_rxt);
@@ -112,10 +119,9 @@ public class Instruction {
         this.parameters = InstructionChecker.getParameters(line, this);
     }
 
-
     @Override
     public String toString() {
-        return input;
+        return instruction;
     }
 
     public String getInstruction() {

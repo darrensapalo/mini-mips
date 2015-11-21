@@ -39,11 +39,11 @@ public class ExecutionManager {
         cpu.input(programCode);
 
         /* Broadcast the Updated Immediate Values */
-        EventBusHolder.instance()
-                .getEventBus()
-                .publish(Addresses.CODE_BROADCAST,
-                        programCode.toJsonObject()
-                );
+//        EventBusHolder.instance()
+//                .getEventBus()
+//                .publish(Addresses.CODE_BROADCAST,
+//                        programCode.toJsonObject()
+//                );
     }
 
     public ProgramCode getProgramCode(){

@@ -75,7 +75,17 @@ public class InstructionChecker {
         ArrayList<Parameter> params = new ArrayList<>();
 
         for (String param : split) {
-            params.add(new Parameter(param, instruction));
+            Parameter.ParameterType type;
+            if (param.startsWith("R"))
+                type = Parameter.ParameterType.register;
+            else if (param.startsWith("F"))
+                type = Parameter.ParameterType.register;
+            else if (param.startsWith("#"))
+                type = Parameter.ParameterType.immediate;
+            else
+                type = Parameter.ParameterType.memory;
+
+            params.add(new Parameter(param, type, instruction));
         }
 
         return params;

@@ -14,6 +14,13 @@ public class Parameter {
     private final Instruction instruction;
     private Writable parameter;
     private ParameterType type;
+    private DependencyType dependencyType;
+
+    public void dequeueDependency() {
+        parameter.dequeueDependency(instruction);
+
+
+    }
 
     public enum ParameterType {
         register, memory, immediate
@@ -31,6 +38,7 @@ public class Parameter {
 
     public void analyzeDependency(){
         DependencyType type = DependencyChecker.check(parameter, instruction);
+        dependencyType = type;
         parameter.addDependency(instruction, type);
     }
 
@@ -42,11 +50,12 @@ public class Parameter {
         if (type == ParameterType.memory)
             return MemoryManager.instance().getInstance(parameter);
 
+        parameter = parameter.replace("#", "");
         return new Immediate(new StringBinary(parameter));
     }
 
-    public Instruction peekDependency(DependencyType type){
-        return parameter.peekDependency(type);
+    public Instruction peekDependency(){
+        return parameter.peekDependency(getDependencyType());
     }
 
     public Writable getParameter() {
@@ -65,5 +74,9 @@ public class Parameter {
             return parameter.equals(param.parameter);
         }
         return parameter.equals(obj);
+    }
+
+    public DependencyType getDependencyType() {
+        return dependencyType;
     }
 }

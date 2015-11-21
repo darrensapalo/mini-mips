@@ -24,27 +24,27 @@ public class Register implements Writable {
         this.register = register;
     }
 
-    public static String getType(String registerName){
-        return registerName.charAt(0)+"";
+    public static String getType(String registerName) {
+        return registerName.charAt(0) + "";
     }
 
-    public static int getNumber(String registerName){
-       return Integer.parseInt(registerName.substring(1));
+    public static int getNumber(String registerName) {
+        return Integer.parseInt(registerName.substring(1));
     }
 
     public static boolean validate(String register) throws IllegalArgumentException {
         return register.matches("(R|F)[0-9]{1,2}");
     }
 
-    public StringBinary getValue(){
+    public StringBinary getValue() {
         return value;
     }
 
-    public void setValue(StringBinary value){
+    public void setValue(StringBinary value) {
         this.value = value;
     }
 
-    public JsonObject toJsonObject(){
+    public JsonObject toJsonObject() {
         JsonObject jsonObject = new JsonObject();
         jsonObject.put("name", register);
         jsonObject.put("value", RadixHelper.padWithZero(value.toHexString(), 16));
@@ -57,8 +57,8 @@ public class Register implements Writable {
     }
 
     @Override
-    public String read() {
-        return null;
+    public StringBinary read() {
+        return value;
     }
 
     @Override
@@ -70,11 +70,13 @@ public class Register implements Writable {
     public void addDependency(Instruction instruction, Parameter.DependencyType type) {
         switch (type) {
             case read:
-                readDependency.add(instruction);
+                if (!readDependency.contains(instruction))
+                    readDependency.add(instruction);
                 break;
 
             case write:
-                writeDependency.add(instruction);
+                if (!writeDependency.contains(instruction))
+                    writeDependency.add(instruction);
                 break;
         }
     }
@@ -91,4 +93,19 @@ public class Register implements Writable {
         return null;
     }
 
+
+    @Override
+    public void dequeueDependency(Instruction instruction) {
+        if (instruction.equals(peekDependency(Parameter.DependencyType.read))) {
+            readDependency.remove(instruction);
+        } else {
+            System.err.println("Trying to dequeue when i am not at the head of the queue!");
+        }
+
+        if (instruction.equals(peekDependency(Parameter.DependencyType.write))) {
+            writeDependency.remove(instruction);
+        } else {
+            System.err.println("Trying to dequeue when i am not at the head of the queue!");
+        }
+    }
 }

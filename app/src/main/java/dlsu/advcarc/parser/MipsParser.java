@@ -54,7 +54,7 @@ public class MipsParser {
 
     public static ProgramCode parseFile(String fileName) throws Exception {
 
-        byte[] encoded = Files.readAllBytes(Paths.get(fileName));
+        byte[] encoded = Files.readAllBytes(Paths.get("app//"+fileName));
         String codeString = new String(encoded, Charset.defaultCharset());
 
         return parseCodeString(codeString);

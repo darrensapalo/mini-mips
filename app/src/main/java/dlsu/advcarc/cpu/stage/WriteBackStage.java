@@ -1,37 +1,58 @@
 package dlsu.advcarc.cpu.stage;
 
+import dlsu.advcarc.cpu.CPU;
 import dlsu.advcarc.memory.Memory;
 import dlsu.advcarc.parser.Instruction;
 import dlsu.advcarc.parser.Parameter;
 import dlsu.advcarc.parser.StringBinary;
+import dlsu.advcarc.register.Register;
+
+import java.util.ArrayList;
 
 /**
  * Created by Darren on 11/9/2015.
  */
 public class WriteBackStage extends Stage {
+    private CPU cpu;
     private MemoryStage memoryStage;
     private Memory LMD;
     private Memory IR;
     private StringBinary ALUOutput;
+    private Instruction instruction;
 
 
-    public WriteBackStage(MemoryStage memoryStage) {
+    public WriteBackStage(CPU cpu, MemoryStage memoryStage) {
+        this.cpu = cpu;
         this.memoryStage = memoryStage;
     }
 
     @Override
-    protected void housekeeping() {
+    public void housekeeping() {
         LMD = memoryStage.getMEMWB_LMD();
         ALUOutput = memoryStage.getMEMWB_ALUOutput();
         IR = memoryStage.getMEMWB_IR();
+        instruction = memoryStage.getInstruction();
     }
 
     @Override
     public void execute() {
-        housekeeping();
-
         Parameter source, destination;
-        Instruction instruction = new Instruction(IR.getAsBinary());
+
+
+        ArrayList<Parameter> parameters = this.instruction.getParameters();
+
+        // If I have dependencies, block
+        for (Parameter p : parameters) {
+            if (p.getParameter() instanceof Register) {
+                Instruction dependentOnThis = p.peekDependency();
+                if (this.instruction.equals(dependentOnThis) == false) {
+                    cpu.setDataDependencyBlock(4);
+                    return;
+                }
+            }
+        }
+
+
         switch (instruction.getInstruction()) {
             // J Types
             case "J":
@@ -62,14 +83,8 @@ public class WriteBackStage extends Stage {
             case "LW":
             case "LWU":
             case "L.S":
-                destination = instruction.getParameters().get(1);
-                destination.getParameter().write(LMD.getAsBinary());
-                break;
-
             case "S.S":
             case "SW":
-                source = instruction.getParameters().get(1);
-                LMD.write(source.getParameter().read());
                 break;
 
             case "BEQ":
@@ -83,5 +98,12 @@ public class WriteBackStage extends Stage {
 
 
         // todo: dequeue dependencies
+
+        // If I have dependencies, block
+        for (Parameter p : parameters) {
+            if (p.getParameter() instanceof Register) {
+                p.dequeueDependency();
+            }
+        }
     }
 }

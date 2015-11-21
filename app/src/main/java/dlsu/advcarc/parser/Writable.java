@@ -1,7 +1,5 @@
 package dlsu.advcarc.parser;
 
-import java.text.NumberFormat;
-
 /**
  * Created by Darren on 11/9/2015.
  */
@@ -15,9 +13,11 @@ public interface Writable {
      */
     void write(String value) throws NumberFormatException;
 
-    String read();
+    StringBinary read();
 
     void addDependency(Instruction instruction, Parameter.DependencyType type);
 
     Instruction peekDependency(Parameter.DependencyType type);
+
+    void dequeueDependency(Instruction instruction);
 }

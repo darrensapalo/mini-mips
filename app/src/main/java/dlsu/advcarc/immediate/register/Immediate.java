@@ -26,8 +26,8 @@ public class Immediate implements Writable {
     }
 
     @Override
-    public String read() {
-        return value.getBinaryValue();
+    public StringBinary read() {
+        return value;
     }
 
     @Override
@@ -45,4 +45,8 @@ public class Immediate implements Writable {
         return null;
     }
 
+    @Override
+    public void dequeueDependency(Instruction instruction) {
+
+    }
 }

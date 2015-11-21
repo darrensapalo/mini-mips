@@ -63,11 +63,11 @@ public class RegisterManager {
         register.setValue(newValue);
 
         /* Broadcast the Updated Immediate Values */
-        EventBusHolder.instance()
-                .getEventBus()
-                .publish(Addresses.REGISTER_BROADCAST,
-                        RegisterManager.instance().toJsonObject()
-                );
+//        EventBusHolder.instance()
+//                .getEventBus()
+//                .publish(Addresses.REGISTER_BROADCAST,
+//                        RegisterManager.instance().toJsonObject()
+//                );
     }
 
     public void clear() {

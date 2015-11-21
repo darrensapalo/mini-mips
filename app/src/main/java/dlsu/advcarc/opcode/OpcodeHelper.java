@@ -78,8 +78,11 @@ public class OpcodeHelper {
 
     public static String getInstruction(StringBinary ir) {
         String binaryValue = ir.getBinaryValue();
+
+        if (binaryValue.length() == 64)
+            binaryValue = binaryValue.substring(32, 64);
         StringBinary opcode = new StringBinary(binaryValue.substring(0, 6));
-        StringBinary func = new StringBinary(binaryValue.substring(26, 31));
+        StringBinary func = new StringBinary(binaryValue.substring(26, 32));
 
         switch (opcode.getAsInt()) {
 

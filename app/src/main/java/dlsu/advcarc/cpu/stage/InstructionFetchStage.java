@@ -3,6 +3,7 @@ package dlsu.advcarc.cpu.stage;
 import dlsu.advcarc.cpu.CPU;
 import dlsu.advcarc.memory.*;
 import dlsu.advcarc.memory.Memory;
+import dlsu.advcarc.parser.Instruction;
 import dlsu.advcarc.parser.ProgramCode;
 import dlsu.advcarc.parser.StringBinary;
 import dlsu.advcarc.utils.RadixHelper;
@@ -18,6 +19,7 @@ public class InstructionFetchStage extends Stage {
     private dlsu.advcarc.memory.Memory IFID_IR;
     private StringBinary IFID_NPC;
     private ExecuteStage executeStage;
+    private Instruction instruction;
 
     public InstructionFetchStage(CPU cpu, ProgramCode code) {
         this.cpu = cpu;
@@ -25,20 +27,28 @@ public class InstructionFetchStage extends Stage {
     }
 
     @Override
-    protected void housekeeping() {
+    public void housekeeping() {
 
     }
 
     @Override
     public void execute() {
-        int programCounter = cpu.getProgramCounter();
+        
+        StringBinary PC = cpu.getProgramCounter();
 
         // IF/ID.IR = Mem[PC]
-        String memoryLocation = RadixHelper.convertLongToHexString(programCounter);
+        String memoryLocation = RadixHelper.convertLongToHexString(PC.getAsLong());
         IFID_IR = MemoryManager.instance().getInstance(memoryLocation);
 
         // IF/ID.NPC, PC = (EX/MEM.Cond) ? EX/MEM.ALUOutput : PC + 4;
-        IFID_NPC = executeStage.getEXMEM_Cond().equals("1") ? executeStage.getEXMEM_ALUOutput() : StringBinary.valueOf(programCounter + 4);
+        IFID_NPC = ("1").equals(executeStage.getEXMEM_Cond()) ? executeStage.getEXMEM_ALUOutput() : StringBinary.valueOf(PC.getAsLong() + 4);
+
+        // Get references to registers
+        instruction = new Instruction(new StringBinary(IFID_IR.getAsBinary()));
+
+
+        PC = IFID_NPC;
+        cpu.setProgramCounter(PC);
     }
 
     public void setExecuteStage(ExecuteStage executeStage) {
@@ -53,4 +63,7 @@ public class InstructionFetchStage extends Stage {
         return IFID_NPC;
     }
 
+    public Instruction getInstruction() {
+        return instruction;
+    }
 }

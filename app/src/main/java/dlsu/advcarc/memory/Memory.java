@@ -7,7 +7,6 @@ import dlsu.advcarc.parser.Writable;
 import dlsu.advcarc.utils.RadixHelper;
 import io.vertx.core.json.JsonObject;
 
-import java.util.HashMap;
 import java.util.LinkedList;
 
 /**
@@ -28,7 +27,7 @@ public class Memory implements Writable {
         return memory.matches("[0-9A-Fa-f]{4}") && Integer.valueOf(memory, 16) % 4 == 0;
     }
 
-    public void setValue(StringBinary value){
+    public void setValue(StringBinary value) {
         this.value = value;
     }
 
@@ -38,35 +37,35 @@ public class Memory implements Writable {
     }
 
     @Override
-    public String read() {
-        return value.toString();
+    public StringBinary read() {
+        return value;
     }
 
     @Override
     public String toString() {
-        return memory+": "+getAsHex();
+        return memory + ": " + getAsHex();
     }
 
-    public JsonObject toJsonObject(){
+    public JsonObject toJsonObject() {
         JsonObject jsonObject = new JsonObject();
         jsonObject.put("address", memory);
         jsonObject.put("value", RadixHelper.padWithZero(getAsHex(), 16));
         return jsonObject;
     }
 
-    public String getAsBinary(){
-        return read();
+    public String getAsBinary() {
+        return value.getBinaryValue();
     }
 
-    public long getAsLong(){
+    public long getAsLong() {
         return value.getAsLong();
     }
 
-    public double getAsDouble(){
+    public double getAsDouble() {
         return value.getAsDouble();
     }
 
-    public String getAsHex(){
+    public String getAsHex() {
         return value.toHexString();
     }
 
@@ -74,10 +73,12 @@ public class Memory implements Writable {
     public void addDependency(Instruction instruction, Parameter.DependencyType type) {
         switch (type) {
             case read:
-                readDependency.add(instruction);
+                if (!readDependency.contains(instruction))
+                    readDependency.add(instruction);
                 break;
 
             case write:
+                if (!writeDependency.contains(instruction))
                 writeDependency.add(instruction);
                 break;
         }
@@ -95,4 +96,22 @@ public class Memory implements Writable {
         return null;
     }
 
+    @Override
+    public void dequeueDependency(Instruction instruction) {
+        if (instruction.equals(peekDependency(Parameter.DependencyType.read)))
+        {
+            readDependency.remove(instruction);
+        }else
+        {
+            System.err.println("Trying to dequeue when i am not at the head of the queue!");
+        }
+
+        if (instruction.equals(peekDependency(Parameter.DependencyType.write)))
+        {
+            writeDependency.remove(instruction);
+        }else
+        {
+            System.err.println("Trying to dequeue when i am not at the head of the queue!");
+        }
+    }
 }
