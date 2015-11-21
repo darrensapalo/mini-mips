@@ -38,8 +38,9 @@ public class InstructionFetchStage extends Stage {
         IFID_IR = MemoryManager.instance().getInstance(memoryLocation);
 
         // IF/ID.NPC, PC = (EX/MEM.Cond) ? EX/MEM.ALUOutput : PC + 4;
-        IFID_NPC = executeStage.getEXMEM_Cond().equals("1") ? executeStage.getEXMEM_ALUOutput() : new StringBinary(Integer.toBinaryString(programCounter + 4));
+        IFID_NPC = executeStage.getEXMEM_Cond().equals("1") ? executeStage.getEXMEM_ALUOutput() : StringBinary.valueOf(programCounter + 4);
     }
+
     public void setExecuteStage(ExecuteStage executeStage) {
         this.executeStage = executeStage;
     }

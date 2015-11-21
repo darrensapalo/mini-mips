@@ -1,16 +1,18 @@
 package dlsu.advcarc.cpu;
 
+import dlsu.advcarc.immediate.register.Immediate;
 import dlsu.advcarc.memory.Memory;
 import dlsu.advcarc.parser.StringBinary;
+import dlsu.advcarc.register.Register;
 
 /**
  * Created by Darren on 11/21/2015.
  */
 public class ALU {
 
-    public static String executeCond(String instruction, Memory EXMEM_IR, Memory a, Memory b){
-        StringBinary _a = new StringBinary(a.getAsBinary());
-        StringBinary _b = new StringBinary(b.getAsBinary());
+    public static String executeCond(String instruction, Memory EXMEM_IR, Register a, Register b){
+        StringBinary _a = a.getValue();
+        StringBinary _b = b.getValue();
 
         switch (instruction){
             case "SLT":
@@ -19,10 +21,10 @@ public class ALU {
         return null;
     }
 
-    public static StringBinary executeALU(String instruction, Memory ir, Memory a, Memory b, Memory imm, StringBinary _npc) {
-        StringBinary _a = new StringBinary(a.getAsBinary());
-        StringBinary _b = new StringBinary(b.getAsBinary());
-        StringBinary _imm = new StringBinary(imm.getAsBinary());
+    public static StringBinary executeALU(String instruction, Memory ir, Register a, Register b, Immediate imm, StringBinary _npc) {
+        StringBinary _a = a.getValue();
+        StringBinary _b = b.getValue();
+        StringBinary _imm = imm.getValue();
 
         switch (instruction){
             case "DADDU":

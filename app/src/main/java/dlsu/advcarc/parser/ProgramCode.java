@@ -29,7 +29,7 @@ public class ProgramCode {
     private String codeString;
     private String parsingErrors;
 
-    private static int StartingMemoryAddress = 0;
+    private static int StartingMemoryAddress = 2000;
     private static int StartingProgramAddress = 0;
 
     private Section currentSection;
@@ -65,7 +65,7 @@ public class ProgramCode {
     }
 
     public int InitialProgramCounter() {
-        return StartingMemoryAddress;
+        return StartingProgramAddress;
     }
 
     public void setInitialProgramCounter(int start) {

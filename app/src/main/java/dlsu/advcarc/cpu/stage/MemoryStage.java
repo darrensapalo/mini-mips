@@ -43,7 +43,7 @@ public class MemoryStage extends Stage {
                 break;
         }
 
-        // perform branch completion
+        // todo: perform branch completion
     }
 
     public StringBinary getMEMWB_ALUOutput() {

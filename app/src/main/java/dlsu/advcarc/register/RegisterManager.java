@@ -43,7 +43,7 @@ public class RegisterManager {
 
     public Register getInstance(String registerName) throws IllegalArgumentException {
         if (!Register.validate(registerName))
-            throw new IllegalArgumentException("Register name not valid: " + registerName);
+            throw new IllegalArgumentException("Immediate name not valid: " + registerName);
 
         String registerType = Register.getType(registerName);
         int registerNum = Register.getNumber(registerName);
@@ -62,7 +62,7 @@ public class RegisterManager {
         Register register = getInstance(registerName);
         register.setValue(newValue);
 
-        /* Broadcast the Updated Register Values */
+        /* Broadcast the Updated Immediate Values */
         EventBusHolder.instance()
                 .getEventBus()
                 .publish(Addresses.REGISTER_BROADCAST,

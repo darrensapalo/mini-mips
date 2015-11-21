@@ -23,24 +23,24 @@ public class Instruction {
                 String label = binary.getBinaryValue().substring(6, 31);
                 StringBinary stringBinary = new StringBinary(label);
                 String hex = stringBinary.toHexString();
-                Parameter parameter = new Parameter(hex, this);
+                Parameter parameter = new Parameter(hex, Parameter.ParameterType.immediate, this);
                 parameters.add(parameter);
                 break;
 
             case "R":
                 String rs = binary.getBinaryValue().substring(6, 10);
                 StringBinary binary_rs = new StringBinary(rs);
-                Parameter parameter_rs = new Parameter("R" + binary_rs.getAsInt(), this);
+                Parameter parameter_rs = new Parameter("R" + binary_rs.getAsInt(), Parameter.ParameterType.register, this);
                 parameters.add(parameter_rs);
 
                 String rt = binary.getBinaryValue().substring(11, 15);
                 StringBinary binary_rt = new StringBinary(rt);
-                Parameter parameter_rt = new Parameter("R" + binary_rt.getAsInt(), this);
+                Parameter parameter_rt = new Parameter("R" + binary_rt.getAsInt(), Parameter.ParameterType.register, this);
                 parameters.add(parameter_rt);
 
                 String rd = binary.getBinaryValue().substring(16, 20);
                 StringBinary binary_rd = new StringBinary(rd);
-                Parameter parameter_rd = new Parameter("R" + binary_rd.getAsInt(), this);
+                Parameter parameter_rd = new Parameter("R" + binary_rd.getAsInt(), Parameter.ParameterType.register, this);
                 parameters.add(parameter_rd);
                 break;
 
@@ -65,30 +65,34 @@ public class Instruction {
                 }
                 String irs = binary.getBinaryValue().substring(6, 10);
                 StringBinary binary_irs = new StringBinary(irs);
-                Parameter parameter_irs = new Parameter(parameterTypes + binary_irs.getAsInt(), this);
+                Parameter parameter_irs = new Parameter(parameterTypes + binary_irs.getAsInt(), Parameter.ParameterType.register, this);
                 parameters.add(parameter_irs);
 
                 String irt = binary.getBinaryValue().substring(11, 15);
                 StringBinary binary_irt = new StringBinary(irt);
-                Parameter parameter_irt = new Parameter(parameterTypes + binary_irt.getAsInt(), this);
+                Parameter parameter_irt = new Parameter(parameterTypes + binary_irt.getAsInt(), Parameter.ParameterType.register, this);
                 parameters.add(parameter_irt);
+
+                String iimm = binary.getBinaryValue().substring(16, 31);
+                Parameter parameter_iimm = new Parameter(iimm, Parameter.ParameterType.immediate, this);
+                parameters.add(parameter_iimm);
                 break;
 
             case "Rx":
                 // Always FPR because instruction set is limited to ADD.S and MUL.S
                 String rxs = binary.getBinaryValue().substring(11, 15);
                 StringBinary binary_rxs = new StringBinary(rxs);
-                Parameter parameter_rxs = new Parameter("F" + binary_rxs.getAsInt(), this);
+                Parameter parameter_rxs = new Parameter("F" + binary_rxs.getAsInt(), Parameter.ParameterType.register, this);
                 parameters.add(parameter_rxs);
 
                 String rxt = binary.getBinaryValue().substring(16, 20);
                 StringBinary binary_rxt = new StringBinary(rxt);
-                Parameter parameter_rxt = new Parameter("F" + binary_rxt.getAsInt(), this);
+                Parameter parameter_rxt = new Parameter("F" + binary_rxt.getAsInt(), Parameter.ParameterType.register, this);
                 parameters.add(parameter_rxt);
 
                 String rxd = binary.getBinaryValue().substring(21, 25);
                 StringBinary binary_rxd = new StringBinary(rxd);
-                Parameter parameter_rxd = new Parameter("F" + binary_rxd.getAsInt(), this);
+                Parameter parameter_rxd = new Parameter("F" + binary_rxd.getAsInt(), Parameter.ParameterType.register, this);
                 parameters.add(parameter_rxd);
                 break;
 

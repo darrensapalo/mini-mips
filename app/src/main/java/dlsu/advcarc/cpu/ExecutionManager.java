@@ -38,7 +38,7 @@ public class ExecutionManager {
         this.programCode = programCode;
         cpu.input(programCode);
 
-        /* Broadcast the Updated Register Values */
+        /* Broadcast the Updated Immediate Values */
         EventBusHolder.instance()
                 .getEventBus()
                 .publish(Addresses.CODE_BROADCAST,
