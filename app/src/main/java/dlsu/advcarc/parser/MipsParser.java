@@ -48,9 +48,6 @@ public class MipsParser {
             }
         }
 
-
-        //loop through each code, then call buildOpcode(ProgramCode) so they can look for labels if needed
-        // TODO
         return programCode;
 
     }
