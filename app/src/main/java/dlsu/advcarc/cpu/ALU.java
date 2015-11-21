@@ -35,6 +35,7 @@ public class ALU {
                 return null;
 
             case "DMULT":
+                //TODO Check how to do this properly; result should be stored in HI and LO
                 return _a.times(_b);
 
             case "DSLL":
@@ -44,11 +45,11 @@ public class ALU {
 
             case "ADD.S":
                 // todo: how to read binary as floating point?
-                return _a.plus(_b);
+                return StringBinary.valueOf(_a.getAsDouble() + _b.getAsDouble());
 
             case "MUL.S":
                 // todo: how to read binary as floating point?
-                return _a.times(_b);
+                return StringBinary.valueOf(_a.getAsDouble() * _b.getAsDouble());
 
             case "LW":
             case "LWU":

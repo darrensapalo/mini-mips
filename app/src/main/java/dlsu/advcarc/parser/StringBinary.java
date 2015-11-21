@@ -80,6 +80,12 @@ public class StringBinary {
         return new StringBinary(Long.toBinaryString(n));
     }
 
+    public static StringBinary valueOf(double d){
+        return new StringBinary(Long.toBinaryString(Double.doubleToLongBits(d)));
+    }
+
+
+
     public StringBinary and(StringBinary b) {
         String thisBinary = padBinaryValue(64);
         String thatBinary = b.padBinaryValue(64);
