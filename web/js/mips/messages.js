@@ -95,7 +95,7 @@ function requestForMemoryValues(type){
       alert("Failed to get data memory values from server.");
     }
 
-    var array = msg.body.reverse();
+    var array = msg.body;
 
     populateTable('#table-memory', array, memoryColumns);
   });
