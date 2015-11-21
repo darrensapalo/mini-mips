@@ -43,9 +43,11 @@ public class ALU {
                 return _a.shiftRight(shiftAmountBinary.getAsInt());
 
             case "ADD.S":
+                // todo: how to read binary as floating point?
                 return _a.plus(_b);
 
             case "MUL.S":
+                // todo: how to read binary as floating point?
                 return _a.times(_b);
 
             case "LW":
