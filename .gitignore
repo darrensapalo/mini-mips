@@ -3,3 +3,4 @@ gen/
 *.idea
 *.vertx
 input.txt
+*.class
