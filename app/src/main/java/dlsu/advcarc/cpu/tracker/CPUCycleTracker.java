@@ -44,7 +44,7 @@ public class CPUCycleTracker {
     }
 
     public void setWbInstruction(String wbInstruction) {
-        currCycleRecord.setIfInstruction(wbInstruction);
+        currCycleRecord.setWbInstruction(wbInstruction);
     }
 
     public JsonArray toJsonArray(){
