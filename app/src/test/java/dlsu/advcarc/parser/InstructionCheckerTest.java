@@ -110,14 +110,14 @@ public class InstructionCheckerTest extends TestCase {
         assertEquals("R3", instruction.getParameters().get(2).toString());
 
         instruction = InstructionChecker.getInstruction(SAMPLE_INSTRUCTION_5);
-        assertEquals("LW", instruction.getInstruction());
+        assertEquals("LW", instruction.getInstructionOnly());
 
         assertEquals("R1", instruction.getParameters().get(0).toString());
         assertEquals("1000", instruction.getParameters().get(1).toString());
         assertEquals("R2", instruction.getParameters().get(2).toString());
 
         instruction = InstructionChecker.getInstruction(SAMPLE_INSTRUCTION_6);
-        assertEquals("SW", instruction.getInstruction());
+        assertEquals("SW", instruction.getInstructionOnly());
 
         assertEquals("R3", instruction.getParameters().get(0).toString());
         assertEquals("0000", instruction.getParameters().get(1).toString());
@@ -128,13 +128,13 @@ public class InstructionCheckerTest extends TestCase {
 
     public void testInstruction() throws Exception {
         Instruction instruction = InstructionChecker.getInstruction(SAMPLE_INSTRUCTION_1);
-        assertEquals("DADDU", instruction.getInstruction());
+        assertEquals("DADDU", instruction.getInstructionOnly());
 
         instruction = InstructionChecker.getInstruction(SAMPLE_INSTRUCTION_2);
-        assertEquals("DADDU", instruction.getInstruction());
+        assertEquals("DADDU", instruction.getInstructionOnly());
 
         instruction = InstructionChecker.getInstruction(SAMPLE_INSTRUCTION_3);
-        assertEquals("BNE", instruction.getInstruction());
+        assertEquals("BNE", instruction.getInstructionOnly());
     }
 
     public void testRegistersSingleton() throws Exception {

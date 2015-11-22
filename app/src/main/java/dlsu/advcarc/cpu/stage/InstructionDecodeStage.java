@@ -34,9 +34,18 @@ public class InstructionDecodeStage extends Stage {
 
     @Override
     public void housekeeping() {
-        IDEX_IR = instructionFetchStage.getIFID_IR();
-        IDEX_NPC = instructionFetchStage.getIFID_NPC();
-        instruction = instructionFetchStage.getInstruction();
+        try {
+            Instruction inst = instructionFetchStage.getInstruction();
+            checkDependencies(inst);
+
+            IDEX_IR = instructionFetchStage.getIFID_IR();
+            IDEX_NPC = instructionFetchStage.getIFID_NPC();
+            this.instruction = inst;
+        } catch (Exception e) {
+            instruction = null;
+            if (e.getMessage() != null)
+                System.out.println(e.getMessage());
+        }
     }
 
     @Override
@@ -50,30 +59,38 @@ public class InstructionDecodeStage extends Stage {
                 p.analyzeDependency();
         }
 
-        for (Parameter p : parameters) {
-            if (p.getParameter() instanceof Register)
-                if (instruction.equals(p.peekDependency()) == false) {
-                    cpu.setDataDependencyBlock(1);
-                    return;
+        checkDependencies(instruction);
+
+        try {
+            IDEX_A = parameters.get(0);
+        } catch (Exception e) {
+
+        }
+
+        try {
+            IDEX_B = parameters.get(1);
+        } catch (Exception e) {
+
+        }
+
+        try {
+            IDEX_IMM = parameters.get(2);
+        } catch (Exception e) {
+
+        }
+
+    }
+
+    private void checkDependencies(Instruction instruction) {
+
+        for (Parameter p : instruction.getParameters()) {
+            if (p.getParameter() instanceof Register) {
+                Instruction inst = p.peekDependency();
+                if (inst != null && instruction.equals(inst) == false) {
+                    cpu.setDataDependencyBlock(instruction, Instruction.Stage.WB, Instruction.Stage.ID);
+                    throw new IllegalStateException("Cannot proceed because " + instruction.toString() + " has a write dependency on " + inst.toString());
                 }
-        }
-
-        try {
-            IDEX_A = parameters.get(2);
-        } catch (Exception e) {
-
-        }
-
-        try {
-            IDEX_B = parameters.get(0);
-        } catch (Exception e) {
-
-        }
-
-        try {
-            IDEX_IMM = parameters.get(1);
-        } catch (Exception e) {
-
+            }
         }
 
     }
@@ -102,12 +119,13 @@ public class InstructionDecodeStage extends Stage {
         return instruction;
     }
 
-    public JsonArray toJsonArray(){
+    public JsonArray toJsonArray() {
         return new JsonArray()
-            .add(new JsonObject().put("register", "ID/EX.A").put("value", getIDEX_A() == null? "null": getIDEX_A().getValue()))
-            .add(new JsonObject().put("register", "ID/EX.B").put("value", getIDEX_B() == null? "null": getIDEX_B().getValue()))
-            .add(new JsonObject().put("register", "ID/EX.Imm").put("value", getIDEX_IMM() == null? "null": getIDEX_IMM().getValue()))
-            .add(new JsonObject().put("register", "ID/EX.IR").put("value", getIDEX_IR() == null? "null": getIDEX_IR().getAsHex()))
-            .add(new JsonObject().put("register", "ID/EX.NPC").put("value", getIDEX_NPC() == null? "null": getIDEX_NPC().toHexString()));
+                .add(new JsonObject().put("register", "ID/EX.A").put("value", getIDEX_A() == null ? "null" : getIDEX_A().getValue()))
+                .add(new JsonObject().put("register", "ID/EX.B").put("value", getIDEX_B() == null ? "null" : getIDEX_B().getValue()))
+                .add(new JsonObject().put("register", "ID/EX.Imm").put("value", getIDEX_IMM() == null ? "null" : getIDEX_IMM().getValue()))
+                .add(new JsonObject().put("register", "ID/EX.IR").put("value", getIDEX_IR() == null ? "null" : getIDEX_IR().getAsHex()))
+                .add(new JsonObject().put("register", "ID/EX.NPC").put("value", getIDEX_NPC() == null ? "null" : getIDEX_NPC().toHexString()));
     }
+
 }

@@ -1,7 +1,6 @@
 package dlsu.advcarc.cpu;
 
 import dlsu.advcarc.parser.ProgramCode;
-import dlsu.advcarc.register.RegisterManager;
 import dlsu.advcarc.server.Addresses;
 import dlsu.advcarc.server.EventBusHolder;
 

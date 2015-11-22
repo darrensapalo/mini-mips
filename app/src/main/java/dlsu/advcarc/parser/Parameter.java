@@ -55,7 +55,7 @@ public class Parameter {
     }
 
     public Instruction peekDependency(){
-        return parameter.peekDependency(getDependencyType());
+        return parameter.peekDependency(DependencyType.write);
     }
 
     public Writable getParameter() {

@@ -78,8 +78,10 @@ public class Memory implements Writable {
                 break;
 
             case write:
-                if (!writeDependency.contains(instruction))
-                writeDependency.add(instruction);
+                if (!writeDependency.contains(instruction)) {
+                    System.out.println("Adding a write dependency on " + this);
+                    writeDependency.add(instruction);
+                }
                 break;
         }
     }
@@ -98,20 +100,13 @@ public class Memory implements Writable {
 
     @Override
     public void dequeueDependency(Instruction instruction) {
-        if (instruction.equals(peekDependency(Parameter.DependencyType.read)))
-        {
+        if (instruction.equals(peekDependency(Parameter.DependencyType.read))) {
             readDependency.remove(instruction);
-        }else
-        {
-            System.err.println("Trying to dequeue when i am not at the head of the queue!");
         }
 
-        if (instruction.equals(peekDependency(Parameter.DependencyType.write)))
-        {
+        if (instruction.equals(peekDependency(Parameter.DependencyType.write))) {
+            System.out.println("Removing write dependency on " + this);
             writeDependency.remove(instruction);
-        }else
-        {
-            System.err.println("Trying to dequeue when i am not at the head of the queue!");
         }
     }
 }

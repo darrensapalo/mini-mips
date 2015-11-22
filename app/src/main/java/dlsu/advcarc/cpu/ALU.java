@@ -18,8 +18,9 @@ public class ALU {
         switch (instruction){
             case "SLT":
                 return (_a.getAsInt() < _b.getAsInt()) ? "1" : "0";
+            default:
+                return "0";
         }
-        return null;
     }
 
     public static StringBinary executeALU(String instruction, Memory ir, Parameter a, Parameter b, Parameter imm, StringBinary _npc) {
