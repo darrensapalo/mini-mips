@@ -1,10 +1,11 @@
 package dlsu.advcarc.cpu;
 
+import dlsu.advcarc.cpu.block.Block;
 import dlsu.advcarc.cpu.stage.*;
 import dlsu.advcarc.cpu.tracker.CPUCycleTracker;
+import dlsu.advcarc.parser.Instruction;
 import dlsu.advcarc.parser.ProgramCode;
 import dlsu.advcarc.parser.StringBinary;
-import dlsu.advcarc.server.handlers.CPUClockHandler;
 import dlsu.advcarc.utils.RadixHelper;
 import dlsu.advcarc.server.Addresses;
 import dlsu.advcarc.server.EventBusHolder;
@@ -23,7 +24,7 @@ public class CPU {
 
     private ProgramCode code;
 
-    private int dataDependencyBlock = -1;
+    private Block dataDependencyBlock = Block.none();
 
     private StringBinary programCounter;
 
@@ -44,49 +45,54 @@ public class CPU {
     }
 
     public void clock() {
-
         try {
-            if (dataDependencyBlock <= 0) {
+            if (dataDependencyBlock.getBlockStage() <= Instruction.Stage.WB.ordinal()) {
                 instructionFetchStage.execute();
                 cycleTracker.setIfInstruction(instructionFetchStage.getInstruction().getInstruction());
             }
         } catch (Exception e) {
-
+            instructionFetchStage.reset();
+            if (e.getMessage() != null)
+                System.out.println("IF Stage: " + e.getMessage());
         }
 
         try {
-            if (dataDependencyBlock <= 1) {
+            if (dataDependencyBlock.getBlockStage() <= Instruction.Stage.WB.ordinal()) {
                 instructionDecodeStage.execute();
                 cycleTracker.setIdInstruction(instructionDecodeStage.getInstruction().getInstruction());
             }
         } catch (Exception e) {
-
+            if (e.getMessage() != null)
+                System.out.println("ID Stage: " + e.getMessage());
         }
 
         try {
-            if (dataDependencyBlock <= 2){
+            if (dataDependencyBlock.getBlockStage() <= Instruction.Stage.WB.ordinal()) {
                 executeStage.execute();
                 cycleTracker.setExInstruction(executeStage.getInstruction().getInstruction());
             }
         } catch (Exception e) {
-
+            if (e.getMessage() != null)
+                System.out.println("EX Stage: " + e.getMessage());
         }
 
         try {
-            if (dataDependencyBlock <= 3) {
+            if (dataDependencyBlock.getBlockStage() <= Instruction.Stage.WB.ordinal()) {
                 memoryStage.execute();
                 cycleTracker.setMemInstruction(memoryStage.getInstruction().getInstruction());
             }
         } catch (Exception e) {
-
+            if (e.getMessage() != null)
+                System.out.println("MEM Stage: " + e.getMessage());
         }
         try {
-            if (dataDependencyBlock <= 4) {
+            if (dataDependencyBlock.getBlockStage() <= Instruction.Stage.WB.ordinal()) {
                 writeBackStage.execute();
                 cycleTracker.setWbInstruction(writeBackStage.getInstruction().getInstruction());
             }
         } catch (Exception e) {
-
+            if (e.getMessage() != null)
+                System.out.println("WB Stage: " + e.getMessage());
         }
 
 
@@ -109,16 +115,16 @@ public class CPU {
         return programCounter;
     }
 
-    public JsonObject toJsonObject(){
+    public JsonObject toJsonObject() {
         return new JsonObject()
                 .put("registers", getRegistersJsonArray())
-                .put("pipeline", cycleTracker == null? new JsonArray() : cycleTracker.toJsonArray());
+                .put("pipeline", cycleTracker == null ? new JsonArray() : cycleTracker.toJsonArray());
     }
 
 
-    public JsonArray getRegistersJsonArray(){
+    public JsonArray getRegistersJsonArray() {
 
-        if(instructionFetchStage == null)
+        if (instructionFetchStage == null)
             return new JsonArray();
 
         return new JsonArray()
@@ -133,11 +139,17 @@ public class CPU {
         this.programCounter = programCounter;
     }
 
-    public int getDataDependencyBlock() {
+    public Block getDataDependencyBlock() {
         return dataDependencyBlock;
     }
 
-    public void setDataDependencyBlock(int dataDependencyBlock) {
-        this.dataDependencyBlock = dataDependencyBlock;
+    public void setDataDependencyBlock(Instruction instruction, Instruction.Stage releaseStage, Instruction.Stage dataDependencyBlock) {
+        this.dataDependencyBlock = new Block(instruction, releaseStage, dataDependencyBlock);
+    }
+
+    public void reviewBlock(Instruction instruction) {
+        if (instruction.equals(dataDependencyBlock.getOwnedBy())){
+            dataDependencyBlock = Block.none();
+        }
     }
 }

@@ -130,6 +130,12 @@ public class Instruction {
         return instruction;
     }
 
+    public String getInstructionOnly() {
+        if (instruction != null)
+            return instruction.split(" ")[0];
+        return instruction;
+    }
+
     public Stage getStage() {
         return stage;
     }

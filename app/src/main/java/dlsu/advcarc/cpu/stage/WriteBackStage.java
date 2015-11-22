@@ -28,32 +28,46 @@ public class WriteBackStage extends Stage {
 
     @Override
     public void housekeeping() {
-        LMD = memoryStage.getMEMWB_LMD();
-        ALUOutput = memoryStage.getMEMWB_ALUOutput();
-        IR = memoryStage.getMEMWB_IR();
-        instruction = memoryStage.getInstruction();
+        try {
+            Instruction inst = memoryStage.getInstruction();
+            checkDependencies(inst);
+
+            LMD = memoryStage.getMEMWB_LMD();
+            ALUOutput = memoryStage.getMEMWB_ALUOutput();
+            IR = memoryStage.getMEMWB_IR();
+            instruction = inst;
+        } catch (Exception e) {
+            instruction = null;
+            if (e.getMessage() != null)
+                System.out.println(e.getMessage());
+        }
+    }
+
+    public void checkDependencies(Instruction instruction) {
+
+        ArrayList<Parameter> parameters = instruction.getParameters();
+
+        // If I have dependencies, block
+        for (Parameter p : parameters) {
+            if (p.getParameter() instanceof Register) {
+                Instruction dependentOnThis = p.peekDependency();
+                if (dependentOnThis != null && !instruction.equals(dependentOnThis)) {
+                    cpu.setDataDependencyBlock(instruction, Instruction.Stage.WB, Instruction.Stage.WB);
+                    throw new IllegalStateException("Cannot proceed because " + instruction.toString() + " has a write dependency on " + dependentOnThis.toString());
+                }
+            }
+        }
     }
 
     @Override
     public void execute() {
         Parameter source, destination;
 
-
-        ArrayList<Parameter> parameters = this.instruction.getParameters();
-
-        // If I have dependencies, block
-        for (Parameter p : parameters) {
-            if (p.getParameter() instanceof Register) {
-                Instruction dependentOnThis = p.peekDependency();
-                if (this.instruction.equals(dependentOnThis) == false) {
-                    cpu.setDataDependencyBlock(4);
-                    return;
-                }
-            }
-        }
+        checkDependencies(instruction);
 
 
-        switch (instruction.getInstruction()) {
+        String instruction = this.instruction.getInstructionOnly();
+        switch (instruction) {
             // J Types
             case "J":
                 break;
@@ -63,7 +77,7 @@ public class WriteBackStage extends Stage {
             case "OR":
             case "SLT":
             case "DSLL":
-                destination = instruction.getParameters().get(2);
+                destination = this.instruction.getParameters().get(2);
                 destination.getParameter().write(ALUOutput.getBinaryValue());
                 break;
 
@@ -91,7 +105,6 @@ public class WriteBackStage extends Stage {
                 break;
 
 
-
             default:
                 break;
         }
@@ -100,14 +113,18 @@ public class WriteBackStage extends Stage {
         // todo: dequeue dependencies
 
         // If I have dependencies, block
-        for (Parameter p : parameters) {
+        for (Parameter p : this.instruction.getParameters()) {
             if (p.getParameter() instanceof Register) {
                 p.dequeueDependency();
             }
         }
+
+        if (cpu.getDataDependencyBlock().getReleaseStage() == Instruction.Stage.WB)
+            cpu.reviewBlock(this.instruction);
     }
 
     public Instruction getInstruction() {
         return instruction;
     }
+
 }

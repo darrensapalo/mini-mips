@@ -44,7 +44,7 @@ public class ExecuteStage extends Stage {
 
     @Override
     public void execute() {
-        String inst =  instruction.getInstruction();
+        String inst =  instruction.getInstructionOnly();
 
         // depending on instruction, perform operation on a, b, or imm
         // EXMEM_ALUOutput =
@@ -52,6 +52,9 @@ public class ExecuteStage extends Stage {
 
         // depending on instruction, compute for cond
         EXMEM_Cond = ALU.executeCond(inst, EXMEM_IR, a, b);
+
+        if ("1".equals(EXMEM_Cond))
+            throw new IllegalStateException("The program will now branch because Cond evaluated to 1");
     }
 
     public Memory getEXMEM_IR() {
@@ -82,5 +85,6 @@ public class ExecuteStage extends Stage {
                 .add(new JsonObject().put("register", "EX/MEM.IR").put("value", getEXMEM_IR() == null? "null": getEXMEM_IR().getAsHex()));
 
     }
+
 
 }

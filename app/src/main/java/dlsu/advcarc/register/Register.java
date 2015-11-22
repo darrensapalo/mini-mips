@@ -46,8 +46,8 @@ public class Register implements Writable {
 
     public JsonObject toJsonObject() {
         return new JsonObject()
-            .put("register", register)
-            .put("value", RadixHelper.padWithZero(value.toHexString(), 16));
+                .put("register", register)
+                .put("value", RadixHelper.padWithZero(value.toHexString(), 16));
     }
 
     @Override
@@ -74,8 +74,10 @@ public class Register implements Writable {
                 break;
 
             case write:
-                if (!writeDependency.contains(instruction))
+                if (!writeDependency.contains(instruction)) {
+                    System.out.println("Adding a write dependency on " + this);
                     writeDependency.add(instruction);
+                }
                 break;
         }
     }
@@ -87,6 +89,7 @@ public class Register implements Writable {
                 return readDependency.peek();
 
             case write:
+
                 return writeDependency.peek();
         }
         return null;
@@ -97,14 +100,11 @@ public class Register implements Writable {
     public void dequeueDependency(Instruction instruction) {
         if (instruction.equals(peekDependency(Parameter.DependencyType.read))) {
             readDependency.remove(instruction);
-        } else {
-            System.err.println("Trying to dequeue when i am not at the head of the queue!");
         }
 
         if (instruction.equals(peekDependency(Parameter.DependencyType.write))) {
+            System.out.println("Removing write dependency on " + this);
             writeDependency.remove(instruction);
-        } else {
-            System.err.println("Trying to dequeue when i am not at the head of the queue!");
         }
     }
 }

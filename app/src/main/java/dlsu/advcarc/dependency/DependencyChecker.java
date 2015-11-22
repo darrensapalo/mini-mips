@@ -18,7 +18,8 @@ public class DependencyChecker {
             return null;
 
         ArrayList<Parameter> parameters = instruction.getParameters();
-        switch (instruction.getInstruction()) {
+        String inst = instruction.getInstructionOnly();
+        switch (inst) {
             // R types
             case "DADDU":
             case "DMULT":

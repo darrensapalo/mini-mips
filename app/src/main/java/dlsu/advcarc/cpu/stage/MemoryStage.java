@@ -3,11 +3,9 @@ package dlsu.advcarc.cpu.stage;
 import dlsu.advcarc.cpu.CPU;
 import dlsu.advcarc.memory.Memory;
 import dlsu.advcarc.memory.MemoryManager;
-import dlsu.advcarc.opcode.OpcodeHelper;
 import dlsu.advcarc.parser.Instruction;
 import dlsu.advcarc.parser.Parameter;
 import dlsu.advcarc.parser.StringBinary;
-import dlsu.advcarc.register.Register;
 import io.vertx.core.json.JsonArray;
 import io.vertx.core.json.JsonObject;
 
@@ -33,12 +31,20 @@ public class MemoryStage extends Stage {
 
     @Override
     public void housekeeping() {
+        try {
+            Instruction inst = executeStage.getInstruction();
+            checkDependencies(inst);
 
-        // ALU instructions
-        MEMWB_IR = executeStage.getEXMEM_IR();
-        MEMWB_ALUOutput = executeStage.getEXMEM_ALUOutput();
-        instruction = executeStage.getInstruction();
-        MEMWB_B = executeStage.getEXMEM_B();
+            // ALU instructions
+            MEMWB_IR = executeStage.getEXMEM_IR();
+            MEMWB_ALUOutput = executeStage.getEXMEM_ALUOutput();
+            instruction = inst;
+            MEMWB_B = executeStage.getEXMEM_B();
+        } catch (Exception e) {
+            instruction = null;
+            if (e.getMessage() != null)
+                System.out.println(e.getMessage());
+        }
     }
 
     @Override
@@ -51,21 +57,14 @@ public class MemoryStage extends Stage {
                 p.analyzeDependency();
         }
 
-        // If I have dependencies, block
-        for (Parameter p : parameters) {
-            if (p.getParameter() instanceof Memory) {
-                Instruction dependentOnThis = p.peekDependency();
-                if (this.instruction.equals(dependentOnThis) == false) {
-                    cpu.setDataDependencyBlock(3);
-                    return;
-                }
-            }
-        }
+        checkDependencies(instruction);
 
-        switch (instruction.getInstruction()) {
+        String instruction = this.instruction.getInstructionOnly();
+        switch (instruction) {
             // read
             case "LW":
             case "LWU":
+                System.out.println("MEM Stage: Reading from address " + MEMWB_ALUOutput.toHexString());
                 MEMWB_LMD = MemoryManager.instance().getInstance(MEMWB_ALUOutput.toHexString());
                 break;
 
@@ -73,6 +72,7 @@ public class MemoryStage extends Stage {
             case "SW":
             case "L.S":
             case "S.S":
+                System.out.println("MEM Stage: Writing to address " + MEMWB_ALUOutput.toHexString() + " with value " + MEMWB_B.getParameter().read().toHexString());
                 MemoryManager.instance().updateMemory(MEMWB_ALUOutput.toHexString(), MEMWB_B.getParameter().read());
                 break;
         }
@@ -84,7 +84,24 @@ public class MemoryStage extends Stage {
             }
         }
 
+        if (cpu.getDataDependencyBlock().getReleaseStage() == Instruction.Stage.MEM)
+            cpu.reviewBlock(this.instruction);
+
         // todo: perform branch completion in IF stage
+
+    }
+
+    private void checkDependencies(Instruction instruction) {
+        // If I have dependencies, block
+        for (Parameter p : instruction.getParameters()) {
+            if (p.getParameter() instanceof Memory) {
+                Instruction dependentOnThis = p.peekDependency();
+                if (dependentOnThis != null && !instruction.equals(dependentOnThis)) {
+                    cpu.setDataDependencyBlock(instruction, Instruction.Stage.MEM, Instruction.Stage.MEM);
+                    throw new IllegalStateException("Cannot proceed because " + instruction.toString() + " has a write dependency on " + dependentOnThis.toString());
+                }
+            }
+        }
     }
 
     public StringBinary getMEMWB_ALUOutput() {
@@ -104,12 +121,11 @@ public class MemoryStage extends Stage {
     }
 
 
-
-    public JsonArray toJsonArray(){
+    public JsonArray toJsonArray() {
         return new JsonArray()
-                .add(new JsonObject().put("register", "MEM/WB.LMD").put("value", getMEMWB_LMD() == null? "null": getMEMWB_LMD().getAsHex()))
-                .add(new JsonObject().put("register", "MEM/WB.ALUOutput").put("value", getMEMWB_ALUOutput() == null? "null": getMEMWB_ALUOutput().toHexString()))
-                .add(new JsonObject().put("register", "MEM/WB.IR").put("value", getMEMWB_IR() == null? "null": getMEMWB_IR().getAsHex()));
+                .add(new JsonObject().put("register", "MEM/WB.LMD").put("value", getMEMWB_LMD() == null ? "null" : getMEMWB_LMD().getAsHex()))
+                .add(new JsonObject().put("register", "MEM/WB.ALUOutput").put("value", getMEMWB_ALUOutput() == null ? "null" : getMEMWB_ALUOutput().toHexString()))
+                .add(new JsonObject().put("register", "MEM/WB.IR").put("value", getMEMWB_IR() == null ? "null" : getMEMWB_IR().getAsHex()));
     }
 
 }

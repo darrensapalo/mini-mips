@@ -45,6 +45,9 @@ public class InstructionFetchStage extends Stage {
 
         String lineOfCode = this.code.getCode(Integer.valueOf(memoryLocation, 16));
 
+        if (lineOfCode == null)
+            throw new NullPointerException("There is no more available program data to read.");
+
         // IF/ID.NPC, PC = (EX/MEM.Cond) ? EX/MEM.ALUOutput : PC + 4;
         IFID_NPC = ("1").equals(executeStage.getEXMEM_Cond()) ? executeStage.getEXMEM_ALUOutput() : StringBinary.valueOf(PC.getAsLong() + 4);
 
@@ -76,6 +79,11 @@ public class InstructionFetchStage extends Stage {
     public JsonArray toJsonArray(){
         return new JsonArray()
                 .add(new JsonObject().put("register", "IF/ID.IR").put("value", IFID_IR == null? "null": IFID_IR.getAsHex()))
-                .add(new JsonObject().put("register","IF/ID.NPC").put("value", IFID_NPC.toHexString()));
+                .add(new JsonObject().put("register","IF/ID.NPC").put("value", IFID_NPC == null ? "null" : IFID_NPC.toHexString()));
+    }
+
+    public void reset(){
+        instruction = null;
+        IFID_IR = null;
     }
 }
