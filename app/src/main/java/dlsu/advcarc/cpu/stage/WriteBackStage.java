@@ -18,26 +18,27 @@ public class WriteBackStage extends Stage {
     private Memory LMD;
     private Memory IR;
     private StringBinary ALUOutput;
-    private Instruction instruction;
 
 
     public WriteBackStage(CPU cpu, MemoryStage memoryStage) {
         this.cpu = cpu;
         this.memoryStage = memoryStage;
+        stageId = 4;
     }
 
     @Override
     public void housekeeping() {
         try {
-            Instruction inst = memoryStage.getInstruction();
-            checkDependencies(inst);
+            isBlocked = isBlocked || memoryStage.isBlocked();
 
-            LMD = memoryStage.getMEMWB_LMD();
-            ALUOutput = memoryStage.getMEMWB_ALUOutput();
-            IR = memoryStage.getMEMWB_IR();
-            instruction = inst;
+            if (isBlocked == false) {
+                instruction = memoryStage.getInstruction();
+
+                LMD = memoryStage.getMEMWB_LMD();
+                ALUOutput = memoryStage.getMEMWB_ALUOutput();
+                IR = memoryStage.getMEMWB_IR();
+            }
         } catch (Exception e) {
-            instruction = null;
             if (e.getMessage() != null)
                 System.out.println(e.getMessage());
         }
@@ -52,7 +53,7 @@ public class WriteBackStage extends Stage {
             if (p.getParameter() instanceof Register) {
                 Instruction dependentOnThis = p.peekDependency();
                 if (dependentOnThis != null && !instruction.equals(dependentOnThis)) {
-                    cpu.setDataDependencyBlock(instruction, Instruction.Stage.WB, Instruction.Stage.WB);
+                    cpu.setDataDependencyBlock(dependentOnThis, Instruction.Stage.WB, Instruction.Stage.WB);
                     throw new IllegalStateException("Cannot proceed because " + instruction.toString() + " has a write dependency on " + dependentOnThis.toString());
                 }
             }
@@ -61,6 +62,8 @@ public class WriteBackStage extends Stage {
 
     @Override
     public void execute() {
+
+        didRun = false;
         Parameter source, destination;
 
         checkDependencies(instruction);
@@ -112,19 +115,11 @@ public class WriteBackStage extends Stage {
 
         // todo: dequeue dependencies
 
-        // If I have dependencies, block
-        for (Parameter p : this.instruction.getParameters()) {
-            if (p.getParameter() instanceof Register) {
-                p.dequeueDependency();
-            }
-        }
-
         if (cpu.getDataDependencyBlock().getReleaseStage() == Instruction.Stage.WB)
             cpu.reviewBlock(this.instruction);
-    }
 
-    public Instruction getInstruction() {
-        return instruction;
+
+        didRun = true;
     }
 
 }

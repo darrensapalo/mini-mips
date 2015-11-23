@@ -22,11 +22,11 @@ public class InstructionFetchStage extends Stage {
     private dlsu.advcarc.memory.Memory IFID_IR;
     private StringBinary IFID_NPC;
     private ExecuteStage executeStage;
-    private Instruction instruction;
 
     public InstructionFetchStage(CPU cpu, ProgramCode code) {
         this.cpu = cpu;
         this.code = code;
+        stageId = 0;
     }
 
     @Override
@@ -36,7 +36,7 @@ public class InstructionFetchStage extends Stage {
 
     @Override
     public void execute() {
-        
+        didRun = false;
         StringBinary PC = cpu.getProgramCounter();
 
         // IF/ID.IR = Mem[PC]
@@ -51,13 +51,14 @@ public class InstructionFetchStage extends Stage {
         // IF/ID.NPC, PC = (EX/MEM.Cond) ? EX/MEM.ALUOutput : PC + 4;
         IFID_NPC = ("1").equals(executeStage.getEXMEM_Cond()) ? executeStage.getEXMEM_ALUOutput() : StringBinary.valueOf(PC.getAsLong() + 4);
 
-
         // Get references to registers
         instruction = new Instruction(new StringBinary(IFID_IR.getAsBinary()), lineOfCode);
-
+        instruction.setStage(Instruction.Stage.IF);
+        System.out.println("IF Stage: Read a new instruction from program code - " + instruction.toString());
 
         PC = IFID_NPC;
         cpu.setProgramCounter(PC);
+        didRun = true;
     }
 
     public void setExecuteStage(ExecuteStage executeStage) {
@@ -72,9 +73,6 @@ public class InstructionFetchStage extends Stage {
         return IFID_NPC;
     }
 
-    public Instruction getInstruction() {
-        return instruction;
-    }
 
     public JsonArray toJsonArray(){
         return new JsonArray()

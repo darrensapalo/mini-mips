@@ -109,7 +109,7 @@ public class Instruction {
     }
 
     public enum Stage {
-        IF, ID, EX, MEM, WB
+        IF, ID, EX, MEM, WB, DONE
     }
 
     public Instruction(String line) {
@@ -119,6 +119,10 @@ public class Instruction {
         this.label = InstructionChecker.parseLabel(line);
         this.instruction = InstructionChecker.parseInstruction(line);
         this.parameters = InstructionChecker.getParameters(line, this);
+    }
+
+    public void setStage(Stage stage) {
+        this.stage = stage;
     }
 
     @Override

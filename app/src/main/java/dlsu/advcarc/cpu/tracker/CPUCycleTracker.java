@@ -27,6 +27,10 @@ public class CPUCycleTracker {
         currCycleRecord = new CycleRecord(++cycleNumber);
     }
 
+    public int getCycleNumber() {
+        return cycleNumber;
+    }
+
     public void setIfInstruction(String ifInstruction) {
         currCycleRecord.setIfInstruction(ifInstruction);
     }

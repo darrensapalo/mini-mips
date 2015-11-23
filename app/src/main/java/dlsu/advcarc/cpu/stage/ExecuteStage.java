@@ -1,6 +1,7 @@
 package dlsu.advcarc.cpu.stage;
 
 import dlsu.advcarc.cpu.ALU;
+import dlsu.advcarc.cpu.CPU;
 import dlsu.advcarc.memory.Memory;
 import dlsu.advcarc.opcode.OpcodeHelper;
 import dlsu.advcarc.parser.Instruction;
@@ -13,6 +14,7 @@ import io.vertx.core.json.JsonObject;
  * Created by Darren on 11/9/2015.
  */
 public class ExecuteStage extends Stage {
+    private final CPU cpu;
     private InstructionDecodeStage instructionDecodeStage;
     private Memory EXMEM_IR;
     private String EXMEM_Cond;
@@ -24,37 +26,50 @@ public class ExecuteStage extends Stage {
     private StringBinary npc;
     private Instruction instruction;
 
-    public ExecuteStage(InstructionDecodeStage instructionDecodeStage, InstructionFetchStage instructionFetchStage) {
+    public ExecuteStage(CPU cpu, InstructionDecodeStage instructionDecodeStage, InstructionFetchStage instructionFetchStage) {
+        this.cpu = cpu;
         this.instructionDecodeStage = instructionDecodeStage;
         instructionFetchStage.setExecuteStage(this);
+        stageId = 2;
     }
 
     @Override
     public void housekeeping() {
+
         EXMEM_IR = instructionDecodeStage.getIDEX_IR();
         EXMEM_B = instructionDecodeStage.getIDEX_B();
 
         instruction = instructionDecodeStage.getInstruction();
+
+        if (instruction != null)
+            System.out.println("EX Stage: Received a new instruction from ID stage - " + instruction);
+
         a = instructionDecodeStage.getIDEX_A();
         b = instructionDecodeStage.getIDEX_B();
         imm = instructionDecodeStage.getIDEX_IMM();
         npc = instructionDecodeStage.getIDEX_NPC();
-
     }
 
     @Override
     public void execute() {
-        String inst =  instruction.getInstructionOnly();
+        didRun = false;
+        Instruction ownedBy = cpu.getDataDependencyBlock().getOwnedBy();
+        boolean allowed = (ownedBy == null) ? true : ownedBy.getStage() == Instruction.Stage.EX;
+        if (allowed) {
 
-        // depending on instruction, perform operation on a, b, or imm
-        // EXMEM_ALUOutput =
-        EXMEM_ALUOutput = ALU.executeALU(inst, EXMEM_IR, a, b, imm, npc);
+            String inst = instruction.getInstructionOnly();
 
-        // depending on instruction, compute for cond
-        EXMEM_Cond = ALU.executeCond(inst, EXMEM_IR, a, b);
+            // depending on instruction, perform operation on a, b, or imm
+            // EXMEM_ALUOutput =
+            EXMEM_ALUOutput = ALU.executeALU(inst, EXMEM_IR, a, b, imm, npc);
 
-        if ("1".equals(EXMEM_Cond))
-            throw new IllegalStateException("The program will now branch because Cond evaluated to 1");
+            // depending on instruction, compute for cond
+            EXMEM_Cond = ALU.executeCond(inst, EXMEM_IR, a, b);
+
+            didRun = true;
+            if ("1".equals(EXMEM_Cond))
+                throw new IllegalStateException("The program will now branch because Cond evaluated to 1");
+        }
     }
 
     public Memory getEXMEM_IR() {
@@ -77,12 +92,12 @@ public class ExecuteStage extends Stage {
         return instruction;
     }
 
-    public JsonArray toJsonArray(){
+    public JsonArray toJsonArray() {
         return new JsonArray()
-                .add(new JsonObject().put("register", "EX/MEM.B").put("value", getEXMEM_B() == null? "null": getEXMEM_B().getValue()))
-                .add(new JsonObject().put("register", "EX/MEM.ALUOutput").put("value", getEXMEM_ALUOutput() == null? "null": getEXMEM_ALUOutput().toHexString()))
-                .add(new JsonObject().put("register", "EX/MEM.Cond").put("value", getEXMEM_Cond() == null? "null": getEXMEM_Cond()))
-                .add(new JsonObject().put("register", "EX/MEM.IR").put("value", getEXMEM_IR() == null? "null": getEXMEM_IR().getAsHex()));
+                .add(new JsonObject().put("register", "EX/MEM.B").put("value", getEXMEM_B() == null ? "null" : getEXMEM_B().getValue()))
+                .add(new JsonObject().put("register", "EX/MEM.ALUOutput").put("value", getEXMEM_ALUOutput() == null ? "null" : getEXMEM_ALUOutput().toHexString()))
+                .add(new JsonObject().put("register", "EX/MEM.Cond").put("value", getEXMEM_Cond() == null ? "null" : getEXMEM_Cond()))
+                .add(new JsonObject().put("register", "EX/MEM.IR").put("value", getEXMEM_IR() == null ? "null" : getEXMEM_IR().getAsHex()));
 
     }
 
