@@ -99,7 +99,7 @@ public class Instruction {
                 Parameter parameter_rxt = new Parameter("F" + binary_rxt.getAsInt(), Parameter.ParameterType.register, this);
                 parameters.add(parameter_rxt);
 
-                String rxd = binary.getBinaryValue().substring(21, 25);
+                String rxd = binary.getBinaryValue().substring(21, 26);
                 StringBinary binary_rxd = new StringBinary(rxd);
                 Parameter parameter_rxd = new Parameter("F" + binary_rxd.getAsInt(), Parameter.ParameterType.register, this);
                 parameters.add(parameter_rxd);
