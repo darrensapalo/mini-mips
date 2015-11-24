@@ -42,6 +42,8 @@ public class CPU {
         writeBackStage = new WriteBackStage(this, memoryStage);
 
         cycleTracker = new CPUCycleTracker(code);
+
+        broadcastCPUState();
     }
 
     public void clock() {
@@ -108,9 +110,12 @@ public class CPU {
 
         cycleTracker.nextCycle();
 
+        broadcastCPUState();
+    }
+
+    private void broadcastCPUState(){
         EventBusHolder.instance().getEventBus()
                 .publish(Addresses.CPU_BROADCAST, this.toJsonObject());
-
     }
 
     public StringBinary getProgramCounter() {
@@ -122,7 +127,6 @@ public class CPU {
                 .put("registers", getRegistersJsonArray())
                 .put("pipeline", cycleTracker == null ? new JsonArray() : cycleTracker.toJsonObject());
     }
-
 
     public JsonArray getRegistersJsonArray() {
 

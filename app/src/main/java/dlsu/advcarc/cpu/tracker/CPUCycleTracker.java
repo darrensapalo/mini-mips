@@ -28,6 +28,10 @@ public class CPUCycleTracker {
     }
 
     public void nextCycle() {
+
+        if(map.size() == 0)
+            return;
+
         for (Map.Entry<Integer, List<String>> entry : map.entrySet()) {
             if(entry.getValue().size() < cyclesFinished + 1)
                 entry.getValue().add("");
