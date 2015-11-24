@@ -9,6 +9,7 @@ import java.util.ArrayList;
  * Created by Darren on 11/6/2015.
  */
 public class Instruction {
+    private int cycle;
     private String input;
     private String instruction;
     private String label;
@@ -17,7 +18,8 @@ public class Instruction {
     private ArrayList<Parameter> parameters = new ArrayList<>();
 
     // generate instruction based on binary
-    public Instruction(StringBinary binary, String lineOfCode, String memAddressHex) {
+    public Instruction(StringBinary binary, String lineOfCode, int cycle, String memAddressHex) {
+        this.cycle = cycle;
         String binaryValue = binary.getBinaryValue();
 
         if (binaryValue.length() == 64) {
@@ -99,7 +101,7 @@ public class Instruction {
                 Parameter parameter_rxt = new Parameter("F" + binary_rxt.getAsInt(), Parameter.ParameterType.register, this);
                 parameters.add(parameter_rxt);
 
-                String rxd = binary.getBinaryValue().substring(21, 25);
+                String rxd = binary.getBinaryValue().substring(21, 26);
                 StringBinary binary_rxd = new StringBinary(rxd);
                 Parameter parameter_rxd = new Parameter("F" + binary_rxd.getAsInt(), Parameter.ParameterType.register, this);
                 parameters.add(parameter_rxd);
@@ -110,8 +112,27 @@ public class Instruction {
 
     }
 
+    public int getExCycles() {
+        return 4;  // compute number of ex cycles
+    }
+
+    public boolean isBranch() {
+        return "BEQ".equals(getInstructionOnly().toUpperCase());
+    }
+
+    public String getExecutionType() {
+        switch (getInstructionOnly()){
+            case "ADD.S":
+                return "ADDER";
+            case "MUL.S":
+                return "MULTIPLIER";
+            default:
+                return "INTEGER";
+        }
+    }
+
     public enum Stage {
-        IF, ID, EX, MEM, WB
+        IF, ID, EX, MEM, WB, DONE
     }
 
     public Instruction(String line) {
@@ -121,6 +142,10 @@ public class Instruction {
         this.label = InstructionChecker.parseLabel(line);
         this.instruction = InstructionChecker.parseInstruction(line);
         this.parameters = InstructionChecker.getParameters(line, this);
+    }
+
+    public void setStage(Stage stage) {
+        this.stage = stage;
     }
 
     @Override
@@ -134,7 +159,7 @@ public class Instruction {
 
     public String getInstructionOnly() {
         if (instruction != null)
-            return instruction.split(" ")[0];
+            return instruction.split(" ")[0].toUpperCase();
         return instruction;
     }
 
@@ -156,4 +181,7 @@ public class Instruction {
         return parameters;
     }
 
+    public int getCycle() {
+        return cycle;
+    }
 }

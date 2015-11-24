@@ -64,7 +64,7 @@ public class DependencyChecker {
             case "MUL.S":
 
                 parameter1 = (Register) parameters.get(0).getParameter();
-                Memory memory2 = (Memory) parameters.get(1).getParameter();
+                parameter2= (Register) parameters.get(1).getParameter();
                 parameter3 = (Register) parameters.get(2).getParameter();
                 if (parameter.equals(parameter3))
                     return Parameter.DependencyType.write;

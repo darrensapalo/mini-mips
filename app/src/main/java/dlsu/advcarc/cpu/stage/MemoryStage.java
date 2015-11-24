@@ -1,6 +1,7 @@
 package dlsu.advcarc.cpu.stage;
 
 import dlsu.advcarc.cpu.CPU;
+import dlsu.advcarc.cpu.stage.ex.ExecuteStageSwitch;
 import dlsu.advcarc.memory.Memory;
 import dlsu.advcarc.memory.MemoryManager;
 import dlsu.advcarc.parser.Instruction;
@@ -16,48 +17,54 @@ import java.util.ArrayList;
  */
 public class MemoryStage extends Stage {
     private CPU cpu;
-    private ExecuteStage executeStage;
+    private ExecuteStageSwitch executeStage;
 
     private StringBinary MEMWB_ALUOutput;
     private Memory MEMWB_LMD;
     private dlsu.advcarc.memory.Memory MEMWB_IR;
-    private Instruction instruction;
     private Parameter MEMWB_B;
 
-    public MemoryStage(CPU cpu, ExecuteStage executeStage) {
+    public MemoryStage(CPU cpu, ExecuteStageSwitch executeStage) {
         this.cpu = cpu;
         this.executeStage = executeStage;
+        stageId = 3;
     }
 
     @Override
     public void housekeeping() {
         try {
-            Instruction inst = executeStage.getInstruction();
-            checkDependencies(inst);
+            isBlocked = isBlocked || executeStage.isBlocked();
+            if (isBlocked == false) {
 
-            // ALU instructions
-            MEMWB_IR = executeStage.getEXMEM_IR();
-            MEMWB_ALUOutput = executeStage.getEXMEM_ALUOutput();
-            instruction = inst;
-            MEMWB_B = executeStage.getEXMEM_B();
+                Instruction inst = executeStage.getInstruction();
+
+                // ALU instructions
+                MEMWB_IR = executeStage.getEXMEM_IR();
+                MEMWB_ALUOutput = executeStage.getEXMEM_ALUOutput();
+                instruction = inst;
+                MEMWB_B = executeStage.getEXMEM_B();
+            }
         } catch (Exception e) {
-            instruction = null;
             if (e.getMessage() != null)
                 System.out.println(e.getMessage());
         }
+
     }
 
     @Override
     public void execute() {
+        didRun = false;
+        checkDependencies(instruction);
 
-        ArrayList<Parameter> parameters = this.instruction.getParameters();
+
         // Analyze the dependencies of memory references
+        ArrayList<Parameter> parameters = this.instruction.getParameters();
+
         for (Parameter p : parameters) {
             if (p.getParameter() instanceof Memory)
                 p.analyzeDependency();
         }
 
-        checkDependencies(instruction);
 
         String instruction = this.instruction.getInstructionOnly();
         switch (instruction) {
@@ -89,7 +96,9 @@ public class MemoryStage extends Stage {
 
         // todo: perform branch completion in IF stage
 
+        didRun = true;
     }
+
 
     private void checkDependencies(Instruction instruction) {
         // If I have dependencies, block
@@ -97,7 +106,7 @@ public class MemoryStage extends Stage {
             if (p.getParameter() instanceof Memory) {
                 Instruction dependentOnThis = p.peekDependency();
                 if (dependentOnThis != null && !instruction.equals(dependentOnThis)) {
-                    cpu.setDataDependencyBlock(instruction, Instruction.Stage.MEM, Instruction.Stage.MEM);
+                    cpu.setDataDependencyBlock(dependentOnThis, Instruction.Stage.MEM, Instruction.Stage.MEM);
                     throw new IllegalStateException("Cannot proceed because " + instruction.toString() + " has a write dependency on " + dependentOnThis.toString());
                 }
             }
@@ -114,10 +123,6 @@ public class MemoryStage extends Stage {
 
     public Memory getMEMWB_IR() {
         return MEMWB_IR;
-    }
-
-    public Instruction getInstruction() {
-        return instruction;
     }
 
 

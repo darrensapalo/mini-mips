@@ -25,24 +25,24 @@ public class InstructionDecodeStage extends Stage {
     private Memory IDEX_IR;
     private StringBinary IDEX_NPC;
     private Immediate newImm;
-    private Instruction instruction;
 
     public InstructionDecodeStage(CPU cpu, InstructionFetchStage instructionFetchStage) {
         this.cpu = cpu;
         this.instructionFetchStage = instructionFetchStage;
+        stageId = 1;
     }
 
     @Override
     public void housekeeping() {
         try {
-            Instruction inst = instructionFetchStage.getInstruction();
-            checkDependencies(inst);
-
-            IDEX_IR = instructionFetchStage.getIFID_IR();
-            IDEX_NPC = instructionFetchStage.getIFID_NPC();
-            this.instruction = inst;
+            if (isBlocked == false) {
+                this.instruction = instructionFetchStage.getInstruction();
+                if (instruction != null)
+                    System.out.println("ID Stage: Received a new instruction from IF stage - " + instruction);
+                IDEX_IR = instructionFetchStage.getIFID_IR();
+                IDEX_NPC = instructionFetchStage.getIFID_NPC();
+            }
         } catch (Exception e) {
-            instruction = null;
             if (e.getMessage() != null)
                 System.out.println(e.getMessage());
         }
@@ -51,6 +51,9 @@ public class InstructionDecodeStage extends Stage {
     @Override
     public void execute() {
         // instructionFetchStage.get code
+        didRun = false;
+
+        checkDependencies(instruction);
 
         ArrayList<Parameter> parameters = instruction.getParameters();
 
@@ -58,8 +61,6 @@ public class InstructionDecodeStage extends Stage {
             if (p.getParameter() instanceof Register)
                 p.analyzeDependency();
         }
-
-        checkDependencies(instruction);
 
         try {
             IDEX_A = parameters.get(0);
@@ -78,16 +79,17 @@ public class InstructionDecodeStage extends Stage {
         } catch (Exception e) {
 
         }
-
+        didRun = true;
     }
 
     private void checkDependencies(Instruction instruction) {
-
+        isBlocked = false;
         for (Parameter p : instruction.getParameters()) {
             if (p.getParameter() instanceof Register) {
                 Instruction inst = p.peekDependency();
                 if (inst != null && instruction.equals(inst) == false) {
-                    cpu.setDataDependencyBlock(instruction, Instruction.Stage.WB, Instruction.Stage.ID);
+                    cpu.setDataDependencyBlock(inst, Instruction.Stage.WB, Instruction.Stage.ID);
+                    isBlocked = true;
                     throw new IllegalStateException("Cannot proceed because " + instruction.toString() + " has a write dependency on " + inst.toString());
                 }
             }
@@ -113,10 +115,6 @@ public class InstructionDecodeStage extends Stage {
 
     public StringBinary getIDEX_NPC() {
         return IDEX_NPC;
-    }
-
-    public Instruction getInstruction() {
-        return instruction;
     }
 
     public JsonArray toJsonArray() {

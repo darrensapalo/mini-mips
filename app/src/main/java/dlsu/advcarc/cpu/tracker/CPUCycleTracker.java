@@ -39,6 +39,10 @@ public class CPUCycleTracker {
         cyclesFinished++;
     }
 
+    public int getCycleNumber() {
+        return cyclesFinished;
+    }
+
     public void setIfInstruction(Instruction instruction) {
         map.get(instruction.getMemAddressInt()).add("IF");
     }
