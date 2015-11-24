@@ -1,7 +1,8 @@
 package dlsu.advcarc.cpu.stage;
 
-import com.sun.xml.internal.bind.v2.model.core.ID;
 import dlsu.advcarc.cpu.CPU;
+import dlsu.advcarc.cpu.stage.ex.ExecuteStageInteger;
+import dlsu.advcarc.cpu.stage.ex.ExecuteStageSwitch;
 import dlsu.advcarc.memory.*;
 import dlsu.advcarc.memory.Memory;
 import dlsu.advcarc.parser.Instruction;
@@ -21,12 +22,14 @@ public class InstructionFetchStage extends Stage {
 
     private dlsu.advcarc.memory.Memory IFID_IR;
     private StringBinary IFID_NPC;
-    private ExecuteStage executeStage;
+    private ExecuteStageSwitch executeStage;
+    private int cycle;
 
     public InstructionFetchStage(CPU cpu, ProgramCode code) {
         this.cpu = cpu;
         this.code = code;
         stageId = 0;
+        cycle = 0;
     }
 
     @Override
@@ -52,7 +55,7 @@ public class InstructionFetchStage extends Stage {
         IFID_NPC = ("1").equals(executeStage.getEXMEM_Cond()) ? executeStage.getEXMEM_ALUOutput() : StringBinary.valueOf(PC.getAsLong() + 4);
 
         // Get references to registers
-        instruction = new Instruction(new StringBinary(IFID_IR.getAsBinary()), lineOfCode);
+        instruction = new Instruction(new StringBinary(IFID_IR.getAsBinary()), lineOfCode, ++cycle);
         instruction.setStage(Instruction.Stage.IF);
         System.out.println("IF Stage: Read a new instruction from program code - " + instruction.toString());
 
@@ -61,7 +64,7 @@ public class InstructionFetchStage extends Stage {
         didRun = true;
     }
 
-    public void setExecuteStage(ExecuteStage executeStage) {
+    public void setExecuteStage(ExecuteStageSwitch executeStage) {
         this.executeStage = executeStage;
     }
 

@@ -1,7 +1,7 @@
 package dlsu.advcarc.cpu.block;
 
 import dlsu.advcarc.cpu.stage.*;
-import dlsu.advcarc.memory.Memory;
+import dlsu.advcarc.cpu.stage.ex.ExecuteStageInteger;
 import dlsu.advcarc.parser.Instruction;
 
 /**
@@ -58,30 +58,33 @@ public class Block {
     }
 
     public boolean canHousekeepingRun(Stage stage, Stage previous) {
-        if (blockStage == null)
-            return true;
-
-        int stageNumber = -1;
-        if (stage instanceof InstructionFetchStage)
-            stageNumber = 0;
-        else if (stage instanceof InstructionDecodeStage)
-            stageNumber = 1;
-        else if (stage instanceof ExecuteStage)
-            stageNumber = 2;
-        else if (stage instanceof MemoryStage)
-            stageNumber = 3;
-        else if (stage instanceof WriteBackStage)
-            stageNumber = 4;
-
-
-        boolean allowed = false;
+        boolean allowed;
         try {
+
+
+            if (blockStage == null) return true;
+
+            int stageNumber = -1;
+            if (stage instanceof InstructionFetchStage)
+                stageNumber = 0;
+            else if (stage instanceof InstructionDecodeStage)
+                stageNumber = 1;
+            else if (stage instanceof ExecuteStageInteger)
+                stageNumber = 2;
+            else if (stage instanceof MemoryStage)
+                stageNumber = 3;
+            else if (stage instanceof WriteBackStage)
+                stageNumber = 4;
+
+
             Instruction instruction = previous.getInstruction();
             allowed = ownedBy.equals(instruction);
-        }catch (Exception e){
 
+
+            return allowed && stageNumber > blockStage.ordinal();
+        } catch (Exception e) {
+            System.out.println(e.getMessage());
         }
-
-        return allowed && stageNumber > blockStage.ordinal();
+        return false;
     }
 }

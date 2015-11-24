@@ -50,4 +50,8 @@ public abstract class Stage {
     public int getStageId() {
         return stageId;
     }
+
+    public boolean didRun() {
+        return didRun;
+    }
 }

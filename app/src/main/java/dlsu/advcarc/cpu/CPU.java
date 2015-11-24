@@ -2,6 +2,7 @@ package dlsu.advcarc.cpu;
 
 import dlsu.advcarc.cpu.block.Block;
 import dlsu.advcarc.cpu.stage.*;
+import dlsu.advcarc.cpu.stage.ex.ExecuteStageSwitch;
 import dlsu.advcarc.cpu.tracker.CPUCycleTracker;
 import dlsu.advcarc.parser.Instruction;
 import dlsu.advcarc.parser.Parameter;
@@ -22,7 +23,7 @@ import java.util.Iterator;
 public class CPU {
     InstructionFetchStage instructionFetchStage = null;
     InstructionDecodeStage instructionDecodeStage = null;
-    ExecuteStage executeStage = null;
+    ExecuteStageSwitch executeStage = null;
     MemoryStage memoryStage = null;
     WriteBackStage writeBackStage = null;
 
@@ -45,7 +46,7 @@ public class CPU {
 
         instructionFetchStage = new InstructionFetchStage(this, code);
         instructionDecodeStage = new InstructionDecodeStage(this, instructionFetchStage);
-        executeStage = new ExecuteStage(this, instructionDecodeStage, instructionFetchStage);
+        executeStage = new ExecuteStageSwitch(this, instructionDecodeStage, instructionFetchStage);
         memoryStage = new MemoryStage(this, executeStage);
         writeBackStage = new WriteBackStage(this, memoryStage);
 

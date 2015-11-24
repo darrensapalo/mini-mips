@@ -1,6 +1,7 @@
 package dlsu.advcarc.cpu.stage;
 
 import dlsu.advcarc.cpu.CPU;
+import dlsu.advcarc.cpu.stage.ex.ExecuteStageSwitch;
 import dlsu.advcarc.memory.Memory;
 import dlsu.advcarc.memory.MemoryManager;
 import dlsu.advcarc.parser.Instruction;
@@ -16,14 +17,14 @@ import java.util.ArrayList;
  */
 public class MemoryStage extends Stage {
     private CPU cpu;
-    private ExecuteStage executeStage;
+    private ExecuteStageSwitch executeStage;
 
     private StringBinary MEMWB_ALUOutput;
     private Memory MEMWB_LMD;
     private dlsu.advcarc.memory.Memory MEMWB_IR;
     private Parameter MEMWB_B;
 
-    public MemoryStage(CPU cpu, ExecuteStage executeStage) {
+    public MemoryStage(CPU cpu, ExecuteStageSwitch executeStage) {
         this.cpu = cpu;
         this.executeStage = executeStage;
         stageId = 3;

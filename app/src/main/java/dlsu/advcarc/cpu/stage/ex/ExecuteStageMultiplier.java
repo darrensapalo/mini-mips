@@ -1,9 +1,8 @@
-package dlsu.advcarc.cpu.stage;
+package dlsu.advcarc.cpu.stage.ex;
 
 import dlsu.advcarc.cpu.ALU;
 import dlsu.advcarc.cpu.CPU;
 import dlsu.advcarc.memory.Memory;
-import dlsu.advcarc.opcode.OpcodeHelper;
 import dlsu.advcarc.parser.Instruction;
 import dlsu.advcarc.parser.Parameter;
 import dlsu.advcarc.parser.StringBinary;
@@ -13,67 +12,58 @@ import io.vertx.core.json.JsonObject;
 /**
  * Created by Darren on 11/9/2015.
  */
-public class ExecuteStage extends Stage {
-    private final CPU cpu;
-    private InstructionDecodeStage instructionDecodeStage;
-    private Memory EXMEM_IR;
-    private String EXMEM_Cond;
-    private Parameter EXMEM_B;
-    private StringBinary EXMEM_ALUOutput;
-    private Parameter a;
-    private Parameter b;
-    private Parameter imm;
-    private StringBinary npc;
-    private Instruction instruction;
+public class ExecuteStageMultiplier extends AbstractExecuteStage {
 
-    public ExecuteStage(CPU cpu, InstructionDecodeStage instructionDecodeStage, InstructionFetchStage instructionFetchStage) {
-        this.cpu = cpu;
-        this.instructionDecodeStage = instructionDecodeStage;
-        instructionFetchStage.setExecuteStage(this);
-        stageId = 2;
+    public ExecuteStageMultiplier(ExecuteStageSwitch executeStageSwitch, CPU cpu) {
+        super(cpu, executeStageSwitch);
     }
 
     @Override
     public void housekeeping() {
-
-        EXMEM_IR = instructionDecodeStage.getIDEX_IR();
-        EXMEM_B = instructionDecodeStage.getIDEX_B();
-
-        instruction = instructionDecodeStage.getInstruction();
+        super.housekeeping();
 
         if (instruction != null)
             System.out.println("EX Stage: Received a new instruction from ID stage - " + instruction);
 
-        a = instructionDecodeStage.getIDEX_A();
-        b = instructionDecodeStage.getIDEX_B();
-        imm = instructionDecodeStage.getIDEX_IMM();
-        npc = instructionDecodeStage.getIDEX_NPC();
+        a = executeStageSwitch.getIDEX_A();
+        b = executeStageSwitch.getIDEX_B();
+        imm = executeStageSwitch.getIDEX_IMM();
+        npc = executeStageSwitch.getIDEX_NPC();
     }
 
     @Override
     public void execute() {
         didRun = false;
-        Instruction ownedBy = cpu.getDataDependencyBlock().getOwnedBy();
-        boolean allowed = (ownedBy == null) ? true : ownedBy.getStage() == Instruction.Stage.EX;
-        if (allowed) {
+        try {
+            Instruction ownedBy = cpu.getDataDependencyBlock().getOwnedBy();
+
+            if (instruction == null)
+                throw new Exception("Cannot run exMultiplier because there are no instructions yet.");
+
+            if (ownedBy != null && ownedBy.getStage() != Instruction.Stage.EX)
+                throw new Exception("Cannot run exMultiplier because the instruction is not yet in the EX stage.");
 
             String inst = instruction.getInstructionOnly();
 
             // depending on instruction, perform operation on a, b, or imm
-            // EXMEM_ALUOutput =
-            EXMEM_ALUOutput = ALU.executeALU(inst, EXMEM_IR, a, b, imm, npc);
+            EXMEM_ALUOutput = ALU.executeALU(inst, ir, a, b, imm, npc);
 
             // depending on instruction, compute for cond
-            EXMEM_Cond = ALU.executeCond(inst, EXMEM_IR, a, b);
+            EXMEM_Cond = ALU.executeCond(inst, ir, a, b);
 
             didRun = true;
+
             if ("1".equals(EXMEM_Cond))
-                throw new IllegalStateException("The program will now branch because Cond evaluated to 1");
+                System.out.println("The program will now branch because Cond evaluated to 1");
+
+            super.execute();
+        } catch (Exception e) {
+            System.out.println(e.getMessage());
         }
     }
 
     public Memory getEXMEM_IR() {
-        return EXMEM_IR;
+        return ir;
     }
 
     public String getEXMEM_Cond() {
@@ -86,6 +76,11 @@ public class ExecuteStage extends Stage {
 
     public StringBinary getEXMEM_ALUOutput() {
         return EXMEM_ALUOutput;
+    }
+
+    @Override
+    public int numberOfExecutionCycles() {
+        return 8;
     }
 
     public Instruction getInstruction() {

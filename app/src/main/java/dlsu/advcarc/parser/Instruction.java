@@ -8,6 +8,7 @@ import java.util.ArrayList;
  * Created by Darren on 11/6/2015.
  */
 public class Instruction {
+    private int cycle;
     private String input;
     private String instruction;
     private String label;
@@ -15,7 +16,8 @@ public class Instruction {
     private ArrayList<Parameter> parameters = new ArrayList<>();
 
     // generate instruction based on binary
-    public Instruction(StringBinary binary, String lineOfCode) {
+    public Instruction(StringBinary binary, String lineOfCode, int cycle) {
+        this.cycle = cycle;
         String binaryValue = binary.getBinaryValue();
 
         if (binaryValue.length() == 64) {
@@ -108,6 +110,25 @@ public class Instruction {
 
     }
 
+    public int getExCycles() {
+        return 4;  // compute number of ex cycles
+    }
+
+    public boolean isBranch() {
+        return "BEQ".equals(getInstructionOnly().toUpperCase());
+    }
+
+    public String getExecutionType() {
+        switch (getInstructionOnly()){
+            case "ADD.S":
+                return "ADDER";
+            case "MUL.S":
+                return "MULTIPLIER";
+            default:
+                return "INTEGER";
+        }
+    }
+
     public enum Stage {
         IF, ID, EX, MEM, WB, DONE
     }
@@ -136,7 +157,7 @@ public class Instruction {
 
     public String getInstructionOnly() {
         if (instruction != null)
-            return instruction.split(" ")[0];
+            return instruction.split(" ")[0].toUpperCase();
         return instruction;
     }
 
@@ -148,4 +169,7 @@ public class Instruction {
         return parameters;
     }
 
+    public int getCycle() {
+        return cycle;
+    }
 }
