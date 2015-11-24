@@ -1,6 +1,7 @@
 package dlsu.advcarc.parser;
 
 import dlsu.advcarc.opcode.OpcodeHelper;
+import dlsu.advcarc.utils.RadixHelper;
 
 import java.util.ArrayList;
 
@@ -11,18 +12,19 @@ public class Instruction {
     private String input;
     private String instruction;
     private String label;
+    private String memAddressHex;
     private Stage stage;
     private ArrayList<Parameter> parameters = new ArrayList<>();
 
     // generate instruction based on binary
-    public Instruction(StringBinary binary, String lineOfCode) {
+    public Instruction(StringBinary binary, String lineOfCode, String memAddressHex) {
         String binaryValue = binary.getBinaryValue();
 
         if (binaryValue.length() == 64) {
             binaryValue = binaryValue.substring(32, 64);
             binary = new StringBinary(binaryValue);
         }
-
+        this.memAddressHex = memAddressHex;
         instruction = lineOfCode;
         String instructionType = OpcodeHelper.getInstructionType(binary);
         switch (instructionType) {
@@ -139,6 +141,16 @@ public class Instruction {
     public Stage getStage() {
         return stage;
     }
+
+    public String getMemAddressHex() {
+        return memAddressHex;
+    }
+
+    public Long getMemAddressLong(){
+        return RadixHelper.convertHexToStringBinary(memAddressHex).getAsLong();
+    }
+
+    public Integer getMemAddressInt(){return RadixHelper.convertHexToStringBinary(memAddressHex).getAsInt();}
 
     public ArrayList<Parameter> getParameters() {
         return parameters;

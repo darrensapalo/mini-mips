@@ -53,7 +53,7 @@ public class InstructionFetchStage extends Stage {
 
 
         // Get references to registers
-        instruction = new Instruction(new StringBinary(IFID_IR.getAsBinary()), lineOfCode);
+        instruction = new Instruction(new StringBinary(IFID_IR.getAsBinary()), lineOfCode, PC.toHexString());
 
 
         PC = IFID_NPC;

@@ -1,9 +1,15 @@
 package dlsu.advcarc.cpu.tracker;
 
+import com.fasterxml.jackson.databind.util.JSONPObject;
+import dlsu.advcarc.cpu.stage.Stage;
+import dlsu.advcarc.parser.Code;
+import dlsu.advcarc.parser.Instruction;
+import dlsu.advcarc.parser.ProgramCode;
+import io.vertx.core.json.Json;
 import io.vertx.core.json.JsonArray;
+import io.vertx.core.json.JsonObject;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 
 /**
  * Created by admin on 11/21/2015.
@@ -12,50 +18,87 @@ public class CPUCycleTracker {
 
     private int cycleNumber = 1;
 
-    private List<CycleRecord> cycleRecords;
-    private CycleRecord currCycleRecord;
+//    private List<CycleRecord> cycleRecords;
+//    private CycleRecord currCycleRecord;
 
+    private HashMap<Integer, List<StageExecutionRecord>> map = new LinkedHashMap<Integer, List<StageExecutionRecord>>();
+    private ProgramCode programCode;
 
-    public CPUCycleTracker(){
-        cycleRecords = new ArrayList<CycleRecord>();
-        currCycleRecord = new CycleRecord(cycleNumber);
+    public CPUCycleTracker(ProgramCode programCode) {
+        this.programCode = programCode;
+        List<Code> codeList = programCode.getProgram();
+
+        for (int i = 0; i < codeList.size(); i++) {
+            Code code = codeList.get(i);
+            map.put(i * 4, new ArrayList<StageExecutionRecord>());
+        }
     }
 
-    public void nextCycle(){
-        if(currCycleRecord != null)
-            cycleRecords.add(currCycleRecord);
-        currCycleRecord = new CycleRecord(++cycleNumber);
+    public void finishCycle(){
+        for (Map.Entry<Integer, List<StageExecutionRecord>> entry : map.entrySet()) {
+            if(entry.getValue().size() < cycleNumber )
+                entry.getValue().add(new StageExecutionRecord(cycleNumber, ""));
+        }
     }
 
-    public void setIfInstruction(String ifInstruction) {
-        currCycleRecord.setIfInstruction(ifInstruction);
+    public void nextCycle() {
+        cycleNumber++;
     }
 
-    public void setIdInstruction(String idInstruction) {
-        currCycleRecord.setIdInstruction(idInstruction);
+    public void setIfInstruction(Instruction instruction) {
+
+//        map.entrySet();
+//        long memAddressLong = instruction.getMemAddressLong();
+//        List<StageExecutionRecord> stageExecutionRecords = map.get(memAddressLong);
+//        List<StageExecutionRecord> stageExecutionRecords2 = map.get(0);
+
+        map.get(instruction.getMemAddressInt()).add(new StageExecutionRecord(cycleNumber, "IF"));
+
+
+
+
     }
 
-    public void setExInstruction(String exInstruction) {
-        currCycleRecord.setExInstruction(exInstruction);
+    public void setIdInstruction(Instruction instruction) {
+        map.get(instruction.getMemAddressInt()).add(new StageExecutionRecord(cycleNumber, "ID"));
     }
 
-    public void setMemInstruction(String memInstruction) {
-        currCycleRecord.setMemInstruction(memInstruction);
+    public void setExInstruction(Instruction instruction) {
+        map.get(instruction.getMemAddressInt()).add(new StageExecutionRecord(cycleNumber, "EX"));
     }
 
-    public void setWbInstruction(String wbInstruction) {
-        currCycleRecord.setWbInstruction(wbInstruction);
+    public void setMemInstruction(Instruction instruction) {
+        map.get(instruction.getMemAddressInt()).add(new StageExecutionRecord(cycleNumber, "MEM"));
     }
 
-    public JsonArray toJsonArray(){
+    public void setWbInstruction(Instruction instruction) {
+        map.get(instruction.getMemAddressInt()).add(new StageExecutionRecord(cycleNumber, "WB"));
+    }
+
+    public JsonObject toJsonObject() {
+        return new JsonObject()
+                .put("cycles", cycleNumber)
+                .put("pipeline", getMapAsJsonArray());
+    }
+
+    private JsonArray getMapAsJsonArray() {
         JsonArray jsonArray = new JsonArray();
-        for(CycleRecord cycleRecord: cycleRecords){
-            jsonArray.add(cycleRecord.toJsonObject());
+        for (Map.Entry<Integer, List<StageExecutionRecord>> entry : map.entrySet()) {
+            jsonArray.add(new JsonObject()
+                    .put("instruction", programCode.getCode(entry.getKey()))
+                    .put("records", getListStageExecutionRecordsAsJsonArray(entry.getValue()))
+            );
         }
         return jsonArray;
     }
 
+    private JsonArray getListStageExecutionRecordsAsJsonArray(List<StageExecutionRecord> records){
+        JsonArray jsonArray = new JsonArray();
 
-
+        for(StageExecutionRecord record : records){
+            jsonArray.add(record.getStage());
+        }
+        return jsonArray;
+    }
 
 }

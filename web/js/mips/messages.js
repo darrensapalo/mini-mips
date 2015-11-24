@@ -133,7 +133,8 @@ function requestForCPU(){
         populateTable('#table-cpu-registers', array, registerColumns);
 
     var array = msg.body['pipeline'];
-        populateTable('#table-cpu-pipeline', array, pipelineColumns);
+        // populateTable('#table-cpu-pipeline', array, pipelineColumns);
+        populatePipelineTable(array);
   });
 
 }

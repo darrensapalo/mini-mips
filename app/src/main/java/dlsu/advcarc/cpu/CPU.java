@@ -41,14 +41,16 @@ public class CPU {
         memoryStage = new MemoryStage(this, executeStage);
         writeBackStage = new WriteBackStage(this, memoryStage);
 
-        cycleTracker = new CPUCycleTracker();
+        cycleTracker = new CPUCycleTracker(code);
     }
 
     public void clock() {
+
+
         try {
             if (dataDependencyBlock.getBlockStage() <= Instruction.Stage.WB.ordinal()) {
                 instructionFetchStage.execute();
-                cycleTracker.setIfInstruction(instructionFetchStage.getInstruction().getInstruction());
+                cycleTracker.setIfInstruction(instructionFetchStage.getInstruction());
             }
         } catch (Exception e) {
             instructionFetchStage.reset();
@@ -59,7 +61,7 @@ public class CPU {
         try {
             if (dataDependencyBlock.getBlockStage() <= Instruction.Stage.WB.ordinal()) {
                 instructionDecodeStage.execute();
-                cycleTracker.setIdInstruction(instructionDecodeStage.getInstruction().getInstruction());
+                cycleTracker.setIdInstruction(instructionDecodeStage.getInstruction());
             }
         } catch (Exception e) {
             if (e.getMessage() != null)
@@ -69,7 +71,7 @@ public class CPU {
         try {
             if (dataDependencyBlock.getBlockStage() <= Instruction.Stage.WB.ordinal()) {
                 executeStage.execute();
-                cycleTracker.setExInstruction(executeStage.getInstruction().getInstruction());
+                cycleTracker.setExInstruction(executeStage.getInstruction());
             }
         } catch (Exception e) {
             if (e.getMessage() != null)
@@ -79,7 +81,7 @@ public class CPU {
         try {
             if (dataDependencyBlock.getBlockStage() <= Instruction.Stage.WB.ordinal()) {
                 memoryStage.execute();
-                cycleTracker.setMemInstruction(memoryStage.getInstruction().getInstruction());
+                cycleTracker.setMemInstruction(memoryStage.getInstruction());
             }
         } catch (Exception e) {
             if (e.getMessage() != null)
@@ -88,7 +90,7 @@ public class CPU {
         try {
             if (dataDependencyBlock.getBlockStage() <= Instruction.Stage.WB.ordinal()) {
                 writeBackStage.execute();
-                cycleTracker.setWbInstruction(writeBackStage.getInstruction().getInstruction());
+                cycleTracker.setWbInstruction(writeBackStage.getInstruction());
             }
         } catch (Exception e) {
             if (e.getMessage() != null)
@@ -104,10 +106,13 @@ public class CPU {
         instructionDecodeStage.housekeeping();
         instructionFetchStage.housekeeping();
 
-        cycleTracker.nextCycle();
+        cycleTracker.finishCycle();
 
         EventBusHolder.instance().getEventBus()
                 .publish(Addresses.CPU_BROADCAST, this.toJsonObject());
+
+
+        cycleTracker.nextCycle();
 
     }
 
@@ -118,7 +123,7 @@ public class CPU {
     public JsonObject toJsonObject() {
         return new JsonObject()
                 .put("registers", getRegistersJsonArray())
-                .put("pipeline", cycleTracker == null ? new JsonArray() : cycleTracker.toJsonArray());
+                .put("pipeline", cycleTracker == null ? new JsonArray() : cycleTracker.toJsonObject());
     }
 
 
