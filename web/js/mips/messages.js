@@ -130,10 +130,11 @@ function requestForCPU(){
     }
 
     var array = msg.body['registers'];
+    if(array) // if this is empty, it means there is no pipeline yet
         populateTable('#table-cpu-registers', array, registerColumns);
 
     var array = msg.body['pipeline'];
-        // populateTable('#table-cpu-pipeline', array, pipelineColumns);
+    if(array) // if this is empty, it means there is no pipeline yet
         populatePipelineTable(array);
   });
 

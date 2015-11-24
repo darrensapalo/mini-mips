@@ -106,13 +106,10 @@ public class CPU {
         instructionDecodeStage.housekeeping();
         instructionFetchStage.housekeeping();
 
-        cycleTracker.finishCycle();
+        cycleTracker.nextCycle();
 
         EventBusHolder.instance().getEventBus()
                 .publish(Addresses.CPU_BROADCAST, this.toJsonObject());
-
-
-        cycleTracker.nextCycle();
 
     }
 

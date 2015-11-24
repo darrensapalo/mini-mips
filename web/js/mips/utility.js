@@ -52,6 +52,9 @@ function populateTable(tableID, data, columns){
 
 function populatePipelineTable(data){
 
+  if(data.length == 0)
+    return;
+
   var tableID = "#table-cpu-pipeline";
   var pipelineData = data["pipeline"];
   var columns = [];
@@ -79,17 +82,10 @@ function populatePipelineTable(data){
     .append('tr')
       .selectAll('td')
       .data(function(d){
-
         var row = [];
         row.push(d["instruction"]);
-
-
-        for(i=0;i<d.records.length;i++){
-          row.push(d.records[i]);
-        }
-
+        row = row.concat(d.records);
         return row;
-
       })
       .enter()
       .append('td')
