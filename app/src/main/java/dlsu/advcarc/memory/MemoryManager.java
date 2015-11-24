@@ -86,8 +86,12 @@ public class MemoryManager {
 
     public JsonArray getDataJsonArray(){
         JsonArray jsonArray = new JsonArray();
-        for(Memory memory: ram)
-            jsonArray.add(memory.toJsonObject());
+
+        int startIndex = RadixHelper.convertHexToStringBinary("2000").getAsInt()/4;
+
+        for(int i=startIndex;i<ram.size();i++)
+            jsonArray.add(ram.get(i).toJsonObject());
+
         return jsonArray;
     }
 

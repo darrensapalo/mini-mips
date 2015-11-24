@@ -33,8 +33,16 @@ public class ExecutionManager {
             cpu.clock(); //TODO keep on clocking until program finishes.
     }
 
+    public void reset(){
+        this.programCode = null;
+        this.cpu = new CPU();
+    }
+
     public void inputProgramCode(ProgramCode programCode) {
+
+        //Reset all
         this.programCode = programCode;
+        this.cpu = new CPU();
         cpu.input(programCode);
 
         /* Broadcast the Updated Immediate Values */
