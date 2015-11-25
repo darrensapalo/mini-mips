@@ -51,8 +51,8 @@ public class Register implements Writable {
     }
 
     @Override
-    public void write(String value) {
-
+    public void write(String binaryValue) {
+        RegisterManager.instance().updateRegister(register, new StringBinary(binaryValue));
     }
 
     @Override
