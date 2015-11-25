@@ -33,7 +33,7 @@ public class InstructionDecodeStage extends Stage {
     @Override
     public void housekeeping() {
         try {
-            this.instruction = instructionFetchStage.getInstruction();
+            this.instruction = instructionFetchStage.getNextInstruction();
             if (instruction != null)
                 System.out.println("ID Stage: Received a new instruction from IF stage - " + instruction);
             IDEX_IR = instructionFetchStage.getIFID_IR();

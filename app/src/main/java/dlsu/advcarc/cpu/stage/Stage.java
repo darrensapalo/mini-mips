@@ -79,7 +79,7 @@ public abstract class Stage {
     public boolean canHousekeepingRun(Stage previous, DataDependencyManager dataDependencyManager) {
         try {
             // Previous stage's instruction data
-            Instruction previousInstruction = previous.getInstruction();
+            Instruction previousInstruction = previous instanceof InstructionFetchStage ? ((InstructionFetchStage) previous).getNextInstruction() : previous.getInstruction();
 
             DataDependencyException dataDependencyException = previousInstruction.getDependencyWithBlock();
 
@@ -93,7 +93,7 @@ public abstract class Stage {
                     if (releaseStage != null && dataDependencyException != null) {
                         Instruction instruction = dataDependencyException.getDependentOnThis();
 
-                        boolean instructionIsPastReleaseStage = dataDependencyBlock.getReleaseStage().ordinal() <= dataDependencyBlock.getOwnedBy().getStage().ordinal();
+                        boolean instructionIsPastReleaseStage = dataDependencyBlock.getReleaseStage().ordinal() < dataDependencyBlock.getOwnedBy().getStage().ordinal();
 
                         boolean hazardTypeIsWriteAfterWrite = dataDependencyBlock.getDataHazardType() == DataDependencyManager.DataHazardType.WriteAfterWrite;
 

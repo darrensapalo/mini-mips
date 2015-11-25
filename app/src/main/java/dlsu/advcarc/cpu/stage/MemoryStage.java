@@ -66,7 +66,7 @@ public class MemoryStage extends Stage {
             case "LW":
             case "LWU":
                 System.out.println("MEM Stage: Reading from address " + MEMWB_ALUOutput.toHexString());
-                MEMWB_LMD = MemoryManager.instance().getInstance(MEMWB_ALUOutput.padBinaryValue(4));
+                MEMWB_LMD = MemoryManager.instance().getInstance(MEMWB_ALUOutput.toHexString());
                 break;
 
             // write
@@ -74,7 +74,7 @@ public class MemoryStage extends Stage {
             case "L.S":
             case "S.S":
                 System.out.println("MEM Stage: Writing to address " + MEMWB_ALUOutput.toHexString() + " with value " + MEMWB_B.getParameter().read().toHexString());
-                MemoryManager.instance().updateMemory(MEMWB_ALUOutput.padBinaryValue(4), MEMWB_B.getParameter().read());
+                MemoryManager.instance().updateMemory(MEMWB_ALUOutput.toHexString(), MEMWB_B.getParameter().read());
                 break;
         }
 

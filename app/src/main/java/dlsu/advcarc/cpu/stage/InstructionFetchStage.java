@@ -25,6 +25,7 @@ public class InstructionFetchStage extends Stage {
     private dlsu.advcarc.memory.Memory IFID_IR;
     private StringBinary IFID_NPC;
     private ExecuteStageSwitch executeStage;
+    private Instruction nextInstruction;
     private int cycle;
 
     public InstructionFetchStage(CPU cpu, ProgramCode code) {
@@ -59,6 +60,10 @@ public class InstructionFetchStage extends Stage {
         // Get references to registers
         instruction = new Instruction(new StringBinary(IFID_IR.getAsBinary()), lineOfCode, ++cycle, PC.toHexString());
         instruction.setStage(Instruction.Stage.IF);
+
+        if (instruction != null)
+            nextInstruction = instruction;
+
         System.out.println("IF Stage: Read a new instruction from program code - " + instruction.toString());
 
         PC = IFID_NPC;
@@ -108,5 +113,9 @@ public class InstructionFetchStage extends Stage {
     public void reset() {
         instruction = null;
         IFID_IR = null;
+    }
+
+    public Instruction getNextInstruction() {
+        return nextInstruction;
     }
 }

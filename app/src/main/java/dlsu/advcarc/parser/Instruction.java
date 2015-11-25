@@ -219,6 +219,7 @@ public class Instruction {
 
         if (dependency != null) {
             Parameter parameter = dependency.getBecauseOfThisParameter();
+            parameter.analyzeDependency();
             Instruction dependentOnThisInstruction = dependency.getDependentOnThis();
             Instruction blockedInstruction = dependency.getInstruction();
 
@@ -245,11 +246,11 @@ public class Instruction {
                 blockStage = null;
             }
 
-            if (releaseStage != null && blockStage != null && dependentOnThisInstruction.getStage().ordinal() < releaseStage.ordinal()) {
-
-                dependency.setDataDependencyBlock(new DataDependencyManager.DataDependencyBlock(dependentOnThisInstruction, releaseStage, blockStage, hazardType));
-                throw dependency;
-            }
+            if ((releaseStage != null && blockStage != null))
+                if (dependentOnThisInstruction.getStage().ordinal() <= releaseStage.ordinal() && hazardType == DataDependencyManager.DataHazardType.ReadAfterWrite) {
+                    dependency.setDataDependencyBlock(new DataDependencyManager.DataDependencyBlock(dependentOnThisInstruction, releaseStage, blockStage, hazardType));
+                    throw dependency;
+                }
         }
         return dependency;
     }
@@ -261,7 +262,7 @@ public class Instruction {
         for (Parameter param : parameters) {
             if (param.getParameter() instanceof Register) {
                 Instruction dependentOnThis = param.peekDependency();
-                if (dependentOnThis != null && !instruction.equals(dependentOnThis)) {
+                if (dependentOnThis != null && !this.equals(dependentOnThis)) {
                     return new DataDependencyException(this, dependentOnThis, param);
                 }
             }
