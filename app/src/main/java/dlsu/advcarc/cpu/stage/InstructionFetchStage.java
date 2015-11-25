@@ -1,8 +1,10 @@
 package dlsu.advcarc.cpu.stage;
 
 import dlsu.advcarc.cpu.CPU;
+import dlsu.advcarc.cpu.block.DataDependencyManager;
 import dlsu.advcarc.cpu.stage.ex.ExecuteStageInteger;
 import dlsu.advcarc.cpu.stage.ex.ExecuteStageSwitch;
+import dlsu.advcarc.dependency.DataDependencyException;
 import dlsu.advcarc.memory.*;
 import dlsu.advcarc.memory.Memory;
 import dlsu.advcarc.parser.Instruction;
@@ -76,14 +78,34 @@ public class InstructionFetchStage extends Stage {
         return IFID_NPC;
     }
 
+    @Override
+    public boolean canStageRun(DataDependencyManager dataDependencyManager) throws Exception {
 
-    public JsonArray toJsonArray(){
-        return new JsonArray()
-                .add(new JsonObject().put("register", "IF/ID.IR").put("value", IFID_IR == null? "null": IFID_IR.getAsHex()))
-                .add(new JsonObject().put("register","IF/ID.NPC").put("value", IFID_NPC == null ? "null" : IFID_NPC.toHexString()));
+        if (instruction == null) return true;
+
+        Instruction instruction = getInstruction();
+        DataDependencyException dependency = instruction.getDependency();
+
+        if (dependency != null) {
+            DataDependencyManager.DataDependencyBlock block = dependency.getDataDependencyBlock();
+            if (block != null) {
+                Instruction ownedBy = block.getOwnedBy();
+
+                if (ownedBy.getStage().ordinal() < block.getReleaseStage().ordinal())
+                    throw new Exception("Cannot run " + this.getClass().getSimpleName() + " because there is currently a data dependency block.");
+            }
+        }
+
+        return super.canStageRun(dataDependencyManager);
     }
 
-    public void reset(){
+    public JsonArray toJsonArray() {
+        return new JsonArray()
+                .add(new JsonObject().put("register", "IF/ID.IR").put("value", IFID_IR == null ? "null" : IFID_IR.getAsHex()))
+                .add(new JsonObject().put("register", "IF/ID.NPC").put("value", IFID_NPC == null ? "null" : IFID_NPC.toHexString()));
+    }
+
+    public void reset() {
         instruction = null;
         IFID_IR = null;
     }

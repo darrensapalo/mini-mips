@@ -1,7 +1,9 @@
 package dlsu.advcarc.cpu.stage;
 
 import dlsu.advcarc.cpu.CPU;
+import dlsu.advcarc.cpu.block.DataDependencyManager;
 import dlsu.advcarc.cpu.stage.ex.ExecuteStageSwitch;
+import dlsu.advcarc.dependency.DataDependencyException;
 import dlsu.advcarc.memory.Memory;
 import dlsu.advcarc.memory.MemoryManager;
 import dlsu.advcarc.parser.Instruction;
@@ -33,17 +35,14 @@ public class MemoryStage extends Stage {
     @Override
     public void housekeeping() {
         try {
-            isBlocked = isBlocked || executeStage.isBlocked();
-            if (isBlocked == false) {
 
-                Instruction inst = executeStage.getInstruction();
+            Instruction inst = executeStage.getInstruction();
 
-                // ALU instructions
-                MEMWB_IR = executeStage.getEXMEM_IR();
-                MEMWB_ALUOutput = executeStage.getEXMEM_ALUOutput();
-                instruction = inst;
-                MEMWB_B = executeStage.getEXMEM_B();
-            }
+            // ALU instructions
+            MEMWB_IR = executeStage.getEXMEM_IR();
+            MEMWB_ALUOutput = executeStage.getEXMEM_ALUOutput();
+            instruction = inst;
+            MEMWB_B = executeStage.getEXMEM_B();
         } catch (Exception e) {
             if (e.getMessage() != null)
                 System.out.println(e.getMessage());
@@ -54,17 +53,12 @@ public class MemoryStage extends Stage {
     @Override
     public void execute() {
         didRun = false;
-        checkDependencies(instruction);
 
+        instruction.analyzeDependencies();
+        instruction.checkDependencies();
+        instruction.addDependencies();
 
-        // Analyze the dependencies of memory references
-        ArrayList<Parameter> parameters = this.instruction.getParameters();
-
-        for (Parameter p : parameters) {
-            if (p.getParameter() instanceof Memory)
-                p.analyzeDependency();
-        }
-
+        ArrayList<Parameter> parameters = instruction.getParameters();
 
         String instruction = this.instruction.getInstructionOnly();
         switch (instruction) {
@@ -72,7 +66,7 @@ public class MemoryStage extends Stage {
             case "LW":
             case "LWU":
                 System.out.println("MEM Stage: Reading from address " + MEMWB_ALUOutput.toHexString());
-                MEMWB_LMD = MemoryManager.instance().getInstance(MEMWB_ALUOutput.toHexString());
+                MEMWB_LMD = MemoryManager.instance().getInstance(MEMWB_ALUOutput.padBinaryValue(4));
                 break;
 
             // write
@@ -80,7 +74,7 @@ public class MemoryStage extends Stage {
             case "L.S":
             case "S.S":
                 System.out.println("MEM Stage: Writing to address " + MEMWB_ALUOutput.toHexString() + " with value " + MEMWB_B.getParameter().read().toHexString());
-                MemoryManager.instance().updateMemory(MEMWB_ALUOutput.toHexString(), MEMWB_B.getParameter().read());
+                MemoryManager.instance().updateMemory(MEMWB_ALUOutput.padBinaryValue(4), MEMWB_B.getParameter().read());
                 break;
         }
 
@@ -91,27 +85,21 @@ public class MemoryStage extends Stage {
             }
         }
 
-        if (cpu.getDataDependencyBlock().getReleaseStage() == Instruction.Stage.MEM)
-            cpu.reviewBlock(this.instruction);
+        DataDependencyException dependencyWithBlock = this.instruction.getDependencyWithBlock();
+        if (dependencyWithBlock != null) {
+            DataDependencyManager.DataDependencyBlock block = dependencyWithBlock.getDataDependencyBlock();
+            if (block != null) {
+                if (block.getReleaseStage() == Instruction.Stage.MEM)
+                    cpu.reviewBlock(this.instruction);
+            }
+        }
+
 
         // todo: perform branch completion in IF stage
 
         didRun = true;
     }
 
-
-    private void checkDependencies(Instruction instruction) {
-        // If I have dependencies, block
-        for (Parameter p : instruction.getParameters()) {
-            if (p.getParameter() instanceof Memory) {
-                Instruction dependentOnThis = p.peekDependency();
-                if (dependentOnThis != null && !instruction.equals(dependentOnThis)) {
-                    cpu.setDataDependencyBlock(dependentOnThis, Instruction.Stage.MEM, Instruction.Stage.MEM);
-                    throw new IllegalStateException("Cannot proceed because " + instruction.toString() + " has a write dependency on " + dependentOnThis.toString());
-                }
-            }
-        }
-    }
 
     public StringBinary getMEMWB_ALUOutput() {
         return MEMWB_ALUOutput;

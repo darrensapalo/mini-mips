@@ -1,9 +1,10 @@
 package dlsu.advcarc.cpu;
 
-import dlsu.advcarc.cpu.block.Block;
+import dlsu.advcarc.cpu.block.DataDependencyManager;
 import dlsu.advcarc.cpu.stage.*;
 import dlsu.advcarc.cpu.stage.ex.ExecuteStageSwitch;
 import dlsu.advcarc.cpu.tracker.CPUCycleTracker;
+import dlsu.advcarc.dependency.DataDependencyException;
 import dlsu.advcarc.parser.Instruction;
 import dlsu.advcarc.parser.Parameter;
 import dlsu.advcarc.parser.ProgramCode;
@@ -29,7 +30,7 @@ public class CPU {
 
     private ProgramCode code;
 
-    private Block dataDependencyBlock = Block.none();
+    private DataDependencyManager dataDependencyManager = new DataDependencyManager();
 
     private StringBinary programCounter;
 
@@ -37,7 +38,6 @@ public class CPU {
     private boolean fetchFailed;
 
     private ArrayList<Instruction> forDequeuing = new ArrayList<>();
-    private Block removeBlock;
 
     public void input(ProgramCode code) {
         this.code = code;
@@ -71,12 +71,6 @@ public class CPU {
 
         removeDependencesIfAny();
 
-        // Remove data block if any
-        if (removeBlock != null)
-            dataDependencyBlock = removeBlock;
-        removeBlock = null;
-
-
         // Broadcast
         cycleTracker.nextCycle();
         broadcastCPUState();
@@ -96,16 +90,16 @@ public class CPU {
     }
 
     private void housekeeping() {
-        if (dataDependencyBlock.canHousekeepingRun(writeBackStage, memoryStage))
+        if (writeBackStage.canHousekeepingRun(memoryStage, dataDependencyManager))
             writeBackStage.housekeeping();
 
-        if (dataDependencyBlock.canHousekeepingRun(memoryStage, executeStage))
+        if (memoryStage.canHousekeepingRun(executeStage, dataDependencyManager))
             memoryStage.housekeeping();
 
-        if (dataDependencyBlock.canHousekeepingRun(executeStage, instructionDecodeStage))
+        if (executeStage.canHousekeepingRun(instructionDecodeStage, dataDependencyManager))
             executeStage.housekeeping();
 
-        if (dataDependencyBlock.canHousekeepingRun(instructionDecodeStage, instructionFetchStage))
+        if (instructionDecodeStage.canHousekeepingRun(instructionFetchStage, dataDependencyManager))
             instructionDecodeStage.housekeeping();
 
         if (fetchFailed)
@@ -117,10 +111,12 @@ public class CPU {
         System.out.println();
         System.out.println("-- WB stage");
         try {
-            if (dataDependencyBlock.canStageRun(writeBackStage, instructionFetchStage)) {
+            if (writeBackStage.canStageRun(dataDependencyManager)) {
                 writeBackStage.execute();
                 cycleTracker.setWbInstruction(writeBackStage.getInstruction());
             }
+        } catch (DataDependencyException e) {
+            e.handle(this);
         } catch (Exception e) {
             if (e.getMessage() != null)
                 System.out.println("WB Stage: " + e.getMessage());
@@ -130,10 +126,12 @@ public class CPU {
         System.out.println();
         System.out.println("-- MEM stage");
         try {
-            if (dataDependencyBlock.canStageRun(memoryStage, instructionFetchStage)) {
+            if (memoryStage.canStageRun(dataDependencyManager)) {
                 memoryStage.execute();
                 cycleTracker.setMemInstruction(memoryStage.getInstruction());
             }
+        } catch (DataDependencyException e) {
+            e.handle(this);
         } catch (Exception e) {
             if (e.getMessage() != null)
                 System.out.println("MEM Stage: " + e.getMessage());
@@ -143,7 +141,7 @@ public class CPU {
         System.out.println();
         System.out.println("-- EX stage");
         try {
-            if (dataDependencyBlock.canStageRun(executeStage, instructionFetchStage)) {
+            if (executeStage.canStageRun(dataDependencyManager)) {
                 executeStage.execute();
                 cycleTracker.setExInstruction(executeStage.getInstruction());
             }
@@ -156,10 +154,13 @@ public class CPU {
         System.out.println();
         System.out.println("-- ID stage");
         try {
-            if (dataDependencyBlock.canStageRun(instructionDecodeStage, instructionFetchStage)) {
+            if (instructionDecodeStage.canStageRun(dataDependencyManager)) {
                 instructionDecodeStage.execute();
                 cycleTracker.setIdInstruction(instructionDecodeStage.getInstruction());
             }
+        } catch (DataDependencyException e) {
+            e.handle(this);
+
         } catch (Exception e) {
             if (e.getMessage() != null)
                 System.out.println("ID Stage: " + e.getMessage());
@@ -167,7 +168,7 @@ public class CPU {
 
         System.out.println("-- IF stage");
         try {
-            if (dataDependencyBlock.canStageRun(instructionFetchStage, null)) {
+            if (instructionFetchStage.canStageRun(dataDependencyManager)) {
                 instructionFetchStage.execute();
                 cycleTracker.setIfInstruction(instructionFetchStage.getInstruction());
             }
@@ -184,7 +185,7 @@ public class CPU {
         return programCounter;
     }
 
-    public void broadcastCPUState(){
+    public void broadcastCPUState() {
         EventBusHolder.instance().getEventBus()
                 .publish(Addresses.CPU_BROADCAST, this.toJsonObject());
     }
@@ -213,19 +214,22 @@ public class CPU {
         this.programCounter = programCounter;
     }
 
-    public Block getDataDependencyBlock() {
-        return dataDependencyBlock;
+    public DataDependencyManager getDataDependencyManager() {
+        return dataDependencyManager;
     }
 
-    public void setDataDependencyBlock(Instruction instruction, Instruction.Stage releaseStage, Instruction.Stage dataDependencyBlock) {
-        this.dataDependencyBlock = new Block(instruction, releaseStage, dataDependencyBlock);
-    }
-
+    /**
+     * This function is called when an instruction is finished with the lock
+     * on a data dependency. If the instruction owns the data dependency, then the
+     * data dependency is removed.
+     * @param instruction
+     */
     public void reviewBlock(Instruction instruction) {
         forDequeuing.add(instruction);
+        dataDependencyManager.removeBlockOwnedBy(instruction);
+    }
 
-        if (instruction.equals(dataDependencyBlock.getOwnedBy())) {
-            removeBlock = Block.none();
-        }
+    public void addDataDependencyBlock(DataDependencyManager.DataDependencyBlock block) {
+        dataDependencyManager.addDependencyBlock(block);
     }
 }

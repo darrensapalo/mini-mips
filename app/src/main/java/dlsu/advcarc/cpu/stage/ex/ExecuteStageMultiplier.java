@@ -35,13 +35,9 @@ public class ExecuteStageMultiplier extends AbstractExecuteStage {
     public void execute() {
         didRun = false;
         try {
-            Instruction ownedBy = cpu.getDataDependencyBlock().getOwnedBy();
 
             if (instruction == null)
-                throw new Exception("Cannot run exMultiplier because there are no instructions yet.");
-
-            if (ownedBy != null && ownedBy.getStage() != Instruction.Stage.EX)
-                throw new Exception("Cannot run exMultiplier because the instruction is not yet in the EX stage.");
+                throw new Exception();
 
             String inst = instruction.getInstructionOnly();
 

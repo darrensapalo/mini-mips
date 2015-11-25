@@ -1,6 +1,9 @@
 package dlsu.advcarc.parser;
 
+import dlsu.advcarc.cpu.block.DataDependencyManager;
+import dlsu.advcarc.dependency.DataDependencyException;
 import dlsu.advcarc.opcode.OpcodeHelper;
+import dlsu.advcarc.register.Register;
 import dlsu.advcarc.utils.RadixHelper;
 
 import java.util.ArrayList;
@@ -131,6 +134,31 @@ public class Instruction {
         }
     }
 
+    public void addDependencies(){
+        for (Parameter p : parameters){
+            p.addDependency();
+        }
+    }
+
+    public void analyzeDependencies() {
+        ArrayList<Parameter> parameters = getParameters();
+
+        for (Parameter p : parameters) {
+            if (p.getParameter() instanceof Register)
+                p.analyzeDependency();
+        }
+    }
+
+    public DataDependencyException getDependencyWithBlock() {
+        DataDependencyException dataDependencyException = null;
+        try {
+            dataDependencyException = checkDependencies();
+        }catch (DataDependencyException e){
+            dataDependencyException = e;
+        }
+        return dataDependencyException;
+    }
+
     public enum Stage {
         IF, ID, EX, MEM, WB, DONE
     }
@@ -183,5 +211,61 @@ public class Instruction {
 
     public int getCycle() {
         return cycle;
+    }
+
+    public DataDependencyException checkDependencies(){
+        DataDependencyException dependency = getDependency();
+        DataDependencyManager.DataHazardType hazardType = null;
+
+        if (dependency != null) {
+            Parameter parameter = dependency.getBecauseOfThisParameter();
+            Instruction dependentOnThisInstruction = dependency.getDependentOnThis();
+            Instruction blockedInstruction = dependency.getInstruction();
+
+            Instruction.Stage releaseStage, blockStage;
+            if (blockedInstruction.getStage() == Instruction.Stage.ID && parameter.getParameterType() == Parameter.ParameterType.register) {
+                releaseStage = Instruction.Stage.WB;
+                blockStage = Instruction.Stage.ID;
+
+                if (parameter.getDependencyType() == Parameter.DependencyType.write)
+                    hazardType = DataDependencyManager.DataHazardType.WriteAfterWrite;
+                else
+                    hazardType = DataDependencyManager.DataHazardType.ReadAfterWrite;
+
+            } else if (blockedInstruction.getStage() == Instruction.Stage.MEM && parameter.getParameterType() == Parameter.ParameterType.memory) {
+                releaseStage = Instruction.Stage.MEM;
+                blockStage = Instruction.Stage.MEM;
+
+                if (parameter.getDependencyType() == Parameter.DependencyType.write)
+                    hazardType = DataDependencyManager.DataHazardType.WriteAfterWrite;
+                else
+                    hazardType = DataDependencyManager.DataHazardType.ReadAfterWrite;
+            } else {
+                releaseStage = null;
+                blockStage = null;
+            }
+
+            if (releaseStage != null && blockStage != null && dependentOnThisInstruction.getStage().ordinal() < releaseStage.ordinal()) {
+
+                dependency.setDataDependencyBlock(new DataDependencyManager.DataDependencyBlock(dependentOnThisInstruction, releaseStage, blockStage, hazardType));
+                throw dependency;
+            }
+        }
+        return dependency;
+    }
+
+    public DataDependencyException getDependency() {
+        ArrayList<Parameter> parameters = getParameters();
+
+        // If I have dependencies, block
+        for (Parameter param : parameters) {
+            if (param.getParameter() instanceof Register) {
+                Instruction dependentOnThis = param.peekDependency();
+                if (dependentOnThis != null && !instruction.equals(dependentOnThis)) {
+                    return new DataDependencyException(this, dependentOnThis, param);
+                }
+            }
+        }
+        return null;
     }
 }

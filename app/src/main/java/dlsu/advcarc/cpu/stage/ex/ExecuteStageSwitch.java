@@ -1,9 +1,11 @@
 package dlsu.advcarc.cpu.stage.ex;
 
 import dlsu.advcarc.cpu.CPU;
+import dlsu.advcarc.cpu.block.DataDependencyManager;
 import dlsu.advcarc.cpu.stage.InstructionDecodeStage;
 import dlsu.advcarc.cpu.stage.InstructionFetchStage;
 import dlsu.advcarc.cpu.stage.Stage;
+import dlsu.advcarc.dependency.DataDependencyException;
 import dlsu.advcarc.memory.Memory;
 import dlsu.advcarc.parser.Instruction;
 import dlsu.advcarc.parser.Parameter;
@@ -50,40 +52,83 @@ public class ExecuteStageSwitch extends Stage {
 
             switch (instruction.getExecutionType()) {
                 case "ADDER":
-                    exAdder.housekeeping();
-                    adder = instruction;
+                    if (instruction.equals(exAdder.getInstruction()) == false) {
+                        exAdder.housekeeping();
+                        adder = instruction;
+                    }
                     break;
                 case "MULTIPLIER":
-                    exMultiplier.housekeeping();
-                    multiplier = instruction;
+                    if (instruction.equals(exMultiplier.getInstruction()) == false) {
+                        exMultiplier.housekeeping();
+                        multiplier = instruction;
+                    }
                     break;
                 default:
-                    exInteger.housekeeping();
-                    integer = instruction;
+                    if (instruction.equals(exInteger.getInstruction()) == false) {
+                        exInteger.housekeeping();
+                        integer = instruction;
+                    }
                     break;
             }
         } catch (Exception e) {
             if (DEBUG)
-            System.out.println(e.getMessage());
+                System.out.println(e.getMessage());
         }
     }
 
     @Override
     public void execute() {
         try {
+            DataDependencyException dataDependencyException = integer.getDependencyWithBlock();
+
+            if (dataDependencyException != null) {
+                DataDependencyManager.DataDependencyBlock block = dataDependencyException.getDataDependencyBlock();
+                if (block != null) {
+                    Instruction ownedBy = block.getOwnedBy();
+                    if (ownedBy.getStage().ordinal() < block.getReleaseStage().ordinal())
+                        throw dataDependencyException;
+                }
+            }
+
             exInteger.execute();
         } catch (Exception e) {
             e.printStackTrace();
         }
         try {
+            DataDependencyException dataDependencyException = adder.getDependencyWithBlock();
+
+            if (dataDependencyException != null) {
+                DataDependencyManager.DataDependencyBlock block = dataDependencyException.getDataDependencyBlock();
+                if (block != null) {
+                    Instruction ownedBy = block.getOwnedBy();
+                    if (ownedBy.getStage().ordinal() < block.getReleaseStage().ordinal())
+                        throw dataDependencyException;
+                }
+            }
+
             exAdder.execute();
         } catch (Exception e) {
-            e.printStackTrace();
+            if (e.getMessage() != null) {
+                e.getMessage();
+            }
         }
         try {
+            DataDependencyException dataDependencyException = multiplier.getDependencyWithBlock();
+
+            if (dataDependencyException != null) {
+                DataDependencyManager.DataDependencyBlock block = dataDependencyException.getDataDependencyBlock();
+                if (block != null) {
+                    Instruction ownedBy = block.getOwnedBy();
+                    if (ownedBy.getStage().ordinal() < block.getReleaseStage().ordinal())
+                        throw dataDependencyException;
+                }
+            }
+
             exMultiplier.execute();
         } catch (Exception e) {
-            e.printStackTrace();
+            if (e.getMessage() != null) {
+                e.getMessage();
+            }
         }
     }
 
@@ -187,22 +232,47 @@ public class ExecuteStageSwitch extends Stage {
         return getOldestInstruction();
     }
 
+    public boolean canStageRun(DataDependencyManager dataDependencyManager) throws Exception {
+        if (this.getInstruction() == null)
+            throw new Exception("NOP");
+
+        Instruction instruction = this.getOldestInstruction();
+        if (instruction != null && instruction.getStage().ordinal() != this.getStageId())
+            throw new Exception("Cannot run " + this.getClass().getSimpleName() + " because the instruction of this stage has been passed, but is not yet at this stage.");
+
+        return true;
+    }
+
     private Instruction getOldestInstruction() {
         Instruction oldest = null;
         int oldestCycle = 9999;
 
-        if (integer != null && integer.getCycle() < oldestCycle) {
-            oldest = integer;
-            oldestCycle = integer.getCycle();
+
+        if (integer != null) {
+
+            if (integer.getStage() == Instruction.Stage.DONE)
+                integer = null;
+            else if (integer.getCycle() < oldestCycle) {
+                oldest = integer;
+                oldestCycle = integer.getCycle();
+            }
         }
 
-        if (adder != null && adder.getCycle() < oldestCycle) {
-            oldest = adder;
-            oldestCycle = adder.getCycle();
+        if (adder != null) {
+            if (adder.getStage() == Instruction.Stage.DONE)
+                adder = null;
+            else if (adder.getCycle() < oldestCycle) {
+                oldest = adder;
+                oldestCycle = adder.getCycle();
+            }
         }
 
-        if (multiplier != null && multiplier.getCycle() < oldestCycle) {
-            oldest = multiplier;
+        if (multiplier != null) {
+            if (multiplier.getStage() == Instruction.Stage.DONE)
+                multiplier = null;
+            else if (multiplier.getCycle() < oldestCycle) {
+                oldest = multiplier;
+            }
         }
         return oldest;
     }

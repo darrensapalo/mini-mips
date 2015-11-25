@@ -2,10 +2,8 @@ package dlsu.advcarc.parser;
 
 import dlsu.advcarc.dependency.DependencyChecker;
 import dlsu.advcarc.immediate.register.Immediate;
-import dlsu.advcarc.memory.Memory;
 import dlsu.advcarc.memory.MemoryManager;
 import dlsu.advcarc.register.RegisterManager;
-import dlsu.advcarc.utils.RadixHelper;
 
 /**
  * Created by Darren on 11/9/2015.
@@ -13,7 +11,7 @@ import dlsu.advcarc.utils.RadixHelper;
 public class Parameter {
     private final Instruction instruction;
     private Writable parameter;
-    private ParameterType type;
+    private ParameterType parameterType;
     private DependencyType dependencyType;
 
     public void dequeueDependency() {
@@ -30,19 +28,22 @@ public class Parameter {
         read, write
     }
 
-    public Parameter(String param, ParameterType type, Instruction instruction) {
+    public Parameter(String param, ParameterType parameterType, Instruction instruction) {
         this.instruction = instruction;
-        this.type = type;
-        parameter = getParameter(param, type);
+        this.parameterType = parameterType;
+        parameter = getParameter(param, parameterType);
     }
 
-    public void analyzeDependency(){
-        DependencyType type = DependencyChecker.check(parameter, instruction);
-        dependencyType = type;
-        parameter.addDependency(instruction, type);
+    public DependencyType analyzeDependency() {
+        dependencyType = DependencyChecker.check(parameter, instruction);
+        return dependencyType;
     }
 
-    private Writable getParameter(String parameter, ParameterType type){
+    public void addDependency() {
+        parameter.addDependency(instruction, dependencyType);
+    }
+
+    private Writable getParameter(String parameter, ParameterType type) {
         if (type == ParameterType.register)
             if (parameter.startsWith("R") || parameter.startsWith("F"))
                 return RegisterManager.instance().getInstance(parameter);
@@ -54,7 +55,7 @@ public class Parameter {
         return new Immediate(new StringBinary(parameter));
     }
 
-    public Instruction peekDependency(){
+    public Instruction peekDependency() {
         return parameter.peekDependency(DependencyType.write);
     }
 
@@ -76,12 +77,16 @@ public class Parameter {
         return parameter.equals(obj);
     }
 
+    public ParameterType getParameterType() {
+        return parameterType;
+    }
+
     public DependencyType getDependencyType() {
         return dependencyType;
     }
 
-    public String getValue(){
-        if(parameter == null)
+    public String getValue() {
+        if (parameter == null)
             return "null";
 
         return parameter.read().toHexString();

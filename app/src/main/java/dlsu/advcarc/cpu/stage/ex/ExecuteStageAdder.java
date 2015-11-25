@@ -2,6 +2,8 @@ package dlsu.advcarc.cpu.stage.ex;
 
 import dlsu.advcarc.cpu.ALU;
 import dlsu.advcarc.cpu.CPU;
+import dlsu.advcarc.cpu.block.DataDependencyManager;
+import dlsu.advcarc.dependency.DataDependencyException;
 import dlsu.advcarc.parser.Instruction;
 import io.vertx.core.json.JsonArray;
 import io.vertx.core.json.JsonObject;
@@ -37,13 +39,8 @@ public class ExecuteStageAdder extends AbstractExecuteStage {
     public void execute() {
         didRun = false;
         try {
-            Instruction ownedBy = cpu.getDataDependencyBlock().getOwnedBy();
-
             if (instruction == null)
-                throw new Exception("Cannot run exAdder because there are no instructions yet.");
-
-            if (ownedBy != null && ownedBy.getStage() != Instruction.Stage.EX)
-                throw new Exception("Cannot run exAdder because the instruction is not yet in the EX stage.");
+                throw new Exception();
 
             String inst = instruction.getInstructionOnly();
 

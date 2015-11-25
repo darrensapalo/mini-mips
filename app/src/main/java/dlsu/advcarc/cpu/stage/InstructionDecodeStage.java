@@ -3,10 +3,8 @@ package dlsu.advcarc.cpu.stage;
 import dlsu.advcarc.cpu.CPU;
 import dlsu.advcarc.immediate.register.Immediate;
 import dlsu.advcarc.memory.Memory;
-import dlsu.advcarc.parser.Instruction;
 import dlsu.advcarc.parser.Parameter;
 import dlsu.advcarc.parser.StringBinary;
-import dlsu.advcarc.register.Register;
 import io.vertx.core.json.JsonArray;
 import io.vertx.core.json.JsonObject;
 
@@ -35,13 +33,11 @@ public class InstructionDecodeStage extends Stage {
     @Override
     public void housekeeping() {
         try {
-            if (isBlocked == false) {
-                this.instruction = instructionFetchStage.getInstruction();
-                if (instruction != null)
-                    System.out.println("ID Stage: Received a new instruction from IF stage - " + instruction);
-                IDEX_IR = instructionFetchStage.getIFID_IR();
-                IDEX_NPC = instructionFetchStage.getIFID_NPC();
-            }
+            this.instruction = instructionFetchStage.getInstruction();
+            if (instruction != null)
+                System.out.println("ID Stage: Received a new instruction from IF stage - " + instruction);
+            IDEX_IR = instructionFetchStage.getIFID_IR();
+            IDEX_NPC = instructionFetchStage.getIFID_NPC();
         } catch (Exception e) {
             if (e.getMessage() != null)
                 System.out.println(e.getMessage());
@@ -53,14 +49,11 @@ public class InstructionDecodeStage extends Stage {
         // instructionFetchStage.get code
         didRun = false;
 
-        checkDependencies(instruction);
+        instruction.analyzeDependencies();
+        instruction.checkDependencies();
+        instruction.addDependencies();
 
         ArrayList<Parameter> parameters = instruction.getParameters();
-
-        for (Parameter p : parameters) {
-            if (p.getParameter() instanceof Register)
-                p.analyzeDependency();
-        }
 
         try {
             IDEX_A = parameters.get(0);
@@ -80,21 +73,6 @@ public class InstructionDecodeStage extends Stage {
 
         }
         didRun = true;
-    }
-
-    private void checkDependencies(Instruction instruction) {
-        isBlocked = false;
-        for (Parameter p : instruction.getParameters()) {
-            if (p.getParameter() instanceof Register) {
-                Instruction inst = p.peekDependency();
-                if (inst != null && instruction.equals(inst) == false) {
-                    cpu.setDataDependencyBlock(inst, Instruction.Stage.WB, Instruction.Stage.ID);
-                    isBlocked = true;
-                    throw new IllegalStateException("Cannot proceed because " + instruction.toString() + " has a write dependency on " + inst.toString());
-                }
-            }
-        }
-
     }
 
     public Parameter getIDEX_A() {

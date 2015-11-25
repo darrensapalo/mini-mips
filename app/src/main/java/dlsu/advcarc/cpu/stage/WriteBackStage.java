@@ -1,13 +1,12 @@
 package dlsu.advcarc.cpu.stage;
 
 import dlsu.advcarc.cpu.CPU;
+import dlsu.advcarc.cpu.block.DataDependencyManager;
+import dlsu.advcarc.dependency.DataDependencyException;
 import dlsu.advcarc.memory.Memory;
 import dlsu.advcarc.parser.Instruction;
 import dlsu.advcarc.parser.Parameter;
 import dlsu.advcarc.parser.StringBinary;
-import dlsu.advcarc.register.Register;
-
-import java.util.ArrayList;
 
 /**
  * Created by Darren on 11/9/2015.
@@ -29,34 +28,15 @@ public class WriteBackStage extends Stage {
     @Override
     public void housekeeping() {
         try {
-            isBlocked = isBlocked || memoryStage.isBlocked();
 
-            if (isBlocked == false) {
                 instruction = memoryStage.getInstruction();
 
                 LMD = memoryStage.getMEMWB_LMD();
                 ALUOutput = memoryStage.getMEMWB_ALUOutput();
                 IR = memoryStage.getMEMWB_IR();
-            }
         } catch (Exception e) {
             if (e.getMessage() != null)
                 System.out.println(e.getMessage());
-        }
-    }
-
-    public void checkDependencies(Instruction instruction) {
-
-        ArrayList<Parameter> parameters = instruction.getParameters();
-
-        // If I have dependencies, block
-        for (Parameter p : parameters) {
-            if (p.getParameter() instanceof Register) {
-                Instruction dependentOnThis = p.peekDependency();
-                if (dependentOnThis != null && !instruction.equals(dependentOnThis)) {
-                    cpu.setDataDependencyBlock(dependentOnThis, Instruction.Stage.WB, Instruction.Stage.WB);
-                    throw new IllegalStateException("Cannot proceed because " + instruction.toString() + " has a write dependency on " + dependentOnThis.toString());
-                }
-            }
         }
     }
 
@@ -66,8 +46,9 @@ public class WriteBackStage extends Stage {
         didRun = false;
         Parameter source, destination;
 
-        checkDependencies(instruction);
-
+        instruction.analyzeDependencies();
+        instruction.checkDependencies();
+        instruction.addDependencies();
 
         String instruction = this.instruction.getInstructionOnly();
         switch (instruction) {
@@ -115,8 +96,15 @@ public class WriteBackStage extends Stage {
 
         // todo: dequeue dependencies
 
-        if (cpu.getDataDependencyBlock().getReleaseStage() == Instruction.Stage.WB)
-            cpu.reviewBlock(this.instruction);
+
+        DataDependencyException dependencyWithBlock = this.instruction.getDependencyWithBlock();
+        if (dependencyWithBlock != null) {
+            DataDependencyManager.DataDependencyBlock block = dependencyWithBlock.getDataDependencyBlock();
+            if (block != null) {
+                if (block.getReleaseStage() == Instruction.Stage.WB)
+                    cpu.reviewBlock(this.instruction);
+            }
+        }
 
 
         didRun = true;
