@@ -63,10 +63,10 @@ public class ExecuteStageAdder extends AbstractExecuteStage {
 
     public JsonArray toJsonArray() {
         return new JsonArray()
-                .add(new JsonObject().put("register", "EX/MEM.B").put("value", getEXMEM_B() == null ? "null" : getEXMEM_B().getValue()))
-                .add(new JsonObject().put("register", "EX/MEM.ALUOutput").put("value", getEXMEM_ALUOutput() == null ? "null" : getEXMEM_ALUOutput().toHexString()))
-                .add(new JsonObject().put("register", "EX/MEM.Cond").put("value", getEXMEM_Cond() == null ? "null" : getEXMEM_Cond()))
-                .add(new JsonObject().put("register", "EX/MEM.IR").put("value", getEXMEM_IR() == null ? "null" : getEXMEM_IR().getAsHex()));
+                .add(new JsonObject().put("register", "EX/MEM.ADD.B").put("value", getEXMEM_B() == null ? "null" : getEXMEM_B().getValue()))
+                .add(new JsonObject().put("register", "EX/MEM.ADD.ALUOutput").put("value", getEXMEM_ALUOutput() == null ? "null" : getEXMEM_ALUOutput().toHexString()))
+                .add(new JsonObject().put("register", "EX/MEM.ADD.Cond").put("value", getEXMEM_Cond() == null ? "null" : getEXMEM_Cond()))
+                .add(new JsonObject().put("register", "EX/MEM.ADD.IR").put("value", getEXMEM_IR() == null ? "null" : getEXMEM_IR().getAsHex()));
 
     }
 
