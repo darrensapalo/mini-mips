@@ -52,7 +52,30 @@ public class CPUCycleTracker {
     }
 
     public void setExInstruction(Instruction instruction) {
-        map.get(instruction.getMemAddressInt()).add("EX");
+
+        String instructionString = instruction.getInstruction();
+        List<String> target = map.get(instruction.getMemAddressInt());
+
+        if(instructionString.contains("ADD.S")) {
+
+            int digit = 1;
+
+            if(target.size() > 0 && target.get(target.size()).matches("A\\d"))
+                digit = Integer.parseInt(target.get(target.size()).replaceAll("A",""))+1;
+
+            target.add("A"+digit);
+        }
+        else if(instructionString.contains("MULT.S")){
+
+            int digit = 1;
+
+            if(target.size() > 0 && target.get(target.size()).matches("M\\d"))
+                digit = Integer.parseInt(target.get(target.size()).replaceAll("M",""))+1;
+
+            target.add("M"+digit);
+        }
+        else
+            target.add("EX");
     }
 
     public void setMemInstruction(Instruction instruction) {

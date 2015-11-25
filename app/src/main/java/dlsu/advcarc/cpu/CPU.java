@@ -143,7 +143,13 @@ public class CPU {
         try {
             if (executeStage.canStageRun(dataDependencyManager)) {
                 executeStage.execute();
-                cycleTracker.setExInstruction(executeStage.getInstruction());
+
+                if(executeStage.getExInteger().didRun())
+                    cycleTracker.setExInstruction(executeStage.getExInteger().getInstruction());
+                if(executeStage.getExAdder().didRun())
+                    cycleTracker.setExInstruction(executeStage.getExAdder().getInstruction());
+                if(executeStage.getExMultiplier().didRun())
+                    cycleTracker.setExInstruction(executeStage.getExMultiplier().getInstruction());
             }
         } catch (Exception e) {
             if (e.getMessage() != null)

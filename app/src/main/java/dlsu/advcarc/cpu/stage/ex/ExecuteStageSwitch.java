@@ -172,7 +172,10 @@ public class ExecuteStageSwitch extends Stage {
     }
 
     public JsonArray toJsonArray() {
-        return new JsonArray();
+        return new JsonArray()
+                .addAll(exInteger.toJsonArray())
+                .addAll(exAdder.toJsonArray())
+                .addAll(exMultiplier.toJsonArray());
     }
 
     public Memory getEXMEM_IR() {
@@ -279,5 +282,17 @@ public class ExecuteStageSwitch extends Stage {
 
     public Instruction getIdInstruction() {
         return instructionDecodeStage.getInstruction();
+    }
+
+    public ExecuteStageInteger getExInteger() {
+        return exInteger;
+    }
+
+    public ExecuteStageAdder getExAdder() {
+        return exAdder;
+    }
+
+    public ExecuteStageMultiplier getExMultiplier() {
+        return exMultiplier;
     }
 }
