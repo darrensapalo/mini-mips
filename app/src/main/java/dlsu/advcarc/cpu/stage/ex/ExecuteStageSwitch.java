@@ -92,7 +92,9 @@ public class ExecuteStageSwitch extends Stage {
 
             exInteger.execute();
         } catch (Exception e) {
-            e.printStackTrace();
+            if (e.getMessage() != null) {
+                e.getMessage();
+            }
         }
         try {
             DataDependencyException dataDependencyException = adder.getDependencyWithBlock();

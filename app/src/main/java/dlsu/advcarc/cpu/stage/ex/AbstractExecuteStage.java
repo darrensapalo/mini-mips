@@ -23,7 +23,6 @@ public abstract class AbstractExecuteStage extends Stage {
     protected Parameter b;
     protected Parameter imm;
     protected StringBinary npc;
-    protected Instruction instruction;
 
     protected int currentNumberOfExecutionCycles;
 
