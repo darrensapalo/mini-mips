@@ -47,6 +47,12 @@ public class ExecuteStageMultiplier extends AbstractExecuteStage {
             // depending on instruction, perform operation on a, b, or imm
             EXMEM_ALUOutput = ALU.executeALU(inst, ir, a, b, imm, npc);
 
+            // save values to cpu.hi cpu.lo
+            StringBinary reg_hi = cpu.getREG_HI();
+            StringBinary reg_lo = cpu.getREG_LO();
+            cpu.setREG_HI(StringBinary.valueOf(0));
+            cpu.setREG_LO(StringBinary.valueOf(0));
+
             // depending on instruction, compute for cond
             EXMEM_Cond = ALU.executeCond(inst, ir, a, b);
 

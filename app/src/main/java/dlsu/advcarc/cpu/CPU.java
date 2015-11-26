@@ -41,6 +41,8 @@ public class CPU {
     private ArrayList<Instruction> forDequeuing = new ArrayList<>();
     private ControlHazardManager controlHazardManager = new ControlHazardManager();
 
+    private StringBinary REG_HI, REG_LO;
+
     public void input(ProgramCode code) {
         this.code = code;
         programCounter = RadixHelper.convertLongToStringBinary(code.InitialProgramCounter());
@@ -51,6 +53,9 @@ public class CPU {
         executeStage = new ExecuteStageSwitch(this, instructionDecodeStage, instructionFetchStage);
         memoryStage = new MemoryStage(this, executeStage);
         writeBackStage = new WriteBackStage(this, memoryStage);
+
+        REG_HI = StringBinary.valueOf(0);
+        REG_LO = StringBinary.valueOf(0);
 
         cycleTracker = new CPUCycleTracker(code);
 
@@ -145,7 +150,7 @@ public class CPU {
 
                 controlHazardManager.finish();
 
-            }else if (branchCurrentStage == Instruction.Stage.EX){
+            } else if (branchCurrentStage == Instruction.Stage.EX) {
                 System.out.println("-- IF stage");
                 try {
                     if (instructionFetchStage.canStageRun(dataDependencyManager)) {
@@ -341,5 +346,21 @@ public class CPU {
 
     public ControlHazardManager getControlHazardManager() {
         return controlHazardManager;
+    }
+
+    public StringBinary getREG_LO() {
+        return REG_LO;
+    }
+
+    public void setREG_LO(StringBinary REG_LO) {
+        this.REG_LO = REG_LO;
+    }
+
+    public StringBinary getREG_HI() {
+        return REG_HI;
+    }
+
+    public void setREG_HI(StringBinary REG_HI) {
+        this.REG_HI = REG_HI;
     }
 }
