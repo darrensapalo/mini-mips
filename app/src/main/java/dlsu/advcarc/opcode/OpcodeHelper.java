@@ -24,7 +24,7 @@ public class OpcodeHelper {
             case "LWU":
                 return 39;
             case "SW":
-                return 32;
+                return 43; // changed from 32 to 43, i think it is correct now
             case "DSLL":
                 return 56;
             case "ANDI":
