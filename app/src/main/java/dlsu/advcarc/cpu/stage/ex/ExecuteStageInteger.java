@@ -3,6 +3,7 @@ package dlsu.advcarc.cpu.stage.ex;
 import dlsu.advcarc.cpu.ALU;
 import dlsu.advcarc.cpu.CPU;
 import dlsu.advcarc.memory.Memory;
+import dlsu.advcarc.memory.MemoryManager;
 import dlsu.advcarc.parser.Instruction;
 import dlsu.advcarc.parser.Parameter;
 import dlsu.advcarc.parser.StringBinary;
@@ -48,6 +49,11 @@ public class ExecuteStageInteger extends AbstractExecuteStage {
 
             // depending on instruction, compute for cond
             EXMEM_Cond = ALU.executeCond(inst, ir, a, b);
+
+            if (EXMEM_Cond.equals("0") && instruction.getInstructionOnly().equals("BEQ")) {
+                EXMEM_Cond = "1";
+                EXMEM_ALUOutput = npc;
+            }
 
             didRun = true;
 

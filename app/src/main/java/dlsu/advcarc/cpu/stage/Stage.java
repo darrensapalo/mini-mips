@@ -1,5 +1,7 @@
 package dlsu.advcarc.cpu.stage;
 
+import dlsu.advcarc.cpu.CPU;
+import dlsu.advcarc.cpu.block.ControlHazardManager;
 import dlsu.advcarc.cpu.block.DataDependencyManager;
 import dlsu.advcarc.cpu.stage.ex.ExecuteStageAdder;
 import dlsu.advcarc.cpu.stage.ex.ExecuteStageInteger;
@@ -12,6 +14,7 @@ import dlsu.advcarc.parser.Instruction;
  * Created by Darren on 11/9/2015.
  */
 public abstract class Stage {
+    protected CPU cpu;
     protected int stageId;
     protected Instruction instruction;
     protected boolean didRun;
@@ -64,12 +67,22 @@ public abstract class Stage {
 
 
     public boolean canStageRun(DataDependencyManager dataDependencyManager) throws Exception {
-        if (!(this instanceof InstructionFetchStage) && this.getInstruction() == null)
-            throw new Exception("NOP");
+        didRun = false;
+        if (!(this instanceof InstructionFetchStage)) {
 
-        Instruction instruction = this.getInstruction();
-        if (!(this instanceof InstructionFetchStage) && instruction != null && instruction.getStage().ordinal() != this.getStageId())
-            throw new Exception("Cannot run " + this.getClass().getSimpleName() + " because the instruction of this stage " + instruction + " is not at this stage. It is currently in stage " + instruction.getStage() + ".");
+            ControlHazardManager controlHazardManager = cpu.getControlHazardManager();
+
+            Instruction branchInstruction = controlHazardManager.getBranchInstruction();
+            if (branchInstruction != null && !this.instruction.equals(branchInstruction)) return false;
+
+            Instruction instruction = this.getInstruction();
+
+            if (instruction == null)
+                throw new Exception("NOP");
+
+            if (instruction.getStage().ordinal() != this.getStageId())
+                throw new Exception("Cannot run " + this.getClass().getSimpleName() + " because the instruction of this stage " + instruction + " is not at this stage. It is currently in stage " + instruction.getStage() + ".");
+        }
 
 
         return true;
@@ -82,6 +95,9 @@ public abstract class Stage {
             Instruction previousInstruction = previous instanceof InstructionFetchStage ? ((InstructionFetchStage) previous).getNextInstruction() : previous.getInstruction();
 
             DataDependencyException dataDependencyException = previousInstruction.getDependencyWithBlock();
+
+            ControlHazardManager controlHazardManager = cpu.getControlHazardManager();
+
 
             if (dataDependencyException != null) {
                 DataDependencyManager.DataDependencyBlock dataDependencyBlock = dataDependencyException.getDataDependencyBlock();
@@ -110,7 +126,12 @@ public abstract class Stage {
                             throw new Exception("Cannot run housekeeping on stage " + getClass().getSimpleName() + " because the previous instruction " + previousInstruction + " is dependent on " + instruction + " which will only be blocked at stage " + blockStage);
                     }
                 }
+            } else {
+                Instruction branchInstruction = controlHazardManager.getBranchInstruction();
+                if (branchInstruction != null && branchInstruction.equals(previousInstruction) == false)
+                    throw new Exception("Cannot run housekeeping on stage " + getClass().getSimpleName() + " because the previous instruction " + previousInstruction + " is after a control hazard.");
             }
+
             return true;
         } catch (Exception e) {
             if (e.getMessage() != null)

@@ -87,7 +87,7 @@ public class Instruction {
                 Parameter parameter_irt = new Parameter(parameterTypes + binary_irt.getAsInt(), Parameter.ParameterType.register, this);
                 parameters.add(parameter_irt);
 
-                String iimm = binary.getBinaryValue().substring(16, 31);
+                String iimm = binary.getBinaryValue().substring(16, 32);
                 Parameter parameter_iimm = new Parameter(iimm, Parameter.ParameterType.immediate, this);
                 parameters.add(parameter_iimm);
                 break;
@@ -272,6 +272,7 @@ public class Instruction {
         // If I have dependencies, block
         for (Parameter param : parameters) {
             if (param.getParameter() instanceof Register) {
+                param.analyzeDependency();
                 Instruction dependentOnThis = param.peekDependency();
                 if (dependentOnThis != null && !this.equals(dependentOnThis) && dependentOnThis.getStage() != Stage.DONE) {
                     return new DataDependencyException(this, dependentOnThis, param);

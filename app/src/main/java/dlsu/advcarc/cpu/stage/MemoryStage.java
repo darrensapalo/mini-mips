@@ -18,7 +18,6 @@ import java.util.ArrayList;
  * Created by Darren on 11/9/2015.
  */
 public class MemoryStage extends Stage {
-    private CPU cpu;
     private ExecuteStageSwitch executeStage;
 
     private StringBinary MEMWB_ALUOutput;

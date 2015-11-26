@@ -37,6 +37,7 @@ public class ExecuteStageSwitch extends Stage {
     private LinkedList<Instruction> instructions;
 
     public ExecuteStageSwitch(CPU cpu, InstructionDecodeStage instructionDecodeStage, InstructionFetchStage fetch) {
+        this.cpu = cpu;
         this.instructionDecodeStage = instructionDecodeStage;
         this.exInteger = new ExecuteStageInteger(this, cpu);
         this.exAdder = new ExecuteStageAdder(this, cpu);
@@ -262,6 +263,7 @@ public class ExecuteStageSwitch extends Stage {
     }
 
     public boolean canStageRun(DataDependencyManager dataDependencyManager) throws Exception {
+        didRun = false;
         if (this.getInstruction() == null)
             throw new Exception("NOP");
 
@@ -269,7 +271,7 @@ public class ExecuteStageSwitch extends Stage {
         if (instruction != null && instruction.getStage().ordinal() != this.getStageId())
             throw new Exception("Cannot run " + this.getClass().getSimpleName() + " because the instruction of this stage has been passed, but is not yet at this stage.");
 
-        return true;
+        return super.canStageRun(dataDependencyManager);
     }
 
     public Instruction getInstruction() {

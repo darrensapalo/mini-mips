@@ -16,8 +16,13 @@ public class ALU {
         StringBinary _b = b.getParameter().read();
 
         switch (instruction){
-            case "SLT":
-                return (_a.getAsInt() < _b.getAsInt()) ? "1" : "0";
+            case "J":
+                return "1";
+
+            case "BEQ":
+                if (_a.getBinaryValue().equals(_b.getBinaryValue()))
+                    return "1";
+
             default:
                 return "0";
         }
@@ -36,7 +41,7 @@ public class ALU {
                 return _a.or(_b);
 
             case "SLT":
-                return null;
+                return (_a.getAsInt() < _b.getAsInt()) ? StringBinary.valueOf(1) : StringBinary.valueOf(0);
 
             case "DMULT":
                 //TODO Check how to do this properly; result should be stored in HI and LO

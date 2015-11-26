@@ -12,7 +12,6 @@ import dlsu.advcarc.parser.StringBinary;
  * Created by Darren on 11/9/2015.
  */
 public class WriteBackStage extends Stage {
-    private CPU cpu;
     private MemoryStage memoryStage;
     private Memory LMD;
     private Memory IR;

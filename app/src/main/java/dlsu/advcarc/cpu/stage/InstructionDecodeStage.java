@@ -1,8 +1,11 @@
 package dlsu.advcarc.cpu.stage;
 
 import dlsu.advcarc.cpu.CPU;
+import dlsu.advcarc.cpu.block.ControlHazardManager;
+import dlsu.advcarc.cpu.block.DataDependencyManager;
 import dlsu.advcarc.immediate.register.Immediate;
 import dlsu.advcarc.memory.Memory;
+import dlsu.advcarc.parser.Instruction;
 import dlsu.advcarc.parser.Parameter;
 import dlsu.advcarc.parser.StringBinary;
 import io.vertx.core.json.JsonArray;
@@ -14,7 +17,6 @@ import java.util.ArrayList;
  * Created by Darren on 11/9/2015.
  */
 public class InstructionDecodeStage extends Stage {
-    private CPU cpu;
     private InstructionFetchStage instructionFetchStage;
 
     private Parameter IDEX_A;
@@ -34,10 +36,15 @@ public class InstructionDecodeStage extends Stage {
     public void housekeeping() {
         try {
             this.instruction = instructionFetchStage.getNextInstruction();
+
             if (instruction != null)
                 System.out.println("ID Stage: Received a new instruction from IF stage - " + instruction);
+
+            cpu.getControlHazardManager().setBranchInstruction(instruction);
+
             IDEX_IR = instructionFetchStage.getIFID_IR();
             IDEX_NPC = instructionFetchStage.getIFID_NPC();
+
         } catch (Exception e) {
             if (e.getMessage() != null)
                 System.out.println(e.getMessage());

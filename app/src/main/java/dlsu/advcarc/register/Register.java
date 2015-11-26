@@ -67,6 +67,9 @@ public class Register implements Writable {
 
     @Override
     public void addDependency(Instruction instruction, Parameter.DependencyType type) {
+        if (register.equals("R0") || register.equals("F0"))
+            return;
+
         switch (type) {
             case read:
                 if (!readDependency.contains(instruction))

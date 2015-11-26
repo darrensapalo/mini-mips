@@ -1,6 +1,7 @@
 package dlsu.advcarc.cpu.stage;
 
 import dlsu.advcarc.cpu.CPU;
+import dlsu.advcarc.cpu.block.ControlHazardManager;
 import dlsu.advcarc.cpu.block.DataDependencyManager;
 import dlsu.advcarc.cpu.stage.ex.ExecuteStageInteger;
 import dlsu.advcarc.cpu.stage.ex.ExecuteStageSwitch;
@@ -18,8 +19,6 @@ import io.vertx.core.json.JsonObject;
  * Created by Darren on 11/9/2015.
  */
 public class InstructionFetchStage extends Stage {
-
-    private CPU cpu;
     private ProgramCode code;
 
     private dlsu.advcarc.memory.Memory IFID_IR;
@@ -55,13 +54,20 @@ public class InstructionFetchStage extends Stage {
             throw new NullPointerException("There is no more available program data to read.");
 
         // IF/ID.NPC, PC = (EX/MEM.Cond) ? EX/MEM.ALUOutput : PC + 4;
-        IFID_NPC = ("1").equals(executeStage.getEXMEM_Cond()) ? executeStage.getEXMEM_ALUOutput() : StringBinary.valueOf(PC.getAsLong() + 4);
+        boolean shouldBranch = ("1").equals(executeStage.getEXMEM_Cond());
+        if (shouldBranch){
+            executeStage.setEXMEM_Cond("0");
+            IFID_NPC = executeStage.getEXMEM_ALUOutput();
+            nextInstruction = null;
+        }else{
+            IFID_NPC = StringBinary.valueOf(PC.getAsLong() + 4);
+        }
 
         // Get references to registers
         instruction = new Instruction(new StringBinary(IFID_IR.getAsBinary()), lineOfCode, ++cycle, PC.toHexString());
         instruction.setStage(Instruction.Stage.IF);
 
-        if (instruction != null)
+        if (instruction != null && shouldBranch == false)
             nextInstruction = instruction;
 
         System.out.println("IF Stage: Read a new instruction from program code - " + instruction.toString());
@@ -85,21 +91,31 @@ public class InstructionFetchStage extends Stage {
 
     @Override
     public boolean canStageRun(DataDependencyManager dataDependencyManager) throws Exception {
-
-        if (instruction == null) return true;
+        didRun = false;
 
         Instruction instruction = getInstruction();
-        DataDependencyException dependency = instruction.getDependency();
+        if (instruction != null) {
 
-        if (dependency != null) {
-            DataDependencyManager.DataDependencyBlock block = dependency.getDataDependencyBlock();
-            if (block != null) {
-                Instruction ownedBy = block.getOwnedBy();
+            ControlHazardManager controlHazardManager = cpu.getControlHazardManager();
+            Instruction branch = controlHazardManager.checkBranch();
 
-                if (ownedBy.getStage().ordinal() < block.getReleaseStage().ordinal())
-                    throw new Exception("Cannot run " + this.getClass().getSimpleName() + " because there is currently a data dependency block.");
+
+            DataDependencyException dependency = instruction.getDependencyWithBlock();
+
+            if (dependency != null) {
+                DataDependencyManager.DataDependencyBlock block = dependency.getDataDependencyBlock();
+
+                if (block != null) {
+                    Instruction ownedBy = block.getOwnedBy();
+
+                    // If the instruction is less than or equal to WB, block still. It needs to be beyond it.
+                    if (ownedBy.getStage().ordinal() <= block.getReleaseStage().ordinal())
+                        throw new Exception("Cannot run " + this.getClass().getSimpleName() + " because there is currently a data dependency block.");
+                }
             }
         }
+
+        if (this.instruction == null) return true;
 
         return super.canStageRun(dataDependencyManager);
     }

@@ -1,5 +1,6 @@
 package dlsu.advcarc.cpu;
 
+import dlsu.advcarc.cpu.block.ControlHazardManager;
 import dlsu.advcarc.cpu.block.DataDependencyManager;
 import dlsu.advcarc.cpu.stage.*;
 import dlsu.advcarc.cpu.stage.ex.ExecuteStageSwitch;
@@ -38,6 +39,7 @@ public class CPU {
     private boolean fetchFailed;
 
     private ArrayList<Instruction> forDequeuing = new ArrayList<>();
+    private ControlHazardManager controlHazardManager = new ControlHazardManager();
 
     public void input(ProgramCode code) {
         this.code = code;
@@ -102,101 +104,184 @@ public class CPU {
         if (instructionDecodeStage.canHousekeepingRun(instructionFetchStage, dataDependencyManager))
             instructionDecodeStage.housekeeping();
 
-        if (fetchFailed)
-            instructionFetchStage.reset();
+
     }
 
     private void stages() {
 
-        System.out.println();
-        System.out.println("-- WB stage");
-        try {
-            if (writeBackStage.canStageRun(dataDependencyManager)) {
-                writeBackStage.execute();
-                cycleTracker.setWbInstruction(writeBackStage.getInstruction());
-            }
-        } catch (DataDependencyException e) {
-            e.handle(this);
-        } catch (Exception e) {
-            if (e.getMessage() != null)
-                System.out.println("WB Stage: " + e.getMessage());
-        }
+        ControlHazardManager controlHazardManager = getControlHazardManager();
+        Instruction branchInstruction = controlHazardManager.checkBranch();
 
-
-        System.out.println();
-        System.out.println("-- MEM stage");
-        try {
-            if (memoryStage.canStageRun(dataDependencyManager)) {
-                memoryStage.execute();
-                cycleTracker.setMemInstruction(memoryStage.getInstruction());
-            }
-        } catch (DataDependencyException e) {
-            e.handle(this);
-        } catch (Exception e) {
-            if (e.getMessage() != null)
-                System.out.println("MEM Stage: " + e.getMessage());
-        }
-
-
-        System.out.println();
-        System.out.println("-- EX stage");
-        try {
-            if (executeStage.canStageRun(dataDependencyManager)) {
-                executeStage.execute();
-
+        // When the branch instruction is finished, finish off the branching by executing a single IF cycle
+        if (branchInstruction != null && branchInstruction.getStage() != Instruction.Stage.ID) {
+            Instruction.Stage branchCurrentStage = branchInstruction.getStage();
+            if (branchCurrentStage == Instruction.Stage.MEM) {
+                System.out.println("-- IF stage");
                 try {
-                    if (executeStage.getExInteger().didRun())
-                        cycleTracker.setExInstruction(executeStage.getExInteger().getInstruction());
+                    if (instructionFetchStage.canStageRun(dataDependencyManager)) {
+                        instructionFetchStage.execute();
+                        cycleTracker.setIfInstruction(instructionFetchStage.getInstruction());
+                    }
                 } catch (Exception e) {
+                    fetchFailed = true;
 
+                    if (e.getMessage() != null)
+                        System.out.println("IF Stage: " + e.getMessage());
+                }
+
+                System.out.println();
+                System.out.println("-- MEM stage");
+                try {
+                    if (memoryStage.canStageRun(dataDependencyManager)) {
+                        memoryStage.execute();
+                        cycleTracker.setMemInstruction(memoryStage.getInstruction());
+                    }
+                } catch (DataDependencyException e) {
+                    e.handle(this);
+                } catch (Exception e) {
+                    if (e.getMessage() != null)
+                        System.out.println("MEM Stage: " + e.getMessage());
+                }
+
+                controlHazardManager.finish();
+
+            }else if (branchCurrentStage == Instruction.Stage.EX){
+                System.out.println("-- IF stage");
+                try {
+                    if (instructionFetchStage.canStageRun(dataDependencyManager)) {
+                        instructionFetchStage.execute();
+                        cycleTracker.setIfInstruction(instructionFetchStage.getInstruction());
+                    }
+                } catch (Exception e) {
+                    fetchFailed = true;
+
+                    if (e.getMessage() != null)
+                        System.out.println("IF Stage: " + e.getMessage());
                 }
 
                 try {
-                    if (executeStage.getExAdder().didRun())
-                        cycleTracker.setExInstruction(executeStage.getExAdder().getInstruction());
-                } catch (Exception e) {
+                    if (executeStage.canStageRun(dataDependencyManager)) {
+                        executeStage.execute();
 
+                        try {
+                            if (executeStage.getExInteger().didRun())
+                                cycleTracker.setExInstruction(executeStage.getExInteger().getInstruction());
+                        } catch (Exception e) {
+
+                        }
+
+                        try {
+                            if (executeStage.getExAdder().didRun())
+                                cycleTracker.setExInstruction(executeStage.getExAdder().getInstruction());
+                        } catch (Exception e) {
+
+                        }
+
+                        try {
+                            if (executeStage.getExMultiplier().didRun())
+                                cycleTracker.setExInstruction(executeStage.getExMultiplier().getInstruction());
+                        } catch (Exception e) {
+
+                        }
+                    }
+                } catch (Exception e) {
+                    if (e.getMessage() != null)
+                        System.out.println("EX Stage: " + e.getMessage());
                 }
 
-                try {
-                    if (executeStage.getExMultiplier().didRun())
-                        cycleTracker.setExInstruction(executeStage.getExMultiplier().getInstruction());
-                } catch (Exception e) {
+            }
+        } else {
 
+            System.out.println();
+            System.out.println("-- WB stage");
+            try {
+                if (writeBackStage.canStageRun(dataDependencyManager)) {
+                    writeBackStage.execute();
+                    cycleTracker.setWbInstruction(writeBackStage.getInstruction());
                 }
+            } catch (DataDependencyException e) {
+                e.handle(this);
+            } catch (Exception e) {
+                if (e.getMessage() != null)
+                    System.out.println("WB Stage: " + e.getMessage());
             }
-        } catch (Exception e) {
-            if (e.getMessage() != null)
-                System.out.println("EX Stage: " + e.getMessage());
-        }
 
 
-        System.out.println();
-        System.out.println("-- ID stage");
-        try {
-            if (instructionDecodeStage.canStageRun(dataDependencyManager)) {
-                instructionDecodeStage.execute();
-                cycleTracker.setIdInstruction(instructionDecodeStage.getInstruction());
+            System.out.println();
+            System.out.println("-- MEM stage");
+            try {
+                if (memoryStage.canStageRun(dataDependencyManager)) {
+                    memoryStage.execute();
+                    cycleTracker.setMemInstruction(memoryStage.getInstruction());
+                }
+            } catch (DataDependencyException e) {
+                e.handle(this);
+            } catch (Exception e) {
+                if (e.getMessage() != null)
+                    System.out.println("MEM Stage: " + e.getMessage());
             }
-        } catch (DataDependencyException e) {
-            e.handle(this);
 
-        } catch (Exception e) {
-            if (e.getMessage() != null)
-                System.out.println("ID Stage: " + e.getMessage());
-        }
 
-        System.out.println("-- IF stage");
-        try {
-            if (instructionFetchStage.canStageRun(dataDependencyManager)) {
-                instructionFetchStage.execute();
-                cycleTracker.setIfInstruction(instructionFetchStage.getInstruction());
+            System.out.println();
+            System.out.println("-- EX stage");
+            try {
+                if (executeStage.canStageRun(dataDependencyManager)) {
+                    executeStage.execute();
+
+                    try {
+                        if (executeStage.getExInteger().didRun())
+                            cycleTracker.setExInstruction(executeStage.getExInteger().getInstruction());
+                    } catch (Exception e) {
+
+                    }
+
+                    try {
+                        if (executeStage.getExAdder().didRun())
+                            cycleTracker.setExInstruction(executeStage.getExAdder().getInstruction());
+                    } catch (Exception e) {
+
+                    }
+
+                    try {
+                        if (executeStage.getExMultiplier().didRun())
+                            cycleTracker.setExInstruction(executeStage.getExMultiplier().getInstruction());
+                    } catch (Exception e) {
+
+                    }
+                }
+            } catch (Exception e) {
+                if (e.getMessage() != null)
+                    System.out.println("EX Stage: " + e.getMessage());
             }
-        } catch (Exception e) {
-            fetchFailed = true;
 
-            if (e.getMessage() != null)
-                System.out.println("IF Stage: " + e.getMessage());
+
+            System.out.println();
+            System.out.println("-- ID stage");
+            try {
+                if (instructionDecodeStage.canStageRun(dataDependencyManager)) {
+                    instructionDecodeStage.execute();
+                    cycleTracker.setIdInstruction(instructionDecodeStage.getInstruction());
+                }
+            } catch (DataDependencyException e) {
+                e.handle(this);
+
+            } catch (Exception e) {
+                if (e.getMessage() != null)
+                    System.out.println("ID Stage: " + e.getMessage());
+            }
+
+            System.out.println("-- IF stage");
+            try {
+                if (instructionFetchStage.canStageRun(dataDependencyManager)) {
+                    instructionFetchStage.execute();
+                    cycleTracker.setIfInstruction(instructionFetchStage.getInstruction());
+                }
+            } catch (Exception e) {
+                fetchFailed = true;
+
+                if (e.getMessage() != null)
+                    System.out.println("IF Stage: " + e.getMessage());
+            }
         }
 
     }
@@ -252,5 +337,9 @@ public class CPU {
 
     public void addDataDependencyBlock(DataDependencyManager.DataDependencyBlock block) {
         dataDependencyManager.addDependencyBlock(block);
+    }
+
+    public ControlHazardManager getControlHazardManager() {
+        return controlHazardManager;
     }
 }

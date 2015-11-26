@@ -38,7 +38,7 @@ public class DependencyChecker {
 
             // I types
             case "BEQ":
-                return null;
+                return Parameter.DependencyType.read;
 
 
             case "L.S":

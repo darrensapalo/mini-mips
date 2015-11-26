@@ -11,7 +11,6 @@ import dlsu.advcarc.parser.StringBinary;
  * Created by Darren on 11/24/2015.
  */
 public abstract class AbstractExecuteStage extends Stage {
-    protected final CPU cpu;
     protected final ExecuteStageSwitch executeStageSwitch;
 
     protected Memory ir;
@@ -43,6 +42,8 @@ public abstract class AbstractExecuteStage extends Stage {
     public void housekeeping() {
         ir = executeStageSwitch.getIDEX_IR();
         executeStageSwitch.setEXMEM_IR(ir);
+
+
 
         EXMEM_B = executeStageSwitch.getIDEX_B();
         executeStageSwitch.setEXMEM_B(EXMEM_B);
