@@ -36,7 +36,7 @@ public class MemoryStage extends Stage {
     public void housekeeping() {
         try {
 
-            Instruction inst = executeStage.getInstruction();
+            Instruction inst = executeStage.releaseInstruction();
 
             // ALU instructions
             MEMWB_IR = executeStage.getEXMEM_IR();
@@ -61,20 +61,25 @@ public class MemoryStage extends Stage {
         ArrayList<Parameter> parameters = instruction.getParameters();
 
         String instruction = this.instruction.getInstructionOnly();
+        String memoryLocation = MEMWB_ALUOutput.toHexString();
+
+        if ("0".equals(memoryLocation))
+            memoryLocation = MEMWB_ALUOutput.padBinaryValue(4);
+
         switch (instruction) {
             // read
             case "LW":
             case "LWU":
-                System.out.println("MEM Stage: Reading from address " + MEMWB_ALUOutput.toHexString());
-                MEMWB_LMD = MemoryManager.instance().getInstance(MEMWB_ALUOutput.toHexString());
+                System.out.println("MEM Stage: Reading from address " + memoryLocation);
+                MEMWB_LMD = MemoryManager.instance().getInstance(memoryLocation);
                 break;
 
             // write
             case "SW":
             case "L.S":
             case "S.S":
-                System.out.println("MEM Stage: Writing to address " + MEMWB_ALUOutput.toHexString() + " with value " + MEMWB_B.getParameter().read().toHexString());
-                MemoryManager.instance().updateMemory(MEMWB_ALUOutput.toHexString(), MEMWB_B.getParameter().read());
+                System.out.println("MEM Stage: Writing to address " + memoryLocation + " with value " + MEMWB_B.getParameter().read().toHexString());
+                MemoryManager.instance().updateMemory(memoryLocation, MEMWB_B.getParameter().read());
                 break;
         }
 

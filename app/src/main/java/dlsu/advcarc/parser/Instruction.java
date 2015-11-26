@@ -62,7 +62,7 @@ public class Instruction {
                 // GPR or FPR?
 
                 String parameterTypes = "R";
-                switch (instruction) {
+                switch (getInstructionOnly()) {
                     case "BEQ":
                     case "LW":
                     case "LWU":
@@ -124,7 +124,7 @@ public class Instruction {
     }
 
     public String getExecutionType() {
-        switch (getInstructionOnly()){
+        switch (getInstructionOnly()) {
             case "ADD.S":
                 return "ADDER";
             case "MUL.S":
@@ -134,8 +134,8 @@ public class Instruction {
         }
     }
 
-    public void addDependencies(){
-        for (Parameter p : parameters){
+    public void addDependencies() {
+        for (Parameter p : parameters) {
             p.addDependency();
         }
     }
@@ -153,7 +153,7 @@ public class Instruction {
         DataDependencyException dataDependencyException = null;
         try {
             dataDependencyException = checkDependencies();
-        }catch (DataDependencyException e){
+        } catch (DataDependencyException e) {
             dataDependencyException = e;
         }
         return dataDependencyException;
@@ -199,11 +199,13 @@ public class Instruction {
         return memAddressHex;
     }
 
-    public Long getMemAddressLong(){
+    public Long getMemAddressLong() {
         return RadixHelper.convertHexToStringBinary(memAddressHex).getAsLong();
     }
 
-    public Integer getMemAddressInt(){return RadixHelper.convertHexToStringBinary(memAddressHex).getAsInt();}
+    public Integer getMemAddressInt() {
+        return RadixHelper.convertHexToStringBinary(memAddressHex).getAsInt();
+    }
 
     public ArrayList<Parameter> getParameters() {
         return parameters;
@@ -213,7 +215,7 @@ public class Instruction {
         return cycle;
     }
 
-    public DataDependencyException checkDependencies(){
+    public DataDependencyException checkDependencies() {
         DataDependencyException dependency = getDependency();
         DataDependencyManager.DataHazardType hazardType = null;
 
@@ -224,16 +226,20 @@ public class Instruction {
             Instruction blockedInstruction = dependency.getInstruction();
 
             Instruction.Stage releaseStage, blockStage;
-            if (blockedInstruction.getStage() == Instruction.Stage.ID && parameter.getParameterType() == Parameter.ParameterType.register) {
-                releaseStage = Instruction.Stage.WB;
-                blockStage = Instruction.Stage.ID;
+            if (parameter.getParameterType() == Parameter.ParameterType.register) {
 
-                if (parameter.getDependencyType() == Parameter.DependencyType.write)
+
+                if (parameter.getDependencyType() == Parameter.DependencyType.write) {
+                    releaseStage = Instruction.Stage.WB;
+                    blockStage = Instruction.Stage.MEM;
                     hazardType = DataDependencyManager.DataHazardType.WriteAfterWrite;
-                else
+                } else {
+                    releaseStage = Instruction.Stage.WB;
+                    blockStage = Instruction.Stage.ID;
                     hazardType = DataDependencyManager.DataHazardType.ReadAfterWrite;
+                }
 
-            } else if (blockedInstruction.getStage() == Instruction.Stage.MEM && parameter.getParameterType() == Parameter.ParameterType.memory) {
+            } else if (parameter.getParameterType() == Parameter.ParameterType.memory) {
                 releaseStage = Instruction.Stage.MEM;
                 blockStage = Instruction.Stage.MEM;
 
@@ -246,11 +252,16 @@ public class Instruction {
                 blockStage = null;
             }
 
-            if ((releaseStage != null && blockStage != null))
-                if (dependentOnThisInstruction.getStage().ordinal() <= releaseStage.ordinal() && hazardType == DataDependencyManager.DataHazardType.ReadAfterWrite) {
-                    dependency.setDataDependencyBlock(new DataDependencyManager.DataDependencyBlock(dependentOnThisInstruction, releaseStage, blockStage, hazardType));
+            if ((releaseStage != null && blockStage != null)) {
+                dependency.setDataDependencyBlock(new DataDependencyManager.DataDependencyBlock(dependentOnThisInstruction, releaseStage, blockStage, hazardType));
+
+                if (parameter.getParameter() instanceof Register && stage == Stage.ID && hazardType == DataDependencyManager.DataHazardType.ReadAfterWrite) {
                     throw dependency;
                 }
+
+                if (parameter.getParameter() instanceof Register && stage == Stage.WB && hazardType == DataDependencyManager.DataHazardType.WriteAfterWrite)
+                    throw dependency;
+            }
         }
         return dependency;
     }
@@ -262,7 +273,7 @@ public class Instruction {
         for (Parameter param : parameters) {
             if (param.getParameter() instanceof Register) {
                 Instruction dependentOnThis = param.peekDependency();
-                if (dependentOnThis != null && !this.equals(dependentOnThis)) {
+                if (dependentOnThis != null && !this.equals(dependentOnThis) && dependentOnThis.getStage() != Stage.DONE) {
                     return new DataDependencyException(this, dependentOnThis, param);
                 }
             }

@@ -17,6 +17,11 @@ public interface Writable {
 
     void addDependency(Instruction instruction, Parameter.DependencyType type);
 
+    /**
+     *
+     * @param type
+     * @return the Instruction instance that instruction depends on
+     */
     Instruction peekDependency(Parameter.DependencyType type);
 
     void dequeueDependency(Instruction instruction);

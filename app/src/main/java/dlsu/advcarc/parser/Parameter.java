@@ -55,6 +55,10 @@ public class Parameter {
         return new Immediate(new StringBinary(parameter));
     }
 
+    /**
+     * Returns an Instruction if the given parameter has a dependency on another instruction
+     * @return
+     */
     public Instruction peekDependency() {
         return parameter.peekDependency(DependencyType.write);
     }

@@ -35,9 +35,11 @@ public class ExecuteStageInteger extends AbstractExecuteStage {
     public void execute() {
         didRun = false;
         try {
-
             if (instruction == null)
                 throw new Exception("Cannot run exInteger because there are no instructions yet.");
+
+            if (currentNumberOfExecutionCycles >= numberOfExecutionCycles())
+                throw new Exception("Finished running " + instruction);
 
             String inst = instruction.getInstructionOnly();
 

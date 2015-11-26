@@ -40,7 +40,10 @@ public class ExecuteStageAdder extends AbstractExecuteStage {
         didRun = false;
         try {
             if (instruction == null)
-                throw new Exception();
+                throw new Exception("Cannot run exAdder because there are no instructions yet.");
+
+            if (currentNumberOfExecutionCycles >= numberOfExecutionCycles())
+                throw new Exception("Finished running " + instruction);
 
             String inst = instruction.getInstructionOnly();
 

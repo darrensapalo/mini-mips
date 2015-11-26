@@ -1,6 +1,5 @@
 package dlsu.advcarc.parser;
 
-import dlsu.advcarc.memory.Memory;
 import dlsu.advcarc.memory.MemoryManager;
 import dlsu.advcarc.register.RegisterManager;
 import junit.framework.TestCase;

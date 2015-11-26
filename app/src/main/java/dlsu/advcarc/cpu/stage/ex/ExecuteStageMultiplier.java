@@ -37,7 +37,10 @@ public class ExecuteStageMultiplier extends AbstractExecuteStage {
         try {
 
             if (instruction == null)
-                throw new Exception();
+                throw new Exception("Cannot run exMultiplier because there are no instructions yet.");
+
+            if (currentNumberOfExecutionCycles >= numberOfExecutionCycles())
+                throw new Exception("Finished running " + instruction);
 
             String inst = instruction.getInstructionOnly();
 

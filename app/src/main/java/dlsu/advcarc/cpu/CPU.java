@@ -144,12 +144,26 @@ public class CPU {
             if (executeStage.canStageRun(dataDependencyManager)) {
                 executeStage.execute();
 
-                if(executeStage.getExInteger().didRun())
-                    cycleTracker.setExInstruction(executeStage.getExInteger().getInstruction());
-                if(executeStage.getExAdder().didRun())
-                    cycleTracker.setExInstruction(executeStage.getExAdder().getInstruction());
-                if(executeStage.getExMultiplier().didRun())
-                    cycleTracker.setExInstruction(executeStage.getExMultiplier().getInstruction());
+                try {
+                    if (executeStage.getExInteger().didRun())
+                        cycleTracker.setExInstruction(executeStage.getExInteger().getInstruction());
+                } catch (Exception e) {
+
+                }
+
+                try {
+                    if (executeStage.getExAdder().didRun())
+                        cycleTracker.setExInstruction(executeStage.getExAdder().getInstruction());
+                } catch (Exception e) {
+
+                }
+
+                try {
+                    if (executeStage.getExMultiplier().didRun())
+                        cycleTracker.setExInstruction(executeStage.getExMultiplier().getInstruction());
+                } catch (Exception e) {
+
+                }
             }
         } catch (Exception e) {
             if (e.getMessage() != null)
@@ -228,6 +242,7 @@ public class CPU {
      * This function is called when an instruction is finished with the lock
      * on a data dependency. If the instruction owns the data dependency, then the
      * data dependency is removed.
+     *
      * @param instruction
      */
     public void reviewBlock(Instruction instruction) {

@@ -103,6 +103,14 @@ public abstract class AbstractExecuteStage extends Stage {
         return imm;
     }
 
+    public Instruction getInstruction(){
+        Instruction instruction = this.instruction;
+        if (instruction == null || instruction.getStage() == Instruction.Stage.DONE)
+            return null;
+
+        return instruction;
+    }
+
     public void setImm(Parameter imm) {
         this.imm = imm;
     }

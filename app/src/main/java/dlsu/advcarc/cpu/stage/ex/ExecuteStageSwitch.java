@@ -12,6 +12,9 @@ import dlsu.advcarc.parser.Parameter;
 import dlsu.advcarc.parser.StringBinary;
 import io.vertx.core.json.JsonArray;
 
+import java.util.LinkedList;
+import java.util.Stack;
+
 /**
  * Created by Darren on 11/24/2015.
  */
@@ -31,11 +34,14 @@ public class ExecuteStageSwitch extends Stage {
     private Parameter EXMEM_B;
     private StringBinary EXMEM_ALUOutput;
 
+    private LinkedList<Instruction> instructions;
+
     public ExecuteStageSwitch(CPU cpu, InstructionDecodeStage instructionDecodeStage, InstructionFetchStage fetch) {
         this.instructionDecodeStage = instructionDecodeStage;
         this.exInteger = new ExecuteStageInteger(this, cpu);
         this.exAdder = new ExecuteStageAdder(this, cpu);
         this.exMultiplier = new ExecuteStageMultiplier(this, cpu);
+        this.instructions = new LinkedList<>();
         fetch.setExecuteStage(this);
         stageId = 2;
     }
@@ -43,12 +49,15 @@ public class ExecuteStageSwitch extends Stage {
     @Override
     public void housekeeping() {
         try {
-            Instruction instruction = instructionDecodeStage.getInstruction();
+            instruction = instructionDecodeStage.getInstruction();
             if (instruction == null)
                 throw new Exception("Cannot run housekeeping on exStageSwitch because there is no instruction from ID yet.");
 
             if (instruction.getStage() != Instruction.Stage.EX)
                 throw new Exception("Remains from the previous fetch; this instruction " + instruction + " has already been received by EX.");
+
+            if (instructions.contains(instruction) == false)
+                instructions.add(instruction);
 
             switch (instruction.getExecutionType()) {
                 case "ADDER":
@@ -85,7 +94,9 @@ public class ExecuteStageSwitch extends Stage {
                 DataDependencyManager.DataDependencyBlock block = dataDependencyException.getDataDependencyBlock();
                 if (block != null) {
                     Instruction ownedBy = block.getOwnedBy();
-                    if (ownedBy.getStage().ordinal() < block.getReleaseStage().ordinal())
+                    if (block.getDataHazardType() == DataDependencyManager.DataHazardType.WriteAfterWrite && dataDependencyException.getInstruction().getStage().ordinal() < block.getReleaseStage().ordinal())
+                        System.out.println("Write after write can proceed!");
+                    else if (ownedBy.getStage().ordinal() <= block.getReleaseStage().ordinal())
                         throw dataDependencyException;
                 }
             }
@@ -162,6 +173,8 @@ public class ExecuteStageSwitch extends Stage {
                 if (stage != null)
                     System.out.println(instruction + " was delivered to stage " + stage.toString());
 
+                this.instruction = instruction;
+
                 if (stage == Instruction.Stage.DONE)
                     this.instruction = null;
 
@@ -232,9 +245,20 @@ public class ExecuteStageSwitch extends Stage {
         return instructionDecodeStage.getIDEX_NPC();
     }
 
-    @Override
-    public Instruction getInstruction() {
-        return getOldestInstruction();
+    public Instruction releaseInstruction() {
+        Instruction peek = instructions.peekFirst();
+
+        // Null if empty
+        if (peek == null) return null;
+
+        instruction = peek;
+
+        // Pop if done
+        if (peek.getStage() != Instruction.Stage.EX)
+            return instructions.pop();
+
+        // Peek only if not done
+        return peek;
     }
 
     public boolean canStageRun(DataDependencyManager dataDependencyManager) throws Exception {
@@ -246,6 +270,14 @@ public class ExecuteStageSwitch extends Stage {
             throw new Exception("Cannot run " + this.getClass().getSimpleName() + " because the instruction of this stage has been passed, but is not yet at this stage.");
 
         return true;
+    }
+
+    public Instruction getInstruction() {
+        Instruction instruction = this.instruction;
+        if (instruction == null || instruction.getStage() == Instruction.Stage.DONE)
+            return null;
+
+        return instruction;
     }
 
     private Instruction getOldestInstruction() {

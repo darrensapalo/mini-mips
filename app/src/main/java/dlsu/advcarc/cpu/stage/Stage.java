@@ -69,7 +69,7 @@ public abstract class Stage {
 
         Instruction instruction = this.getInstruction();
         if (!(this instanceof InstructionFetchStage) && instruction != null && instruction.getStage().ordinal() != this.getStageId())
-            throw new Exception("Cannot run " + this.getClass().getSimpleName() + " because the instruction of this stage " + instruction + " has been passed, but is not yet at this stage. It is currently in stage " + instruction.getStage() + ".");
+            throw new Exception("Cannot run " + this.getClass().getSimpleName() + " because the instruction of this stage " + instruction + " is not at this stage. It is currently in stage " + instruction.getStage() + ".");
 
 
         return true;
@@ -89,12 +89,13 @@ public abstract class Stage {
 
                     // data dependency block data
                     Instruction.Stage releaseStage = dataDependencyBlock.getReleaseStage();
+                    Instruction.Stage blockStage = dataDependencyBlock.getBlockStage();
 
                     if (releaseStage != null && dataDependencyException != null) {
                         Instruction instruction = dataDependencyException.getDependentOnThis();
 
-                        boolean instructionIsPastReleaseStage = dataDependencyBlock.getReleaseStage().ordinal() < dataDependencyBlock.getOwnedBy().getStage().ordinal();
-
+                        boolean instructionIsPastReleaseStage = releaseStage.ordinal() < dataDependencyBlock.getOwnedBy().getStage().ordinal();
+                        boolean instructionIsPastOrAtLeastBlockStage = blockStage.ordinal() <= dataDependencyException.getInstruction().getStage().ordinal();
                         boolean hazardTypeIsWriteAfterWrite = dataDependencyBlock.getDataHazardType() == DataDependencyManager.DataHazardType.WriteAfterWrite;
 
                         boolean previousInstructionIsTheSameAsTheDependency = previousInstruction.equals(instruction);
@@ -104,6 +105,9 @@ public abstract class Stage {
 
                         if (!instructionIsPastReleaseStage && !hazardTypeIsWriteAfterWrite)
                             throw new Exception("Cannot run housekeeping on stage " + getClass().getSimpleName() + " because the previous instruction " + previousInstruction + " is dependent on " + instruction + " which releases the lock at stage " + releaseStage);
+
+                        if (instructionIsPastOrAtLeastBlockStage && hazardTypeIsWriteAfterWrite)
+                            throw new Exception("Cannot run housekeeping on stage " + getClass().getSimpleName() + " because the previous instruction " + previousInstruction + " is dependent on " + instruction + " which will only be blocked at stage " + blockStage);
                     }
                 }
             }

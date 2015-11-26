@@ -86,7 +86,7 @@ public class Register implements Writable {
     public Instruction peekDependency(Parameter.DependencyType type) {
         switch (type) {
             case read:
-                return readDependency.peek();
+                return this.readDependency.peek();
 
             case write:
 
