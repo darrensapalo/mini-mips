@@ -84,13 +84,13 @@ public class WriteBackStage extends Stage {
             case "LW":
             case "LWU":
             case "L.S":
-            case "S.S":
-            case "SW":
                 break;
 
-            case "BEQ":
+            case "ANDI":
+            case "DADDIU":
+                destination = this.instruction.getParameters().get(1);
+                destination.getParameter().write(ALUOutput.getBinaryValue());
                 break;
-
 
             default:
                 break;
