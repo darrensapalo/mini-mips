@@ -46,7 +46,7 @@ public class OpcodeHelper {
     }
 
     public static String getInstructionType(StringBinary ir) {
-        String binaryValue = ir.getBinaryValue();
+        String binaryValue = ir.forceLength(32);
         StringBinary opcode = new StringBinary(binaryValue.substring(0, 6));
 
         switch (opcode.getAsInt()) {
@@ -56,6 +56,11 @@ public class OpcodeHelper {
 
             // Regular R types
             case 0:
+                //Check for DSLL
+                StringBinary func = new StringBinary(binaryValue.substring(26,32));
+                if(func.getAsInt() == 56)
+                    return "I";
+
                 return "R";
 
             // I Types

@@ -59,8 +59,12 @@ public class WriteBackStage extends Stage {
             case "DADDU":
             case "OR":
             case "SLT":
-            case "DSLL":
                 destination = this.instruction.getParameters().get(2);
+                destination.getParameter().write(ALUOutput.getBinaryValue());
+                break;
+
+            case "DSLL":
+                destination = this.instruction.getParameters().get(0);
                 destination.getParameter().write(ALUOutput.getBinaryValue());
                 break;
 

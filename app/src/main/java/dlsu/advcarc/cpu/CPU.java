@@ -129,8 +129,6 @@ public class CPU {
                     }
                 } catch (Exception e) {
 
-                    e.printStackTrace();
-
                     fetchFailed = true;
 
                     if (e.getMessage() != null)
@@ -210,6 +208,9 @@ public class CPU {
             } catch (DataDependencyException e) {
                 e.handle(this);
             } catch (Exception e) {
+
+                e.printStackTrace();
+
                 if (e.getMessage() != null)
                     System.out.println("WB Stage: " + e.getMessage());
             }
