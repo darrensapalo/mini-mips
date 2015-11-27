@@ -128,6 +128,9 @@ public class CPU {
                         cycleTracker.setIfInstruction(instructionFetchStage.getInstruction());
                     }
                 } catch (Exception e) {
+
+                    e.printStackTrace();
+
                     fetchFailed = true;
 
                     if (e.getMessage() != null)

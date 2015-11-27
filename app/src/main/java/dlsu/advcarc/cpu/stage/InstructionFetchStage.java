@@ -45,6 +45,7 @@ public class InstructionFetchStage extends Stage {
         StringBinary PC = cpu.getProgramCounter();
 
         // IF/ID.IR = Mem[PC]
+        System.out.println(PC.getAsLong());
         String memoryLocation = RadixHelper.convertLongToHexString(PC.getAsLong());
         IFID_IR = MemoryManager.instance().getInstance(memoryLocation);
 

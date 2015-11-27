@@ -44,6 +44,14 @@ public class RadixHelper {
         return string;
     }
 
+    public static String padArithmetic(String string, int desiredLength){
+        String toAdd = string.charAt(0)+"";
+        int numToAdd = desiredLength - string.length();
+        for (int i = 0; i < numToAdd; i++)
+            string = toAdd + string;
+        return string;
+    }
+
     public static String forceLength(String string, int desiredLength) {
         if (string.length() < desiredLength)
             return padWithZero(string, desiredLength);

@@ -5,6 +5,7 @@ import dlsu.advcarc.memory.Memory;
 import dlsu.advcarc.parser.Parameter;
 import dlsu.advcarc.parser.StringBinary;
 import dlsu.advcarc.register.Register;
+import dlsu.advcarc.utils.RadixHelper;
 
 /**
  * Created by Darren on 11/21/2015.
@@ -79,7 +80,8 @@ public class ALU {
                 return _imm.shiftRight(-2);
 
             case "BEQ":
-                return _npc.plus(_imm.shiftRight(-2));
+                StringBinary tempImm = new StringBinary(RadixHelper.padArithmetic(_imm.forceLength(16), 64));
+                return _npc.plus(tempImm.times(StringBinary.valueOf(4)));
         }
         return null;
     }

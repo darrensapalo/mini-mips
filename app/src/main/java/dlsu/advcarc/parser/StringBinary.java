@@ -62,11 +62,11 @@ public class StringBinary {
     }
 
     public StringBinary plus(StringBinary addend){
-        return new StringBinary(Long.toBinaryString(Long.valueOf(value, 2) + Long.valueOf(addend.value, 2)));
+        return new StringBinary(Long.toBinaryString(new BigInteger(value, 2).add(new BigInteger(addend.value, 2)).longValue()));
     }
 
     public StringBinary minus(StringBinary minuend){
-        return new StringBinary(Long.toBinaryString(Long.valueOf(value, 2) - Long.valueOf(minuend.value, 2)));
+        return new StringBinary(Long.toBinaryString(new BigInteger(value, 2).subtract(new BigInteger(minuend.value, 2)).longValue()));
     }
 
     public StringBinary divide(StringBinary dividend){
@@ -74,7 +74,7 @@ public class StringBinary {
     }
 
     public StringBinary times(StringBinary multiplicand){
-        return new StringBinary(Long.toBinaryString(Long.valueOf(value, 2) * Long.valueOf(multiplicand.value, 2)));
+        return new StringBinary(Long.toBinaryString(new BigInteger(value, 2).multiply(new BigInteger(multiplicand.value, 2)).longValue()));
     }
 
 
