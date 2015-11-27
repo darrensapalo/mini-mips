@@ -22,7 +22,7 @@ public class StringBinary {
     }
 
     public String padBinaryValue(int desiredLength){
-        return RadixHelper.padWithZero(value, desiredLength);
+        return RadixHelper.forceLength(value, desiredLength);
     }
 
     public String getBinaryValue(){
@@ -66,7 +66,7 @@ public class StringBinary {
     }
 
     public StringBinary divide(StringBinary dividend){
-        return new StringBinary(Long.toBinaryString(Long.valueOf(value, 2) / Long.valueOf(dividend.value, 2)));
+        return new StringBinary(Long.toBinaryString(new BigInteger(value, 2).divide(new BigInteger(dividend.value, 2)).longValue()));
     }
 
     public StringBinary times(StringBinary multiplicand){
