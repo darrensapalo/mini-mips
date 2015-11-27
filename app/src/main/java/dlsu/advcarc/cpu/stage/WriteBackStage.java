@@ -84,6 +84,8 @@ public class WriteBackStage extends Stage {
             case "LW":
             case "LWU":
             case "L.S":
+                destination = this.instruction.getParameters().get(1);
+                destination.getParameter().write(LMD.getAsBinary());
                 break;
 
             case "ANDI":
