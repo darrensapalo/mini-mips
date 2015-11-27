@@ -85,7 +85,7 @@ public class Instruction {
                     Parameter parameter_irt = new Parameter(parameterTypes + binary_irt.getAsInt(), Parameter.ParameterType.register, this);
                     parameters.add(parameter_irt);
 
-                    String irs = binary.forceLength(32).substring(16, 21);
+                    String irs = binary.getBinaryValue().substring(16, 21);
                     StringBinary binary_irs = new StringBinary(irs);
                     Parameter parameter_irs = new Parameter(parameterTypes + binary_irs.getAsInt(), Parameter.ParameterType.register, this);
                     parameters.add(parameter_irs);
