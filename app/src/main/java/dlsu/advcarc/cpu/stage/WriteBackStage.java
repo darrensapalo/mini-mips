@@ -64,7 +64,7 @@ public class WriteBackStage extends Stage {
                 break;
 
             case "DSLL":
-                destination = this.instruction.getParameters().get(0);
+                destination = this.instruction.getParameters().get(1);
                 destination.getParameter().write(ALUOutput.getBinaryValue());
                 break;
 

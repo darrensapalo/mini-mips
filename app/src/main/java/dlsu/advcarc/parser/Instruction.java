@@ -77,15 +77,31 @@ public class Instruction {
                         parameterTypes = "F";
                         break;
                 }
-                String irs = binary.getBinaryValue().substring(6, 11);
-                StringBinary binary_irs = new StringBinary(irs);
-                Parameter parameter_irs = new Parameter(parameterTypes + binary_irs.getAsInt(), Parameter.ParameterType.register, this);
-                parameters.add(parameter_irs);
 
-                String irt = binary.getBinaryValue().substring(11, 16);
-                StringBinary binary_irt = new StringBinary(irt);
-                Parameter parameter_irt = new Parameter(parameterTypes + binary_irt.getAsInt(), Parameter.ParameterType.register, this);
-                parameters.add(parameter_irt);
+                if("DSLL".equals(OpcodeHelper.getInstruction(binary))){
+
+                    String irt = binary.getBinaryValue().substring(11, 16);
+                    StringBinary binary_irt = new StringBinary(irt);
+                    Parameter parameter_irt = new Parameter(parameterTypes + binary_irt.getAsInt(), Parameter.ParameterType.register, this);
+                    parameters.add(parameter_irt);
+
+                    String irs = binary.forceLength(32).substring(16, 21);
+                    StringBinary binary_irs = new StringBinary(irs);
+                    Parameter parameter_irs = new Parameter(parameterTypes + binary_irs.getAsInt(), Parameter.ParameterType.register, this);
+                    parameters.add(parameter_irs);
+                }
+                else {
+                    String irs = binary.getBinaryValue().substring(6, 11);
+                    StringBinary binary_irs = new StringBinary(irs);
+                    Parameter parameter_irs = new Parameter(parameterTypes + binary_irs.getAsInt(), Parameter.ParameterType.register, this);
+                    parameters.add(parameter_irs);
+
+                    String irt = binary.getBinaryValue().substring(11, 16);
+                    StringBinary binary_irt = new StringBinary(irt);
+                    Parameter parameter_irt = new Parameter(parameterTypes + binary_irt.getAsInt(), Parameter.ParameterType.register, this);
+                    parameters.add(parameter_irt);
+                }
+
 
                 String iimm = binary.getBinaryValue().substring(16, 32);
                 Parameter parameter_iimm = new Parameter(iimm, Parameter.ParameterType.immediate, this);
