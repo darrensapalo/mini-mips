@@ -47,7 +47,7 @@ public class IOpcodeBuilder {
         sb.append(RadixHelper.convertLongToStringBinary(OpcodeHelper.getOpcodeNumber(func)).padBinaryValue(6));
         sb.append(RadixHelper.convertLongToStringBinary(rs).padBinaryValue(5));
         sb.append(RadixHelper.convertLongToStringBinary(rtd).padBinaryValue(5));
-        sb.append(imm.padBinaryValue(16));
+        sb.append(imm.forceLength(16));
 
         return new Opcode(new StringBinary(sb.toString()));
     }

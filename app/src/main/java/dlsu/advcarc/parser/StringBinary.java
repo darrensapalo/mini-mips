@@ -22,6 +22,10 @@ public class StringBinary {
     }
 
     public String padBinaryValue(int desiredLength){
+        return RadixHelper.padWithZero(value, desiredLength);
+    }
+
+    public String forceLength(int desiredLength){
         return RadixHelper.forceLength(value, desiredLength);
     }
 
