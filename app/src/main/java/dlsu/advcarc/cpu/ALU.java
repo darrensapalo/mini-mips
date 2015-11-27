@@ -49,9 +49,9 @@ public class ALU {
                 return _a.times(_b);
 
             case "DSLL":
-                String shiftAmount = ir.getAsBinary().substring(20, 25);
+                String shiftAmount = new StringBinary(ir.getAsBinary()).forceLength(32).substring(21, 26);
                 StringBinary shiftAmountBinary = new StringBinary(shiftAmount);
-                return _a.shiftRight(shiftAmountBinary.getAsInt());
+                return _a.shiftRight(-1*shiftAmountBinary.getAsInt());
 
             case "ADD.S":
                 // todo: how to read binary as floating point?
