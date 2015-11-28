@@ -65,7 +65,7 @@ public class CPUCycleTracker {
 
             target.add("A"+digit);
         }
-        else if(instructionString.contains("MULT.S")){
+        else if(instructionString.contains("MUL.S")){
 
             int digit = 1;
 
