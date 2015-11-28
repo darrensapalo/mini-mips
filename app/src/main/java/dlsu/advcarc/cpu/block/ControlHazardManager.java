@@ -13,7 +13,7 @@ public class ControlHazardManager {
     }
 
     public void setBranchInstruction(Instruction instruction){
-        if (instruction != null && instruction.getInstruction().contains("BEQ")){
+        if (instruction != null && (instruction.getInstruction().contains("BEQ") || instruction.getInstruction().contains("J"))){
             branchInstruction = instruction;
         }
     }
