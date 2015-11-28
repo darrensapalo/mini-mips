@@ -21,7 +21,7 @@ public class MemoryStage extends Stage {
     private ExecuteStageSwitch executeStage;
 
     private StringBinary MEMWB_ALUOutput;
-    private Memory MEMWB_LMD;
+    private StringBinary MEMWB_LMD;
     private dlsu.advcarc.memory.Memory MEMWB_IR;
     private Parameter MEMWB_B;
 
@@ -60,17 +60,20 @@ public class MemoryStage extends Stage {
         ArrayList<Parameter> parameters = instruction.getParameters();
 
         String instruction = this.instruction.getInstructionOnly();
-        String memoryLocation = MEMWB_ALUOutput.toHexString();
+        String memoryLocation = MEMWB_ALUOutput.toHexString(4);
 
-        if ("0".equals(memoryLocation))
-            memoryLocation = MEMWB_ALUOutput.padBinaryValue(4);
+//        if ("0".equals(memoryLocation))
+//            memoryLocation = MEMWB_ALUOutput.padBinaryValue(4);
 
         switch (instruction) {
             // read
             case "LW":
+                System.out.println("MEM Stage: Reading from address " + memoryLocation);
+                MEMWB_LMD = new StringBinary(MemoryManager.instance().getInstance(memoryLocation).read().padBinaryValueArithmetic(64));
+                break;
             case "LWU":
                 System.out.println("MEM Stage: Reading from address " + memoryLocation);
-                MEMWB_LMD = MemoryManager.instance().getInstance(memoryLocation);
+                MEMWB_LMD = new StringBinary(MemoryManager.instance().getInstance(memoryLocation).read().padBinaryValue(64));
                 break;
 
             // write
@@ -109,7 +112,7 @@ public class MemoryStage extends Stage {
         return MEMWB_ALUOutput;
     }
 
-    public Memory getMEMWB_LMD() {
+    public StringBinary getMEMWB_LMD() {
         return MEMWB_LMD;
     }
 
@@ -120,7 +123,7 @@ public class MemoryStage extends Stage {
 
     public JsonArray toJsonArray() {
         return new JsonArray()
-                .add(new JsonObject().put("register", "MEM/WB.LMD").put("value", getMEMWB_LMD() == null ? "null" : getMEMWB_LMD().getAsHex()))
+                .add(new JsonObject().put("register", "MEM/WB.LMD").put("value", getMEMWB_LMD() == null ? "null" : getMEMWB_LMD().toHexString(16)))
                 .add(new JsonObject().put("register", "MEM/WB.ALUOutput").put("value", getMEMWB_ALUOutput() == null ? "null" : getMEMWB_ALUOutput().toHexString()))
                 .add(new JsonObject().put("register", "MEM/WB.IR").put("value", getMEMWB_IR() == null ? "null" : getMEMWB_IR().getAsHex()));
     }

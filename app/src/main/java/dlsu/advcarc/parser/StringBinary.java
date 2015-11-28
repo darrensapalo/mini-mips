@@ -25,6 +25,8 @@ public class StringBinary {
         return RadixHelper.padWithZero(value, desiredLength);
     }
 
+    public String padBinaryValueArithmetic(int desiredLength){ return RadixHelper.padArithmetic(value, desiredLength);}
+
     public String forceLength(int desiredLength){
         return RadixHelper.forceLength(value, desiredLength);
     }

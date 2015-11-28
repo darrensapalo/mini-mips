@@ -13,7 +13,7 @@ import dlsu.advcarc.parser.StringBinary;
  */
 public class WriteBackStage extends Stage {
     private MemoryStage memoryStage;
-    private Memory LMD;
+    private StringBinary LMD;
     private Memory IR;
     private StringBinary ALUOutput;
 
@@ -85,7 +85,7 @@ public class WriteBackStage extends Stage {
             case "LWU":
             case "L.S":
                 destination = this.instruction.getParameters().get(1);
-                destination.getParameter().write(LMD.getAsBinary());
+                destination.getParameter().write(LMD.getBinaryValue());
                 break;
 
             case "ANDI":
