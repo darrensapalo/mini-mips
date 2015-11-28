@@ -17,7 +17,7 @@ public class MipsParser {
     public static final String F_REGISTER_REGEX = "F([0-9]|[1-2][0-9]|[3][0-1])";
 
 
-    public static final String IMM_REGEX = "[0-9]{4}";
+    public static final String IMM_REGEX = "[0-9A-F]{4}";
     public static final String LABEL_REGEX = "L[0-9]+:";
     public static final String LABEL_REGEX_NO_COLON = "L[0-9]+";
 
