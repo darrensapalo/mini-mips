@@ -44,7 +44,7 @@ function populateTable(tableID, data, columns){
         .text(function(d){return d;})
         .attr('class', 'text-nowrap')
         .attr('contenteditable', function(d){
-          if(d.length == 16 && d.indexOf(' ') < 0)
+          if(d.length == 16 && d.indexOf(' ') < 0 || d.length == 8 && tableID == '#table-memory' )
             return true;
           return false;
         });

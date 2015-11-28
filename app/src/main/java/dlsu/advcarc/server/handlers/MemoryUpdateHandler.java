@@ -21,17 +21,17 @@ public class MemoryUpdateHandler implements Handler<Message<JsonObject>> {
 
         try {
 
-            StringBinary newValue;
+            StringBinary newValue = RadixHelper.convertHexToStringBinary(newValueString);
 
-            if (newValueString.contains(".")) {
-                double doubleValue = Double.parseDouble(newValueString);
-                long longValue = Double.doubleToLongBits(doubleValue);
-                newValue = RadixHelper.convertLongToStringBinary(longValue);
-            }
-            else {
-                long longValue = Long.parseLong(newValueString);
-                newValue = RadixHelper.convertLongToStringBinary(longValue);
-            }
+//            if (newValueString.contains(".")) {
+//                double doubleValue = Double.parseDouble(newValueString);
+//                long longValue = Double.doubleToLongBits(doubleValue);
+//                newValue = RadixHelper.convertLongToStringBinary(longValue);
+//            }
+//            else {
+//                long longValue = Long.parseLong(newValueString);
+//                newValue = RadixHelper.convertLongToStringBinary(longValue);
+//            }
 
             MemoryManager.instance().updateMemory(memoryLocation, newValue);
 
