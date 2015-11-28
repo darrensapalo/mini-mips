@@ -34,10 +34,11 @@ public class Instruction {
         String instructionType = OpcodeHelper.getInstructionType(binary);
         switch (instructionType) {
             case "J":
-                String label = binary.getBinaryValue().substring(5, 31);
+                String label = binary.getBinaryValue().substring(6, 32);
                 StringBinary stringBinary = new StringBinary(label);
-                String hex = stringBinary.toHexString();
-                Parameter parameter = new Parameter(hex, Parameter.ParameterType.immediate, this);
+                Parameter parameter = new Parameter(stringBinary.getBinaryValue(), Parameter.ParameterType.immediate, this);
+//                parameters.add(null);
+//                parameters.add(null);
                 parameters.add(parameter);
                 break;
 

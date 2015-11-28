@@ -13,6 +13,9 @@ import dlsu.advcarc.utils.RadixHelper;
 public class ALU {
 
     public static String executeCond(String instruction, Memory EXMEM_IR, Parameter a, Parameter b){
+        if(instruction.equals("J"))
+            return "1";
+
         StringBinary _a = a.getParameter().read();
         StringBinary _b = b.getParameter().read();
 
@@ -30,6 +33,13 @@ public class ALU {
     }
 
     public static StringBinary executeALU(String instruction, Memory ir, Parameter a, Parameter b, Parameter imm, StringBinary _npc) {
+
+        if(instruction.equals("J")) {
+            String jInstructionBinary = new StringBinary(ir.getAsBinary()).forceLength(32);
+            StringBinary targetAddressDiv4Binary = new StringBinary(jInstructionBinary.substring(6, 32));
+            return targetAddressDiv4Binary.times(StringBinary.valueOf(4));
+        }
+
         StringBinary _a = a.getParameter().read();
         StringBinary _b = b.getParameter().read();
         StringBinary _imm = imm.getParameter().read();
@@ -76,8 +86,7 @@ public class ALU {
             case "DADDIU":
                 return _a.plus(_imm);
 
-            case "J":
-                return _imm.shiftRight(-2);
+
 
             case "BEQ":
                 StringBinary tempImm = new StringBinary(RadixHelper.padArithmetic(_imm.forceLength(16), 64));

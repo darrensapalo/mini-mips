@@ -65,19 +65,19 @@ public class InstructionDecodeStage extends Stage {
         try {
             IDEX_A = parameters.get(0);
         } catch (Exception e) {
-
+            IDEX_A = null;
         }
 
         try {
             IDEX_B = parameters.get(1);
         } catch (Exception e) {
-
+            IDEX_B = null;
         }
 
         try {
             IDEX_IMM = parameters.get(2);
         } catch (Exception e) {
-
+            IDEX_IMM = null;
         }
         didRun = true;
     }

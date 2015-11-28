@@ -285,7 +285,7 @@ public class CPU {
                 }
             } catch (Exception e) {
                 fetchFailed = true;
-
+                e.printStackTrace();
                 if (e.getMessage() != null)
                     System.out.println("IF Stage: " + e.getMessage());
             }
