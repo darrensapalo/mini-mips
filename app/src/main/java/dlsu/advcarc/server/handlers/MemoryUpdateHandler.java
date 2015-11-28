@@ -21,7 +21,7 @@ public class MemoryUpdateHandler implements Handler<Message<JsonObject>> {
 
         try {
 
-            StringBinary newValue = RadixHelper.convertHexToStringBinary(newValueString);
+            StringBinary newValue = new StringBinary(RadixHelper.convertHexToStringBinary(newValueString).forceLength(32));
 
 //            if (newValueString.contains(".")) {
 //                double doubleValue = Double.parseDouble(newValueString);

@@ -208,7 +208,7 @@ public class CPU {
             } catch (DataDependencyException e) {
                 e.handle(this);
             } catch (Exception e) {
-                
+
                 if (e.getMessage() != null)
                     System.out.println("WB Stage: " + e.getMessage());
             }
