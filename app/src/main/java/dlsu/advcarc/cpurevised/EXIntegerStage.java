@@ -41,7 +41,11 @@ public class EXIntegerStage extends AbstractEXStage{
 
             case "BEQ":
                 cpu.setIfStageCanCheckCond(true);
-                ALUOutput = A.padBinaryValueArithmeticStringBinary(64).plus(IMM.padBinaryValueArithmeticStringBinary(64));
+                cond = 0; //TODO 
+
+                IMM = IMM.padBinaryValueArithmeticStringBinary(64);
+                IMM = IMM.times(StringBinary.valueOf(4)).forceLengthStringBinary(64);
+                ALUOutput = NPC.plus(IMM).forceLengthStringBinary(64);
                 break;
             case "J":
                 cpu.setIfStageCanCheckCond(true);
