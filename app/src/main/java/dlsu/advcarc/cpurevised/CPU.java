@@ -94,6 +94,8 @@ public class CPU {
         if(ifExecuted)
             cpuCycleTracker.setIfInstruction(ifStage.getIRMemAddressHex());
 
+
+        cpuCycleTracker.nextCycle();
         broadcastCPUState();
 
         return true; //TODO
@@ -145,7 +147,7 @@ public class CPU {
     public JsonObject toJsonObject() {
         return new JsonObject()
                 .put("registers", getRegistersJsonArray())
-                .put("pipeline", ""); //TODO cycleTracker == null ? new JsonArray() : cycleTracker.toJsonObject());
+                .put("pipeline", cpuCycleTracker == null? "" : cpuCycleTracker.toJsonObject()); //TODO cycleTracker == null ? new JsonArray() : cycleTracker.toJsonObject());
     }
 
     public JsonArray getRegistersJsonArray() {
