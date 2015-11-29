@@ -62,7 +62,7 @@ public class CPUCycleTracker {
 
             int digit = 1;
 
-            if(target.size() > 0 && target.get(target.size()-1).matches("A\\d"))
+            if(getLastInserted(target).matches("A\\d"))
                 digit = Integer.parseInt(target.get(target.size()-1).replaceAll("A",""))+1;
 
             target.add("A"+digit);
@@ -71,13 +71,25 @@ public class CPUCycleTracker {
 
             int digit = 1;
 
-            if(target.size() > 0 && target.get(target.size()-1).matches("M\\d"))
+            if(getLastInserted(target).matches("M\\d"))
                 digit = Integer.parseInt(target.get(target.size()-1).replaceAll("M",""))+1;
 
             target.add("M"+digit);
         }
-        else
-            target.add("EX");
+        else {
+
+            String lastInserted = getLastInserted(target);
+            if(!lastInserted.equals("EX"))
+                target.add("EX");
+        }
+    }
+
+    private String getLastInserted(List<String> records){
+        for(int i=records.size()-1; i>=0; i--)
+            if(!records.get(i).isEmpty())
+                return records.get(i);
+
+        return "";
     }
 
     public void setMemInstruction(String memAddressHex) {
