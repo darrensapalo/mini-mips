@@ -1,7 +1,5 @@
 package dlsu.advcarc.cpurevised;
 
-import dlsu.advcarc.cpu.ALU;
-import dlsu.advcarc.opcode.Opcode;
 import dlsu.advcarc.parser.StringBinary;
 import dlsu.advcarc.register.RegisterManager;
 import io.vertx.core.json.JsonArray;
@@ -13,23 +11,27 @@ public class WBStage extends AbstractStage{
 
     private StringBinary ALUOutput;
 
+    public WBStage(CPU cpu){
+        super(cpu);
+        resetRegisters();
+    }
+
     @Override
     public boolean hasInstructionToForward() {
         return true;
     }
 
     @Override
-    public boolean execute() {
+    protected boolean checkExtraDependenciesIfCanExecute() {
+        return true;
+    }
 
-        if( "NOP".equals(IR.getInstruction()))
-            return false;
-
+    @Override
+    public void execute() {
         String destinationRegister = IR.getDestinationRegisterName();
 
         if(destinationRegister != null && !destinationRegister.trim().isEmpty())
             RegisterManager.instance().updateRegister(destinationRegister, ALUOutput);
-
-        return true;
     }
 
     @Override
@@ -50,7 +52,4 @@ public class WBStage extends AbstractStage{
         ALUOutput = StringBinary.valueOf(0);
     }
 
-    public String getIRMemAddressHex() {
-        return IRMemAddressHex;
-    }
 }

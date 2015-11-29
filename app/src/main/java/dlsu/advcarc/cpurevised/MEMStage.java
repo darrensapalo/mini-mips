@@ -1,7 +1,6 @@
 package dlsu.advcarc.cpurevised;
 
 import dlsu.advcarc.memory.MemoryManager;
-import dlsu.advcarc.opcode.Opcode;
 import dlsu.advcarc.parser.StringBinary;
 import io.vertx.core.json.JsonArray;
 import io.vertx.core.json.JsonObject;
@@ -18,7 +17,7 @@ public class MEMStage extends AbstractStage {
     private CPU cpu;
 
     public MEMStage(CPU cpu){
-        this.cpu = cpu;
+        super(cpu);
     }
 
     @Override
@@ -27,10 +26,12 @@ public class MEMStage extends AbstractStage {
     }
 
     @Override
-    public boolean execute() {
-        if(IR.isNOP())
-            return false;
+    protected boolean checkExtraDependenciesIfCanExecute() {
+        return true;
+    }
 
+    @Override
+    public void execute() {
 
         switch(IR.getInstruction()){
 
@@ -49,7 +50,6 @@ public class MEMStage extends AbstractStage {
                 break;
         }
 
-        return true;
     }
 
     @Override
@@ -94,7 +94,4 @@ public class MEMStage extends AbstractStage {
         return cpu;
     }
 
-    public String getIRMemAddressHex() {
-        return IRMemAddressHex;
-    }
 }

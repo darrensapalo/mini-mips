@@ -13,9 +13,7 @@ import java.util.List;
  */
 public class IDStage extends AbstractStage{
 
-    private CPU cpu;
     private StringBinary NPC;
-
     private StringBinary A;
     private StringBinary B;
     private StringBinary IMM;
@@ -23,7 +21,7 @@ public class IDStage extends AbstractStage{
     private boolean hasInstructionToForward;
 
     public IDStage(CPU cpu){
-        this.cpu = cpu;
+        super(cpu);
     }
 
 
@@ -33,23 +31,19 @@ public class IDStage extends AbstractStage{
     }
 
     @Override
-    public boolean execute() {
-
-        hasInstructionToForward = false;
-
-        if("NOP".equals(IR.getInstruction()))
-            return false;
-
-        if(cpu.isFlushing() && !IR.isBranchOrJump()) // TODO || nexxt stage is stalling
-            return false;
-
-        /* Stall if there are Read After Write dependencies */
+    protected boolean checkExtraDependenciesIfCanExecute() {
+           /* Stall if there are Read After Write dependencies */
         List<String> registerReadDependencies = IR.getRegisterNamesToRead();
         for(String registerName: registerReadDependencies){
             if(cpu.hasPendingWrite(registerName))
                 return false;
         }
 
+        return true;
+    }
+
+    @Override
+    public void execute() {
 
         /* Initialize A, B, and IMM */
         String aRegisterName = IR.getARegisterName();
@@ -59,8 +53,6 @@ public class IDStage extends AbstractStage{
         B = bRegisterName == null ? StringBinary.valueOf(0) : RegisterManager.instance().getInstance(bRegisterName).getValue();
         IMM = IR.getImm();
 
-        hasInstructionToForward = true;
-        return true;
     }
 
     @Override
@@ -110,7 +102,4 @@ public class IDStage extends AbstractStage{
         return NPC;
     }
 
-    public String getIRMemAddressHex() {
-        return IRMemAddressHex;
-    }
 }

@@ -11,16 +11,13 @@ import io.vertx.core.json.JsonObject;
  */
 public class IFStage extends AbstractStage{
 
-
-    private CPU cpu;
-
     private StringBinary NPC;
     private StringBinary PC;
 
     private boolean hasInstructionToForward;
 
     public IFStage(CPU cpu){
-        this.cpu = cpu;
+        super(cpu);
         NPC = new StringBinary("0");
         PC = new StringBinary("0");
     }
@@ -31,38 +28,43 @@ public class IFStage extends AbstractStage{
     }
 
     @Override
-    public boolean execute() {
+    protected boolean checkExtraDependenciesIfCanExecute() {
+        IRMemAddressHex = PC.toHexString(4);
+        Opcode nextOpcode =  new Opcode(new StringBinary(MemoryManager.instance().getInstance(IRMemAddressHex).getAsBinary()));
+        return !nextOpcode.isNOP();
+    }
 
+    @Override
+    public void execute() {
         hasInstructionToForward = false;
 
         IRMemAddressHex = PC.toHexString(4);
         IR = new Opcode(new StringBinary(MemoryManager.instance().getInstance(IRMemAddressHex).getAsBinary()));
-
-        if(IR.isNOP())
-            return false;
 
         /* NPC/PC control */
         EXIntegerStage ex = cpu.getEXIntegerStage();
 
         if(ex.getCond() == 1){
             NPC = ex.getALUOutput();
-            cpu.setFlushing(false);
         }
         else{ // Cond == 0
 
             // If branch ex has just finished and no jump/branch is taken, go back to the instruction after J/BEQ
-            if(cpu.justFinishedBranchEx()) {
+            if(cpu.justFinishedBranchEx())
                 NPC = ex.getNPC();
-                cpu.setFlushing(false);
-                cpu.setJustFinishedBranchEx(false);
-            }
             else
                 NPC = PC.plus(StringBinary.valueOf(4));
-                PC = NPC.clone();
         }
 
+        PC = NPC.clone();
+
+        if(cpu.justFinishedBranchEx())
+            cpu.setJustFinishedBranchEx(false);
+
+        if("BEQ".equals(IR.getInstruction()) || "J".equals(IR.getInstruction()))
+            cpu.setRunningBranch(IRMemAddressHex);
+
         hasInstructionToForward = true;
-        return true;
     }
 
     @Override
@@ -93,7 +95,4 @@ public class IFStage extends AbstractStage{
         return NPC;
     }
 
-    public String getIRMemAddressHex() {
-        return IRMemAddressHex;
-    }
 }

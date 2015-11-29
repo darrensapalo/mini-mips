@@ -18,17 +18,23 @@ public class EXIntegerStage extends AbstractStage{
     private int cond;
     private StringBinary NPC;
 
+    public EXIntegerStage(CPU cpu){
+        super(cpu);
+        resetRegisters();
+    }
+
     @Override
     public boolean hasInstructionToForward() {
         return !IR.isNOP();
     }
 
     @Override
-    public boolean execute() {
+    protected boolean checkExtraDependenciesIfCanExecute() {
+        return true;
+    }
 
-        if("NOP".equals(IR.getInstruction())) {
-            return false;
-        }
+    @Override
+    public void execute() {
 
         switch(IR.getInstruction()){
 
@@ -37,9 +43,12 @@ public class EXIntegerStage extends AbstractStage{
 
             //TODO implement the rest here:
 
+            case "BEQ":
+            case "J":
+                cpu.setRunningBranch(null);
+                break;
         }
 
-        return true;
     }
 
     @Override
@@ -82,10 +91,6 @@ public class EXIntegerStage extends AbstractStage{
         return StringBinary.valueOf(0); //TODO
     }
 
-    public Opcode getIR() {
-        return IR;
-    }
-
     public StringBinary getA() {
         return A;
     }
@@ -98,7 +103,4 @@ public class EXIntegerStage extends AbstractStage{
         return IMM;
     }
 
-    public String getIRMemAddressHex() {
-        return IRMemAddressHex;
-    }
 }

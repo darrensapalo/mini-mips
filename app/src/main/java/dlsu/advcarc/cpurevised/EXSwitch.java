@@ -11,8 +11,9 @@ public class EXSwitch extends AbstractStage {
 
     private EXIntegerStage integer;
 
-    public EXSwitch(){
-        integer = new EXIntegerStage();
+    public EXSwitch(CPU cpu){
+        super(cpu);
+        integer = new EXIntegerStage(cpu);
     }
 
     @Override
@@ -21,11 +22,19 @@ public class EXSwitch extends AbstractStage {
     }
 
     @Override
-    public boolean  execute() {
-        return integer.execute();
-        //TODO add the adder and multiplier
+    protected boolean checkExtraDependenciesIfCanExecute() {
+        return integer.checkExtraDependenciesIfCanExecute();
+    }
 
-        //TODO add dependency checking for Write after Write (only applies to S.S after ADD.S or MULT.S)
+    @Override
+    public boolean executeIfAllowed(AbstractStage nextStage){
+        return integer.executeIfAllowed(nextStage);
+        //TODO call adder and multiplier here || adder.executeIfAllowed() ...
+    }
+
+    @Override
+    public void execute() {
+        //This method should not be called
     }
 
     @Override
@@ -46,10 +55,20 @@ public class EXSwitch extends AbstractStage {
             integer.resetToNOP();
     }
 
+    public AbstractStage getTargetStage(Opcode opcode){
+        switch(opcode.getInstruction()){
+            case "ADD.S":
+                return null; //TODO replace with adder
+            case "MUL.S":
+                return null; // TODO Replace with multiplier
+            default: return integer;
+        }
+    }
+
     public  boolean isReadyToAcceptInstruction(String instruction){
 
         //TODO check for ADD.S and MUL.S
-        return integer.isReadyToAcceptInstruction();
+        return integer.isEmpty();
     }
 
     public Opcode getIR(){

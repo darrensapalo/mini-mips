@@ -1,9 +1,9 @@
 package dlsu.advcarc.cpurevised;
 
-import dlsu.advcarc.cpurevised.CPUCycleTracker;
 import dlsu.advcarc.parser.ProgramCode;
 import dlsu.advcarc.server.Addresses;
 import dlsu.advcarc.server.EventBusHolder;
+import dlsu.advcarc.utils.RadixHelper;
 import io.vertx.core.json.JsonArray;
 import io.vertx.core.json.JsonObject;
 
@@ -22,8 +22,8 @@ public class CPU {
     private WBStage wbStage;
 
     private ProgramCode programCode;
-    private boolean isFlushing;
     private boolean justFinishedBranchEx;
+    private String runningBranchMemAddressHex;
 
     private CPUCycleTracker cpuCycleTracker;
 
@@ -36,18 +36,19 @@ public class CPU {
     private void reset(){
         ifStage = new IFStage(this);
         idStage = new IDStage(this);
-        exStage = new EXSwitch();
+        exStage = new EXSwitch(this);
         memStage = new MEMStage(this);
-        wbStage = new WBStage();
+        wbStage = new WBStage(this);
         programCode = null;
-        isFlushing  = false;
         justFinishedBranchEx = false;
+        runningBranchMemAddressHex = null;
     }
 
     public void inputProgramCode(ProgramCode programCode){
         reset();
         this.programCode = programCode;
         cpuCycleTracker = new CPUCycleTracker(programCode);
+        broadcastCPUState();
     }
 
 
@@ -58,29 +59,29 @@ public class CPU {
         // Housekeeping
         wbStage.resetToNOP();
 
-        if(memStage.hasInstructionToForward() && wbStage.isReadyToAcceptInstruction()) {
+        if(!memStage.isStalling() && wbStage.isEmpty()) {
             wbStage.housekeeping(memStage);
             memStage.resetToNOP();
         }
-        if(exStage.hasInstructionToForward() && memStage.isReadyToAcceptInstruction()) {
+        if(!exStage.isStalling && memStage.isEmpty()) {
             memStage.housekeeping(exStage);
             exStage.resetToNOP();
         }
-        if(idStage.hasInstructionToForward() && exStage.isReadyToAcceptInstruction()) {
+        if(!idStage.isStalling() && exStage.isEmpty()) {
             exStage.housekeeping(idStage);
             idStage.resetToNOP();
         }
-        if(ifStage.hasInstructionToForward() && idStage.isReadyToAcceptInstruction()) {
+        if(!ifStage.isStalling() && idStage.isEmpty()) {
             idStage.housekeeping(ifStage);
             ifStage.resetToNOP();
         }
 
         // Execute
-        boolean wbExecuted = wbStage.execute();
-        boolean memExecuted =  memStage.execute();
-        boolean exExecuted = exStage.execute();
-        boolean idExecuted = idStage.execute();
-        boolean ifExecuted =  ifStage.execute();
+        boolean wbExecuted = wbStage.executeIfAllowed(null);
+        boolean memExecuted =  memStage.executeIfAllowed(wbStage);
+        boolean exExecuted = exStage.executeIfAllowed(memStage);
+        boolean idExecuted = idStage.executeIfAllowed(exStage.getTargetStage(idStage.getIR()));
+        boolean ifExecuted =  ifStage.executeIfAllowed(idStage);
 
         // Record the executions
         if(wbExecuted)
@@ -94,11 +95,15 @@ public class CPU {
         if(ifExecuted)
             cpuCycleTracker.setIfInstruction(ifStage.getIRMemAddressHex());
 
-
-        cpuCycleTracker.nextCycle();
+        if(!hasFinishedExecuting())
+            cpuCycleTracker.nextCycle();
         broadcastCPUState();
 
         return true; //TODO
+    }
+
+    private boolean hasFinishedExecuting(){
+        return ifStage.isNOP() && idStage.isNOP() && exStage.isNOP() && memStage.isNOP() && wbStage.isNOP();
     }
 
     public boolean hasPendingWrite(String registerName){
@@ -115,6 +120,13 @@ public class CPU {
         return false;
     }
 
+    public boolean isInstructionAfterRunningBranch(String instMemAddressHex){
+        int instMemAddressInt = RadixHelper.convertHexToStringBinary(instMemAddressHex).getAsInt();
+        int branchAddressInt = RadixHelper.convertHexToStringBinary(runningBranchMemAddressHex).getAsInt();
+
+        return instMemAddressInt > branchAddressInt;
+    }
+
     public void broadcastCPUState() {
         EventBusHolder.instance().getEventBus()
                 .publish(Addresses.CPU_BROADCAST, this.toJsonObject());
@@ -126,12 +138,17 @@ public class CPU {
         return exStage.getEXIntegerStage();
     }
 
-    public boolean isFlushing() {
-        return isFlushing;
+    public boolean isBranchRunning() {
+        return runningBranchMemAddressHex != null && !runningBranchMemAddressHex.trim().isEmpty();
     }
 
-    public void setFlushing(boolean flushing) {
-        isFlushing = flushing;
+    public void setRunningBranch(String runningBranchMemAddressHex) {
+        this.runningBranchMemAddressHex = runningBranchMemAddressHex;
+
+        if(runningBranchMemAddressHex == null)
+            justFinishedBranchEx = true;
+        else
+            justFinishedBranchEx = false;
     }
 
     public boolean justFinishedBranchEx() {
