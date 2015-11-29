@@ -23,7 +23,7 @@ public class MEMStage extends AbstractStage {
 
     @Override
     public boolean hasInstructionToForward() {
-        return IR.isNOP();
+        return !IR.isNOP();
     }
 
     @Override
@@ -77,9 +77,6 @@ public class MEMStage extends AbstractStage {
     }
 
     /* Getters */
-    public Opcode getIR() {
-        return IR;
-    }
 
     public StringBinary getLMD() {
         return LMD;

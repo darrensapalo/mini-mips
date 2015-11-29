@@ -37,7 +37,6 @@ function handleRegisterBroadcast(err, msg){
 
 function handleMemoryBroadcast(err, msg){
 
-	console.log(msg.body);
 	if(msg.body){
 		var array = msg.body;
       	populateTable('#table-memory', array, memoryColumns);
@@ -48,6 +47,8 @@ function handleMemoryBroadcast(err, msg){
 }
 
 function handleCPUBroadcast(err, msg){
+
+	console.log(msg.body);
 
 	if(msg.body){
 		var array = msg.body['registers'];

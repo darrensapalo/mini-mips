@@ -42,4 +42,8 @@ public abstract class AbstractStage {
         return IR.toHexString(16);
     }
 
+    public Opcode getIR() {
+        return IR;
+    }
+
 }

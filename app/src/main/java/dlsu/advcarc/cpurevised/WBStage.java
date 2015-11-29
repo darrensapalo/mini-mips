@@ -21,12 +21,12 @@ public class WBStage extends AbstractStage{
     @Override
     public boolean execute() {
 
-        if(IR == null || "NOP".equals(IR.getInstruction()))
+        if( "NOP".equals(IR.getInstruction()))
             return false;
 
         String destinationRegister = IR.getDestinationRegisterName();
 
-        if(destinationRegister != null)
+        if(destinationRegister != null && !destinationRegister.trim().isEmpty())
             RegisterManager.instance().updateRegister(destinationRegister, ALUOutput);
 
         return true;

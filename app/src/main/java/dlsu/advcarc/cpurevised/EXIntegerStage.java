@@ -20,7 +20,7 @@ public class EXIntegerStage extends AbstractStage{
 
     @Override
     public boolean hasInstructionToForward() {
-        return true;
+        return !IR.isNOP();
     }
 
     @Override
@@ -58,6 +58,7 @@ public class EXIntegerStage extends AbstractStage{
         B = idStage.getB();
         IMM = idStage.getIMM();
         NPC = idStage.getNPC();
+        IR = idStage.getIR();
         IRMemAddressHex = idStage.getIRMemAddressHex();
     }
 
@@ -74,7 +75,7 @@ public class EXIntegerStage extends AbstractStage{
     }
 
     public StringBinary getALUOutput(){
-        return StringBinary.valueOf(0); //TODO
+        return ALUOutput;
     }
 
     public StringBinary getNPC(){

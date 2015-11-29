@@ -53,12 +53,54 @@ public class Opcode {
         return  OpcodeHelper.getInstruction(opcodeBinary);
     }
 
+    public String getInstructionType(){return OpcodeHelper.getInstructionType(opcodeBinary);}
+
     public String getARegisterName(){
-        return ""; //TODO
+
+        switch (getInstructionType()){
+
+            case "J":
+            case "R":
+                int registerNumber = OpcodeHelper.getInt(opcodeBinary, 6, 10);
+                return "R"+registerNumber;
+
+            case "Rx":
+                registerNumber = OpcodeHelper.getInt(opcodeBinary, 11, 15);
+                return "F"+registerNumber;
+
+            case "I":
+                if("DSLL".equals(getInstruction()))
+                    registerNumber = OpcodeHelper.getInt(opcodeBinary, 11, 15);
+                else
+                    registerNumber = OpcodeHelper.getInt(opcodeBinary, 6, 10);
+                return "R"+registerNumber;
+        }
+
+        return "";
     }
 
     public String getBRegisterName(){
-        return ""; //TODO
+
+        switch (getInstructionType()){
+
+            case "J":
+            case "R":
+                int registerNumber = OpcodeHelper.getInt(opcodeBinary, 11, 15);
+                return "R"+registerNumber;
+
+            case "Rx":
+                registerNumber = OpcodeHelper.getInt(opcodeBinary, 16, 20);
+                return "F"+registerNumber;
+
+            case "I":
+                if("DSLL".equals(getInstruction()))
+                    registerNumber = OpcodeHelper.getInt(opcodeBinary, 16, 20);
+                else
+                    registerNumber = OpcodeHelper.getInt(opcodeBinary, 11, 15);
+                return "R"+registerNumber;
+        }
+
+        return "";
     }
 
     public StringBinary getImm(){
@@ -66,7 +108,48 @@ public class Opcode {
     }
 
     public String getDestinationRegisterName(){
-        return ""; //TODO
+        switch (getInstructionType()){
+
+            case "J":
+                return null;
+
+            case "R":
+
+                if(getInstruction().equals("DMULT"))
+                    return null;
+
+                int registerNumber = OpcodeHelper.getInt(opcodeBinary, 16, 20);
+                return "R" + registerNumber;
+
+            case "Rx":
+                registerNumber = OpcodeHelper.getInt(opcodeBinary, 21, 25);
+                return "F"+registerNumber;
+
+            case "I":
+
+                String instruction = getInstruction();
+
+                switch (instruction){
+                    case "BEQ":
+                    case "SW":
+                    case "S.S":
+                            return null;
+
+                    case "DSLL":
+                        registerNumber = OpcodeHelper.getInt(opcodeBinary, 16, 20);
+                        return "R"+registerNumber;
+
+                    case "L.S":
+                        registerNumber = OpcodeHelper.getInt(opcodeBinary, 11, 15);
+                        return "F"+registerNumber;
+
+                    default: //ANDI, DADDIU, LW, LWU
+                        registerNumber = OpcodeHelper.getInt(opcodeBinary, 11, 15);
+                        return "R"+registerNumber;
+                }
+        }
+
+        return null;
     }
 
     public static Opcode createNOP(){
