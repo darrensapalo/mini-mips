@@ -21,6 +21,10 @@ public class StringBinary {
         this.value = value;
     }
 
+    public StringBinary clone(){
+        return new StringBinary(value);
+    }
+
     public String padBinaryValue(int desiredLength){
         return RadixHelper.padWithZero(value, desiredLength);
     }

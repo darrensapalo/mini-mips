@@ -9,10 +9,12 @@ public interface CPUStage {
 
     public boolean hasInstructionToForward();
 
-    public void execute();
+    public boolean execute();
 
     public JsonArray toJsonArray();
 
     public void housekeeping(CPUStage previousStage);
+
+    public void resetToNOP();
 
 }

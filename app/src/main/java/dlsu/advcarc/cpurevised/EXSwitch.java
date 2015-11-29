@@ -7,7 +7,7 @@ import io.vertx.core.json.JsonArray;
 /**
  * Created by user on 11/29/2015.
  */
-public class EXSwitch implements CPUStage {
+public class EXSwitch extends AbstractStage {
 
     private EXIntegerStage integer;
 
@@ -21,8 +21,8 @@ public class EXSwitch implements CPUStage {
     }
 
     @Override
-    public void execute() {
-        integer.execute();
+    public boolean  execute() {
+        return integer.execute();
         //TODO add the adder and multiplier
 
         //TODO add dependency checking for Write after Write (only applies to S.S after ADD.S or MULT.S)
@@ -34,9 +34,21 @@ public class EXSwitch implements CPUStage {
     }
 
     @Override
-    public void housekeeping(CPUStage previousStage) {
+    public void housekeeping(AbstractStage previousStage) {
         //TODO select appropriate EX component
         integer.housekeeping(previousStage);
+    }
+
+    @Override
+    public void resetRegisters() {
+        //TODO check if we need to do anything here
+        integer.resetToNOP();
+    }
+
+    public  boolean isReadyToAcceptInstruction(String instruction){
+
+        //TODO check for ADD.S and MUL.S
+        return integer.isReadyToAcceptInstruction();
     }
 
     public Opcode getIR(){
@@ -52,6 +64,10 @@ public class EXSwitch implements CPUStage {
     public StringBinary getALUOutput(){
         //TODO select appropriate EX component
         return integer.getALUOutput();
+    }
+
+    public String getIRMemAddressHex(){
+        return integer.getIRMemAddressHex();
     }
 
 }

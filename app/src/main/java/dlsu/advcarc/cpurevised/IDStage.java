@@ -11,9 +11,8 @@ import java.util.List;
 /**
  * Created by user on 11/29/2015.
  */
-public class IDStage implements  CPUStage{
+public class IDStage extends AbstractStage{
 
-    private Opcode IR;
     private CPU cpu;
     private StringBinary NPC;
 
@@ -21,17 +20,10 @@ public class IDStage implements  CPUStage{
     private StringBinary B;
     private StringBinary IMM;
 
-
-
     private boolean hasInstructionToForward;
 
     public IDStage(CPU cpu){
         this.cpu = cpu;
-        A = StringBinary.valueOf(0);
-        B = StringBinary.valueOf(0);
-        IMM = StringBinary.valueOf(0);
-        IR = Opcode.createNOP();
-        NPC = StringBinary.valueOf(0);
     }
 
 
@@ -41,18 +33,18 @@ public class IDStage implements  CPUStage{
     }
 
     @Override
-    public void execute() {
+    public boolean execute() {
 
-        if(IR == null) {
+        if("NOP".equals(IR.getInstruction())) {
             hasInstructionToForward = false;
-            return;
+            return false;
         }
 
 
         if(cpu.isFlushing() && !IR.isBranchOrJump()) // TODO || nexxt stage is stalling
         {
             hasInstructionToForward = false;
-            return;
+            return false;
         }
 
         /* Stall if there are Read After Write dependencies */
@@ -60,7 +52,7 @@ public class IDStage implements  CPUStage{
         for(String registerName: registerReadDependencies){
             if(cpu.hasPendingWrite(registerName)) {
                 hasInstructionToForward = false;
-                return;
+                return false;
             }
         }
 
@@ -72,6 +64,8 @@ public class IDStage implements  CPUStage{
         A = aRegisterName == null ? StringBinary.valueOf(0) : RegisterManager.instance().getInstance(aRegisterName).getValue();
         B = bRegisterName == null ? StringBinary.valueOf(0) : RegisterManager.instance().getInstance(bRegisterName).getValue();
         IMM = IR.getImm();
+
+        return true;
     }
 
     @Override
@@ -85,10 +79,20 @@ public class IDStage implements  CPUStage{
     }
 
     @Override
-    public void housekeeping(CPUStage previousStage) {
+    public void housekeeping(AbstractStage previousStage) {
         IFStage ifStage = (IFStage) previousStage;
         IR = ifStage.getIR();
         NPC = ifStage.getNPC();
+        IRMemAddressHex = ifStage.getIRMemAddressHex();
+    }
+
+    @Override
+    public void resetRegisters() {
+        A = StringBinary.valueOf(0);
+        B = StringBinary.valueOf(0);
+        IMM = StringBinary.valueOf(0);
+        IR = Opcode.createNOP();
+        NPC = StringBinary.valueOf(0);
     }
 
     public Opcode getIR() {
@@ -109,5 +113,9 @@ public class IDStage implements  CPUStage{
 
     public StringBinary getNPC() {
         return NPC;
+    }
+
+    public String getIRMemAddressHex() {
+        return IRMemAddressHex;
     }
 }

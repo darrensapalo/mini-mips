@@ -9,23 +9,21 @@ import io.vertx.core.json.JsonObject;
 /**
  * Created by user on 11/29/2015.
  */
-public class IFStage implements CPUStage{
+public class IFStage extends AbstractStage{
 
 
     private CPU cpu;
     private Opcode IR;
+    private String IRMemAddressHex;
 
     private StringBinary NPC;
     private StringBinary PC;
 
     private boolean hasInstructionToForward;
 
-
     public IFStage(CPU cpu){
         this.cpu = cpu;
-        NPC = new StringBinary("0");
-        PC = new StringBinary("0");
-        IR = Opcode.createNOP();
+
     }
 
     @Override
@@ -34,11 +32,12 @@ public class IFStage implements CPUStage{
     }
 
     @Override
-    public void execute() {
-        IR = new Opcode(new StringBinary(MemoryManager.instance().getInstance(PC.toHexString(4)).getAsBinary()));
+    public boolean execute() {
+        IRMemAddressHex = PC.toHexString(4);
+        IR = new Opcode(new StringBinary(MemoryManager.instance().getInstance(IRMemAddressHex).getAsBinary()));
 
         if("NOP".equals(IR.getInstruction()))
-            return;
+            return false;
 
         /* NPC/PC control */
         EXIntegerStage ex = cpu.getEXIntegerStage();
@@ -57,8 +56,10 @@ public class IFStage implements CPUStage{
             }
             else
                 NPC = PC.plus(StringBinary.valueOf(4));
+                PC = NPC.clone();
         }
 
+        return true;
     }
 
     @Override
@@ -69,8 +70,15 @@ public class IFStage implements CPUStage{
     }
 
     @Override
-    public void housekeeping(CPUStage previousStage) {
+    public void housekeeping(AbstractStage previousStage) {
 
+    }
+
+    @Override
+    public void resetRegisters() {
+        NPC = new StringBinary("0");
+        PC = new StringBinary("0");
+        IR = Opcode.createNOP();
     }
 
     public boolean isNOP(){
@@ -83,5 +91,9 @@ public class IFStage implements CPUStage{
 
     public StringBinary getNPC() {
         return NPC;
+    }
+
+    public String getIRMemAddressHex() {
+        return IRMemAddressHex;
     }
 }

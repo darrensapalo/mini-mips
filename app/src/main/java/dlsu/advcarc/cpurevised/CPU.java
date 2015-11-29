@@ -1,5 +1,6 @@
 package dlsu.advcarc.cpurevised;
 
+import dlsu.advcarc.cpurevised.CPUCycleTracker;
 import dlsu.advcarc.parser.ProgramCode;
 import dlsu.advcarc.server.Addresses;
 import dlsu.advcarc.server.EventBusHolder;
@@ -21,6 +22,8 @@ public class CPU {
     private boolean isFlushing;
     private boolean justFinishedBranchEx;
 
+    private CPUCycleTracker cpuCycleTracker;
+
     /* Initialization Code */
 
     public CPU(){
@@ -41,6 +44,7 @@ public class CPU {
     public void inputProgramCode(ProgramCode programCode){
         reset();
         this.programCode = programCode;
+        cpuCycleTracker = new CPUCycleTracker(programCode);
     }
 
 
@@ -49,21 +53,41 @@ public class CPU {
     public boolean clock(){
 
         // Housekeeping
-        if(memStage.hasInstructionToForward())
+        if(memStage.hasInstructionToForward() && wbStage.isReadyToAcceptInstruction()) {
             wbStage.housekeeping(memStage);
-        if(exStage.hasInstructionToForward())
+            memStage.resetToNOP();
+        }
+        if(exStage.hasInstructionToForward() && memStage.isReadyToAcceptInstruction()) {
             memStage.housekeeping(exStage);
-        if(idStage.hasInstructionToForward())
+            exStage.resetToNOP();
+        }
+        if(idStage.hasInstructionToForward() && exStage.isReadyToAcceptInstruction()) {
             exStage.housekeeping(idStage);
-        if(ifStage.hasInstructionToForward())
+            idStage.resetToNOP();
+        }
+        if(ifStage.hasInstructionToForward() && idStage.isReadyToAcceptInstruction()) {
             idStage.housekeeping(ifStage);
+            ifStage.resetToNOP();
+        }
 
         // Execute
-        wbStage.execute();
-        memStage.execute();
-        exStage.execute();
-        idStage.execute();
-        ifStage.execute();
+        boolean wbExecuted = wbStage.execute();
+        boolean memExecuted =  memStage.execute();
+        boolean exExecuted = exStage.execute();
+        boolean idExecuted = idStage.execute();
+        boolean ifExecuted =  ifStage.execute();
+
+        // Record the executions
+        if(wbExecuted)
+            cpuCycleTracker.setWbInstruction(wbStage.getIRMemAddressHex());
+        if(memExecuted)
+            cpuCycleTracker.setMemInstruction(memStage.getIRMemAddressHex());
+        if(exExecuted)
+            cpuCycleTracker.setExInstruction(exStage.getIR().getInstruction(), exStage.getIRMemAddressHex());
+        if(idExecuted)
+            cpuCycleTracker.setIdInstruction(idStage.getIRMemAddressHex());
+        if(ifExecuted)
+            cpuCycleTracker.setIfInstruction(ifStage.getIRMemAddressHex());
 
         broadcastCPUState();
 

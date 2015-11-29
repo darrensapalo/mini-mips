@@ -8,35 +8,27 @@ import io.vertx.core.json.JsonObject;
 /**
  * Created by user on 11/29/2015.
  */
-public class EXIntegerStage implements CPUStage {
+public class EXIntegerStage extends AbstractStage{
 
-
-    private Opcode IR;
     private StringBinary A;
     private StringBinary B;
     private StringBinary IMM;
-
     private StringBinary ALUOutput;
 
     private int cond;
     private StringBinary NPC;
-    private boolean hasFinishedExecuting;
-
-    public EXIntegerStage(){
-        IR = Opcode.createNOP();
-        A = StringBinary.valueOf(0);
-        B = StringBinary.valueOf(0);
-        IMM = StringBinary.valueOf(0);
-        ALUOutput = StringBinary.valueOf(0);
-    }
 
     @Override
     public boolean hasInstructionToForward() {
-        return false;
+        return true;
     }
 
     @Override
-    public void execute() {
+    public boolean execute() {
+
+        if("NOP".equals(IR.getInstruction())) {
+            return false;
+        }
 
         switch(IR.getInstruction()){
 
@@ -47,7 +39,7 @@ public class EXIntegerStage implements CPUStage {
 
         }
 
-        hasFinishedExecuting = true;
+        return true;
     }
 
     @Override
@@ -60,12 +52,21 @@ public class EXIntegerStage implements CPUStage {
     }
 
     @Override
-    public void housekeeping(CPUStage previousStage) {
+    public void housekeeping(AbstractStage previousStage) {
         IDStage idStage = (IDStage) previousStage;
         A = idStage.getA();
         B = idStage.getB();
         IMM = idStage.getIMM();
         NPC = idStage.getNPC();
+        IRMemAddressHex = idStage.getIRMemAddressHex();
+    }
+
+    @Override
+    public void resetRegisters() {
+        A = StringBinary.valueOf(0);
+        B = StringBinary.valueOf(0);
+        IMM = StringBinary.valueOf(0);
+        ALUOutput = StringBinary.valueOf(0);
     }
 
     public int getCond(){
@@ -96,7 +97,7 @@ public class EXIntegerStage implements CPUStage {
         return IMM;
     }
 
-    public boolean isHasFinishedExecuting() {
-        return hasFinishedExecuting;
+    public String getIRMemAddressHex() {
+        return IRMemAddressHex;
     }
 }

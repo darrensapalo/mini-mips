@@ -9,9 +9,11 @@ import io.vertx.core.json.JsonObject;
 /**
  * Created by user on 11/29/2015.
  */
-public class MEMStage implements CPUStage {
+public class MEMStage extends AbstractStage {
 
     private Opcode IR;
+    private String IRMemAddressHex;
+
     private StringBinary LMD;
     private StringBinary ALUOutput;
     private StringBinary B;
@@ -21,10 +23,6 @@ public class MEMStage implements CPUStage {
 
     public MEMStage(CPU cpu){
         this.cpu = cpu;
-        IR = Opcode.createNOP();
-        LMD = StringBinary.valueOf(0);
-        ALUOutput = StringBinary.valueOf(0);
-        B = StringBinary.valueOf(0);
     }
 
     @Override
@@ -33,7 +31,10 @@ public class MEMStage implements CPUStage {
     }
 
     @Override
-    public void execute() {
+    public boolean execute() {
+        if("NOP".equals(IR.getInstruction()))
+            return false;
+
 
         switch(IR.getInstruction()){
 
@@ -52,6 +53,7 @@ public class MEMStage implements CPUStage {
                 break;
         }
 
+        return true;
     }
 
     @Override
@@ -63,11 +65,19 @@ public class MEMStage implements CPUStage {
     }
 
     @Override
-    public void housekeeping(CPUStage previousStage) {
+    public void housekeeping(AbstractStage previousStage) {
         EXSwitch exStage = (EXSwitch) previousStage;
         IR = exStage.getIR();
         ALUOutput = exStage.getALUOutput();
         B = exStage.getB();
+        IRMemAddressHex = exStage.getIRMemAddressHex();
+    }
+
+    @Override
+    public void resetRegisters() {
+        LMD = StringBinary.valueOf(0);
+        ALUOutput = StringBinary.valueOf(0);
+        B = StringBinary.valueOf(0);
     }
 
     /* Getters */
@@ -89,5 +99,9 @@ public class MEMStage implements CPUStage {
 
     public CPU getCpu() {
         return cpu;
+    }
+
+    public String getIRMemAddressHex() {
+        return IRMemAddressHex;
     }
 }

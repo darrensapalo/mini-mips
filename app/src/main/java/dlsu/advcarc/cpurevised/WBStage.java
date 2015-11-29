@@ -9,15 +9,9 @@ import io.vertx.core.json.JsonArray;
 /**
  * Created by user on 11/29/2015.
  */
-public class WBStage implements CPUStage{
+public class WBStage extends AbstractStage{
 
-    private Opcode IR;
     private StringBinary ALUOutput;
-
-    public WBStage(){
-        IR = Opcode.createNOP();
-        ALUOutput = StringBinary.valueOf(0);
-    }
 
     @Override
     public boolean hasInstructionToForward() {
@@ -25,11 +19,17 @@ public class WBStage implements CPUStage{
     }
 
     @Override
-    public void execute() {
+    public boolean execute() {
+
+        if("NOP".equals(IR.getInstruction()))
+            return false;
+
         String destinationRegister = IR.getDestinationRegisterName();
 
         if(destinationRegister != null)
             RegisterManager.instance().updateRegister(destinationRegister, ALUOutput);
+
+        return true;
     }
 
     @Override
@@ -38,9 +38,19 @@ public class WBStage implements CPUStage{
     }
 
     @Override
-    public void housekeeping(CPUStage previousStage) {
+    public void housekeeping(AbstractStage previousStage) {
         MEMStage memStage = (MEMStage) previousStage;
         IR = memStage.getIR();
         ALUOutput = memStage.getALUOutput();
+        IRMemAddressHex = memStage.getIRMemAddressHex();
+    }
+
+    @Override
+    public void resetRegisters() {
+        ALUOutput = StringBinary.valueOf(0);
+    }
+
+    public String getIRMemAddressHex() {
+        return IRMemAddressHex;
     }
 }
