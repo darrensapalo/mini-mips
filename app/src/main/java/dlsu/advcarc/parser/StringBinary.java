@@ -31,6 +31,10 @@ public class StringBinary {
         return RadixHelper.forceLength(value, desiredLength);
     }
 
+    public StringBinary forceLengthStringBinary(int desiredLength){
+        return new StringBinary(forceLength(desiredLength));
+    }
+
     public String getBinaryValue(){
         return value;
     }
@@ -51,8 +55,6 @@ public class StringBinary {
     public String toHexString(){
         return toHexString(null);
     }
-
-
 
     public String toHexString(Integer desiredLength){
         String hex =  RadixHelper.convertBinaryToHexString(value);
@@ -89,7 +91,6 @@ public class StringBinary {
     public static StringBinary valueOf(double d){
         return new StringBinary(Long.toBinaryString(Double.doubleToLongBits(d)));
     }
-
 
 
     public StringBinary and(StringBinary b) {

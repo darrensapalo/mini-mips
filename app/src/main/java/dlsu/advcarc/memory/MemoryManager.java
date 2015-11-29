@@ -57,14 +57,35 @@ public class MemoryManager {
     public void updateMemory(String memoryLocation, StringBinary newValue){
         Memory memory = getInstance(memoryLocation);
         memory.setValue(newValue);
+        broadcastMemoryState();
+    }
 
-          /* Broadcast the Updated Memory Values */
+    private void broadcastMemoryState(){
+           /* Broadcast the Updated Memory Values */
         EventBusHolder.instance()
                 .getEventBus()
                 .publish(Addresses.MEMORY_BROADCAST,
-                        MemoryManager.instance().getDataJsonArray()
+                        this.getDataJsonArray()
                 );
+    }
 
+    public void inputProgramCode(ProgramCode programCode){
+
+        List<Code> program = programCode.getProgram();
+
+        for(int i=0;i<2048;i++){
+
+            String value;
+
+            if(i < program.size())
+                value = program.get(i).getOpcode().to32BitString();
+            else
+                value =  StringBinary.valueOf(0).padBinaryValue(32);
+
+            ram.get(i).write(value);
+        }
+
+        broadcastMemoryState();
     }
 
     public void clear() {
@@ -72,16 +93,24 @@ public class MemoryManager {
     }
 
     public JsonArray getCodeJsonArray(){
-        JsonArray codeMemoryArray = ExecutionManager.instance().getProgramCode().toJsonArray(false);
+        JsonArray jsonArray = new JsonArray();
 
-        int numLinesOfCode = codeMemoryArray.size();
-        int numLinesMissing = DATA_SEGMENT_SIZE / 4 - numLinesOfCode;
-        int startAddingCodeAt = numLinesOfCode * 4;
 
-        for(int i=0;i<numLinesMissing;i++){
-            codeMemoryArray.add(Code.createNOP(startAddingCodeAt + i*4).toJsonObject(false));
+        for(int i=0; i<2048;i++){
+            jsonArray.add(ram.get(i).toJsonObject());
         }
-        return codeMemoryArray;
+
+        return jsonArray;
+//        JsonArray codeMemoryArray = ExecutionManager.instance().getProgramCode().toJsonArray(false);
+//
+//        int numLinesOfCode = codeMemoryArray.size();
+//        int numLinesMissing = DATA_SEGMENT_SIZE / 4 - numLinesOfCode;
+//        int startAddingCodeAt = numLinesOfCode * 4;
+//
+//        for(int i=0;i<numLinesMissing;i++){
+//            codeMemoryArray.add(Code.createNOP(startAddingCodeAt + i*4).toJsonObject(false));
+//        }
+//        return codeMemoryArray;
     }
 
     public JsonArray getDataJsonArray(){

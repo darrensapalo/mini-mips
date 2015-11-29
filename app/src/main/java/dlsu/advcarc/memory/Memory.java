@@ -33,7 +33,8 @@ public class Memory implements Writable {
 
     @Override
     public void write(String value) {
-        MemoryManager.instance().updateMemory(memory, new StringBinary(value));
+        this.value = new StringBinary(value);
+//        MemoryManager.instance().updateMemory(memory, new StringBinary(value));
     }
 
     @Override

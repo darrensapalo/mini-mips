@@ -8,17 +8,21 @@ import dlsu.advcarc.utils.RadixHelper;
  */
 public class Opcode {
 
-    private StringBinary opcodeString;
+    private StringBinary opcodeBinary;
 
-    public Opcode(StringBinary opcodeString){
-        this.opcodeString = opcodeString;
+    public Opcode(StringBinary opcodeBinary){
+        this.opcodeBinary = opcodeBinary.forceLengthStringBinary(32);
+    }
+
+    public String to32BitString(){
+        return opcodeBinary.forceLength(32);
     }
 
     public String toHexString(){
-        return opcodeString.toHexString();
+        return opcodeBinary.toHexString(8);
     }
 
     public String toString(){
-        return opcodeString.toHexString(8);
+        return toHexString();
     }
 }
