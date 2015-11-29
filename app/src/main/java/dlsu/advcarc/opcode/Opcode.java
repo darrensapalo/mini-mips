@@ -36,6 +36,21 @@ public class Opcode {
     public List<String> getRegisterNamesToRead(){
         List<String> registers = new ArrayList<String>();
 
+        switch (getInstructionType()){
+
+            case "J":
+                break;
+
+            case "R":
+            case "Rx":
+                registers.add(getARegisterName());
+                registers.add(getBRegisterName());
+                break;
+
+            case "I":
+                registers.add(getBRegisterName());
+                break;
+        }
 
         return registers;
     }

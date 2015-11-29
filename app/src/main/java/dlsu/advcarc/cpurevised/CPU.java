@@ -7,6 +7,9 @@ import dlsu.advcarc.server.EventBusHolder;
 import io.vertx.core.json.JsonArray;
 import io.vertx.core.json.JsonObject;
 
+import java.util.ArrayList;
+import java.util.List;
+
 /**
  * Created by user on 11/29/2015.
  */
@@ -97,7 +100,17 @@ public class CPU {
     }
 
     public boolean hasPendingWrite(String registerName){
-        return false; //TODO
+        List<AbstractStage> stagesToCheck = new ArrayList<AbstractStage>();
+        stagesToCheck.add(exStage);
+        stagesToCheck.add(memStage);
+        stagesToCheck.add(wbStage);
+
+        for(AbstractStage stage: stagesToCheck){
+            if(registerName.equals(stage.getIR().getDestinationRegisterName()))
+                return true;
+        }
+
+        return false;
     }
 
     public void broadcastCPUState() {
