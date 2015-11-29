@@ -48,8 +48,6 @@ function handleMemoryBroadcast(err, msg){
 
 function handleCPUBroadcast(err, msg){
 
-	console.log(msg.body);
-
 	if(msg.body){
 		var array = msg.body['registers'];
       	populateTable('#table-cpu-registers', array, registerColumns);
