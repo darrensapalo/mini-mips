@@ -21,8 +21,12 @@ public class Opcode {
         return opcodeBinary.forceLength(32);
     }
 
+    public String toHexString(int desiredLength){
+        return opcodeBinary.toHexString(desiredLength);
+    }
+
     public String toHexString(){
-        return opcodeBinary.toHexString(8);
+        return toHexString(8);
     }
 
     public String toString(){
@@ -61,4 +65,7 @@ public class Opcode {
         return ""; //TODO
     }
 
+    public static Opcode createNOP(){
+        return new Opcode(StringBinary.valueOf(0).padBinaryValueStringBinary(32));
+    }
 }

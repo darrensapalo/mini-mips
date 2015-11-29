@@ -1,6 +1,8 @@
 package dlsu.advcarc.cpurevised;
 
 import dlsu.advcarc.parser.ProgramCode;
+import dlsu.advcarc.server.Addresses;
+import dlsu.advcarc.server.EventBusHolder;
 import io.vertx.core.json.JsonArray;
 import io.vertx.core.json.JsonObject;
 
@@ -46,13 +48,6 @@ public class CPU {
 
     public boolean clock(){
 
-        // Execute
-        wbStage.execute();
-        memStage.execute();
-        exStage.execute();
-        idStage.execute();
-        ifStage.execute();
-
         // Housekeeping
         if(memStage.hasInstructionToForward())
             wbStage.housekeeping(memStage);
@@ -63,6 +58,15 @@ public class CPU {
         if(ifStage.hasInstructionToForward())
             idStage.housekeeping(ifStage);
 
+        // Execute
+        wbStage.execute();
+        memStage.execute();
+        exStage.execute();
+        idStage.execute();
+        ifStage.execute();
+
+        broadcastCPUState();
+
         return true; //TODO
     }
 
@@ -70,14 +74,16 @@ public class CPU {
         return false; //TODO
     }
 
+    public void broadcastCPUState() {
+        EventBusHolder.instance().getEventBus()
+                .publish(Addresses.CPU_BROADCAST, this.toJsonObject());
+    }
 
     /* Getters and Setters */
 
     public EXIntegerStage getEXIntegerStage (){
         return null; //TODO
     }
-
-
 
     public boolean isFlushing() {
         return isFlushing;
@@ -107,9 +113,9 @@ public class CPU {
 
         return new JsonArray()
                 .addAll(ifStage.toJsonArray())
-//                .addAll(idStage.toJsonArray())
-//                .addAll(exStage.toJsonArray())
-//                .addAll(memStage.toJsonArray())
+                .addAll(idStage.toJsonArray())
+                .addAll(exStage.toJsonArray())
+                .addAll(memStage.toJsonArray())
                 ;
     }
 }

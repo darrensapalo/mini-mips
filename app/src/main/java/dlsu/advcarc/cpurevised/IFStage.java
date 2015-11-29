@@ -25,6 +25,7 @@ public class IFStage implements CPUStage{
         this.cpu = cpu;
         NPC = new StringBinary("0");
         PC = new StringBinary("0");
+        IR = Opcode.createNOP();
     }
 
     @Override
@@ -63,8 +64,8 @@ public class IFStage implements CPUStage{
     @Override
     public JsonArray toJsonArray() {
         return new JsonArray()
-                .add(new JsonObject().put("register", "IF/ID.IR").put("value", IR == null ? "null" : IR.toHexString()))
-                .add(new JsonObject().put("register", "IF/ID.NPC").put("value", NPC == null ? "null" : NPC.toHexString()));
+                .add(new JsonObject().put("register", "IF/ID.IR").put("value", IR == null ? "null" : IR.toHexString(16)))
+                .add(new JsonObject().put("register", "IF/ID.NPC").put("value", NPC == null ? "null" : NPC.toHexString(16)));
     }
 
     @Override

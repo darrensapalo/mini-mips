@@ -11,6 +11,10 @@ public class EXSwitch implements CPUStage {
 
     private EXIntegerStage integer;
 
+    public EXSwitch(){
+        integer = new EXIntegerStage();
+    }
+
     @Override
     public boolean hasInstructionToForward() {
         return integer.hasInstructionToForward();
@@ -26,7 +30,7 @@ public class EXSwitch implements CPUStage {
 
     @Override
     public JsonArray toJsonArray() {
-        return null;
+        return integer.toJsonArray();
     }
 
     @Override

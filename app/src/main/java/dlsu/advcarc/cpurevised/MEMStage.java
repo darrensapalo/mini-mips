@@ -4,6 +4,7 @@ import dlsu.advcarc.memory.MemoryManager;
 import dlsu.advcarc.opcode.Opcode;
 import dlsu.advcarc.parser.StringBinary;
 import io.vertx.core.json.JsonArray;
+import io.vertx.core.json.JsonObject;
 
 /**
  * Created by user on 11/29/2015.
@@ -20,6 +21,10 @@ public class MEMStage implements CPUStage {
 
     public MEMStage(CPU cpu){
         this.cpu = cpu;
+        IR = Opcode.createNOP();
+        LMD = StringBinary.valueOf(0);
+        ALUOutput = StringBinary.valueOf(0);
+        B = StringBinary.valueOf(0);
     }
 
     @Override
@@ -51,7 +56,10 @@ public class MEMStage implements CPUStage {
 
     @Override
     public JsonArray toJsonArray() {
-        return null;
+        return new JsonArray()
+                .add(new JsonObject().put("register", "MEM/WB.LMD").put("value", LMD.toHexString(16)))
+                .add(new JsonObject().put("register", "MEM/WB.ALUOutput").put("value", ALUOutput.toHexString(16)))
+                .add(new JsonObject().put("register", "MEM/WB.IR").put("value", IR.toHexString(16)));
     }
 
     @Override

@@ -4,6 +4,7 @@ import dlsu.advcarc.opcode.Opcode;
 import dlsu.advcarc.parser.StringBinary;
 import dlsu.advcarc.register.RegisterManager;
 import io.vertx.core.json.JsonArray;
+import io.vertx.core.json.JsonObject;
 
 import java.util.List;
 
@@ -26,6 +27,11 @@ public class IDStage implements  CPUStage{
 
     public IDStage(CPU cpu){
         this.cpu = cpu;
+        A = StringBinary.valueOf(0);
+        B = StringBinary.valueOf(0);
+        IMM = StringBinary.valueOf(0);
+        IR = Opcode.createNOP();
+        NPC = StringBinary.valueOf(0);
     }
 
 
@@ -70,7 +76,12 @@ public class IDStage implements  CPUStage{
 
     @Override
     public JsonArray toJsonArray() {
-        return null;
+        return new JsonArray()
+                .add(new JsonObject().put("register", "ID/EX.A").put("value", A.toHexString(16)))
+                .add(new JsonObject().put("register", "ID/EX.B").put("value",B.toHexString(16)))
+                .add(new JsonObject().put("register", "ID/EX.Imm").put("value", IMM.toHexString(16)))
+                .add(new JsonObject().put("register", "ID/EX.IR").put("value", IR.toHexString(16)))
+                .add(new JsonObject().put("register", "ID/EX.NPC").put("value", NPC.toHexString(16)));
     }
 
     @Override

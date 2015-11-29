@@ -14,8 +14,10 @@ public class WBStage implements CPUStage{
     private Opcode IR;
     private StringBinary ALUOutput;
 
-    private CPU cpu;
-    private boolean hasInstructionToForward;
+    public WBStage(){
+        IR = Opcode.createNOP();
+        ALUOutput = StringBinary.valueOf(0);
+    }
 
     @Override
     public boolean hasInstructionToForward() {

@@ -3,6 +3,7 @@ package dlsu.advcarc.cpurevised;
 import dlsu.advcarc.opcode.Opcode;
 import dlsu.advcarc.parser.StringBinary;
 import io.vertx.core.json.JsonArray;
+import io.vertx.core.json.JsonObject;
 
 /**
  * Created by user on 11/29/2015.
@@ -20,6 +21,14 @@ public class EXIntegerStage implements CPUStage {
     private int cond;
     private StringBinary NPC;
     private boolean hasFinishedExecuting;
+
+    public EXIntegerStage(){
+        IR = Opcode.createNOP();
+        A = StringBinary.valueOf(0);
+        B = StringBinary.valueOf(0);
+        IMM = StringBinary.valueOf(0);
+        ALUOutput = StringBinary.valueOf(0);
+    }
 
     @Override
     public boolean hasInstructionToForward() {
@@ -43,7 +52,11 @@ public class EXIntegerStage implements CPUStage {
 
     @Override
     public JsonArray toJsonArray() {
-        return null;
+        return new JsonArray()
+                .add(new JsonObject().put("register", "EX/MEM.B").put("value", B.toHexString(16)))
+                .add(new JsonObject().put("register", "EX/MEM.ALUOutput").put("value", ALUOutput.toHexString(16)))
+                .add(new JsonObject().put("register", "EX/MEM.Cond").put("value", cond))
+                .add(new JsonObject().put("register", "EX/MEM.IR").put("value", IR.toHexString(16)));
     }
 
     @Override
