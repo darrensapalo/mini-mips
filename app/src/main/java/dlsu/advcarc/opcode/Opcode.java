@@ -36,6 +36,9 @@ public class Opcode {
     public List<String> getRegisterNamesToRead(){
         List<String> registers = new ArrayList<String>();
 
+        if(isNOP())
+            return registers;
+
         switch (getInstructionType()){
 
             case "J":
@@ -119,10 +122,19 @@ public class Opcode {
     }
 
     public StringBinary getImm(){
-        return new StringBinary(opcodeBinary.getBinaryValue().substring(16, 31));
+        return getSubBinary(16, 31);
+    }
+
+    public StringBinary getSubBinary(int startIndex, int endIndex){
+        return new StringBinary(opcodeBinary.getBinaryValue().substring(startIndex, endIndex+1));
     }
 
     public String getDestinationRegisterName(){
+
+        if(isNOP())
+            return null;
+
+
         switch (getInstructionType()){
 
             case "J":

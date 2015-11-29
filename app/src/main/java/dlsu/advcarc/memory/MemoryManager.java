@@ -47,6 +47,9 @@ public class MemoryManager {
     }
 
     public Memory getInstance(String memoryLocation) throws IllegalArgumentException {
+
+        memoryLocation = memoryLocation.substring(memoryLocation.length()-4, memoryLocation.length());
+
         if(!Memory.validate(memoryLocation))
             throw new IllegalArgumentException("Invalid memory format: "+memoryLocation);
 

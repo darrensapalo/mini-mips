@@ -44,7 +44,6 @@ public class IDStage extends AbstractStage{
 
     @Override
     public void execute() {
-
         /* Initialize A, B, and IMM */
         String aRegisterName = IR.getARegisterName();
         String bRegisterName = IR.getBRegisterName();
@@ -52,7 +51,6 @@ public class IDStage extends AbstractStage{
         A = aRegisterName == null ? StringBinary.valueOf(0) : RegisterManager.instance().getInstance(aRegisterName).getValue();
         B = bRegisterName == null ? StringBinary.valueOf(0) : RegisterManager.instance().getInstance(bRegisterName).getValue();
         IMM = IR.getImm();
-
     }
 
     @Override

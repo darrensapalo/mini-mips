@@ -26,7 +26,7 @@ public abstract class AbstractStage {
             return false;
 
         // If flushing, and instruction is after the running branch
-        if(cpu.isBranchRunning() && cpu.isInstructionAfterRunningBranch(IR.toHexString()) )
+        if(cpu.isBranchRunning() && cpu.isInstructionAfterRunningBranch(IRMemAddressHex) && !(this instanceof IFStage))
             return false;
 
         if(!checkExtraDependenciesIfCanExecute())
@@ -37,15 +37,13 @@ public abstract class AbstractStage {
 
     public abstract boolean hasInstructionToForward();
 
-    public  boolean isEmpty(){
-        return "NOP".equals(IR.getInstruction());
-    }
-
     public boolean executeIfAllowed(AbstractStage nextStage){
 
         // No need to do anything if NOP, unless IF
-        if(!(this instanceof IFStage) && isEmpty())
+        if(!(this instanceof IFStage) && isNOP()) {
+//            isStalling = true;
             return false;
+        }
 
         // Check control hazards and stalling
         if(canExecute(nextStage)) {

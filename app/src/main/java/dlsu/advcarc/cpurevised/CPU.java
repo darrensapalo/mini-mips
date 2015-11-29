@@ -22,7 +22,7 @@ public class CPU {
     private WBStage wbStage;
 
     private ProgramCode programCode;
-    private boolean justFinishedBranchEx;
+    private boolean ifStageCanCheckCond;
     private String runningBranchMemAddressHex;
 
     private CPUCycleTracker cpuCycleTracker;
@@ -40,7 +40,7 @@ public class CPU {
         memStage = new MEMStage(this);
         wbStage = new WBStage(this);
         programCode = null;
-        justFinishedBranchEx = false;
+        ifStageCanCheckCond = false;
         runningBranchMemAddressHex = null;
     }
 
@@ -59,22 +59,23 @@ public class CPU {
         // Housekeeping
         wbStage.resetToNOP();
 
-        if(!memStage.isStalling() && wbStage.isEmpty()) {
+        if(!memStage.isStalling() && !memStage.isNOP() && wbStage.isNOP()) {
             wbStage.housekeeping(memStage);
             memStage.resetToNOP();
         }
-        if(!exStage.isStalling && memStage.isEmpty()) {
+        if(!exStage.isStalling() && !exStage.isNOP() &&  memStage.isNOP()) {
             memStage.housekeeping(exStage);
             exStage.resetToNOP();
         }
-        if(!idStage.isStalling() && exStage.isEmpty()) {
+        if(!idStage.isStalling() && !idStage.isNOP() &&  exStage.isNOP()) {
             exStage.housekeeping(idStage);
             idStage.resetToNOP();
         }
-        if(!ifStage.isStalling() && idStage.isEmpty()) {
+        if(!ifStage.isStalling() && !ifStage.isNOP() &&  idStage.isNOP()) {
             idStage.housekeeping(ifStage);
             ifStage.resetToNOP();
         }
+
 
         // Execute
         boolean wbExecuted = wbStage.executeIfAllowed(null);
@@ -98,6 +99,10 @@ public class CPU {
         if(!hasFinishedExecuting())
             cpuCycleTracker.nextCycle();
         broadcastCPUState();
+
+        if(ifStageCanCheckCond)
+            runningBranchMemAddressHex = null;
+
 
         return true; //TODO
     }
@@ -144,19 +149,14 @@ public class CPU {
 
     public void setRunningBranch(String runningBranchMemAddressHex) {
         this.runningBranchMemAddressHex = runningBranchMemAddressHex;
-
-        if(runningBranchMemAddressHex == null)
-            justFinishedBranchEx = true;
-        else
-            justFinishedBranchEx = false;
     }
 
-    public boolean justFinishedBranchEx() {
-        return justFinishedBranchEx;
+    public boolean ifStageCanCheckCond() {
+        return ifStageCanCheckCond;
     }
 
-    public void setJustFinishedBranchEx(boolean justFinishedBranchEx) {
-        this.justFinishedBranchEx = justFinishedBranchEx;
+    public void setIfStageCanCheckCond(boolean ifStageCanCheckCond) {
+        this.ifStageCanCheckCond = ifStageCanCheckCond;
     }
 
     /* Json Methods */
@@ -176,4 +176,5 @@ public class CPU {
                 .addAll(memStage.toJsonArray())
                 ;
     }
+
 }

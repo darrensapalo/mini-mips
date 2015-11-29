@@ -31,12 +31,13 @@ public class IFStage extends AbstractStage{
     protected boolean checkExtraDependenciesIfCanExecute() {
         IRMemAddressHex = PC.toHexString(4);
         Opcode nextOpcode =  new Opcode(new StringBinary(MemoryManager.instance().getInstance(IRMemAddressHex).getAsBinary()));
-        return !nextOpcode.isNOP();
+        if(nextOpcode.isNOP())
+           return false;
+        return true;
     }
 
     @Override
     public void execute() {
-        hasInstructionToForward = false;
 
         IRMemAddressHex = PC.toHexString(4);
         IR = new Opcode(new StringBinary(MemoryManager.instance().getInstance(IRMemAddressHex).getAsBinary()));
@@ -44,27 +45,60 @@ public class IFStage extends AbstractStage{
         /* NPC/PC control */
         EXIntegerStage ex = cpu.getEXIntegerStage();
 
-        if(ex.getCond() == 1){
-            NPC = ex.getALUOutput();
+        if(cpu.isBranchRunning()){
+            isStalling = true;
+            NPC = PC.plus(StringBinary.valueOf(4));
         }
-        else{ // Cond == 0
+        else{
 
-            // If branch ex has just finished and no jump/branch is taken, go back to the instruction after J/BEQ
-            if(cpu.justFinishedBranchEx())
-                NPC = ex.getNPC();
-            else
+            if(cpu.ifStageCanCheckCond()){
+                if(ex.getCond() == 1)
+                    NPC = ex.getALUOutput();
+                else
+                    NPC = ex.getNPC();
+
+                // set back to false
+                cpu.setIfStageCanCheckCond(false);
+                isStalling = true; //stall/flush one last time
+            }
+            else{
+                isStalling = false;
                 NPC = PC.plus(StringBinary.valueOf(4));
+
+                if ("BEQ".equals(IR.getInstruction()) || "J".equals(IR.getInstruction()))
+                    cpu.setRunningBranch(IRMemAddressHex);
+            }
         }
+
+//        // to avoid the IF that runs on the same cycle as the EX
+//        if(cpu.ifStageCanCheckCond() && !cpu.isBranchRunning()){
+//
+//            if(ex.getCond() == 1)
+//                NPC = ex.getALUOutput();
+//            else
+//                NPC = ex.getNPC();
+//
+//            // set back to false
+//            cpu.setIfStageCanCheckCond(false);
+//            isStalling = true; //stall/flush one last time
+//        }
+//        else {
+//            NPC = PC.plus(StringBinary.valueOf(4));
+//        }
 
         PC = NPC.clone();
 
-        if(cpu.justFinishedBranchEx())
-            cpu.setJustFinishedBranchEx(false);
+//        // This is so that no housekeeping will occur if in flush mode
+//        if(cpu.isBranchRunning()){ // Flush mode
+//            isStalling = true;
+//        }
+//        else {
+//            isStalling = false;
+//
+//            if ("BEQ".equals(IR.getInstruction()) || "J".equals(IR.getInstruction()))
+//                cpu.setRunningBranch(IRMemAddressHex);
+//        }
 
-        if("BEQ".equals(IR.getInstruction()) || "J".equals(IR.getInstruction()))
-            cpu.setRunningBranch(IRMemAddressHex);
-
-        hasInstructionToForward = true;
     }
 
     @Override

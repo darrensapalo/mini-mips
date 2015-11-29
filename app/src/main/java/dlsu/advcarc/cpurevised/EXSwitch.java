@@ -55,6 +55,10 @@ public class EXSwitch extends AbstractStage {
             integer.resetToNOP();
     }
 
+    @Override
+    public boolean isNOP(){
+        return integer.isNOP();
+    }
     public AbstractStage getTargetStage(Opcode opcode){
         switch(opcode.getInstruction()){
             case "ADD.S":
@@ -68,7 +72,7 @@ public class EXSwitch extends AbstractStage {
     public  boolean isReadyToAcceptInstruction(String instruction){
 
         //TODO check for ADD.S and MUL.S
-        return integer.isEmpty();
+        return integer.isNOP();
     }
 
     public Opcode getIR(){

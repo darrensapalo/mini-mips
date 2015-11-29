@@ -1,6 +1,5 @@
 package dlsu.advcarc.cpurevised;
 
-import dlsu.advcarc.opcode.Opcode;
 import dlsu.advcarc.parser.StringBinary;
 import io.vertx.core.json.JsonArray;
 import io.vertx.core.json.JsonObject;
@@ -13,7 +12,7 @@ public class EXIntegerStage extends AbstractStage{
     private StringBinary A;
     private StringBinary B;
     private StringBinary IMM;
-    private StringBinary ALUOutput;
+    private StringBinary ALUOutput = StringBinary.valueOf(0);
 
     private int cond;
     private StringBinary NPC;
@@ -44,8 +43,13 @@ public class EXIntegerStage extends AbstractStage{
             //TODO implement the rest here:
 
             case "BEQ":
+                cpu.setIfStageCanCheckCond(true);
+                ALUOutput = A.padBinaryValueArithmeticStringBinary(64).plus(IMM.padBinaryValueArithmeticStringBinary(64));
+                break;
             case "J":
-                cpu.setRunningBranch(null);
+                cpu.setIfStageCanCheckCond(true);
+                cond = 0;
+                ALUOutput = IR.getSubBinary(6,31).times(StringBinary.valueOf(4)).padBinaryValueStringBinary(64);
                 break;
         }
 
@@ -57,7 +61,9 @@ public class EXIntegerStage extends AbstractStage{
                 .add(new JsonObject().put("register", "EX/MEM.B").put("value", B.toHexString(16)))
                 .add(new JsonObject().put("register", "EX/MEM.ALUOutput").put("value", ALUOutput.toHexString(16)))
                 .add(new JsonObject().put("register", "EX/MEM.Cond").put("value", cond))
-                .add(new JsonObject().put("register", "EX/MEM.IR").put("value", IR.toHexString(16)));
+                .add(new JsonObject().put("register", "EX/MEM.IR").put("value", IR.toHexString(16)))
+                .add(new JsonObject().put("register", "EX/MEM.NPC").put("value", NPC == null? "" :NPC.toHexString(4)));
+
     }
 
     @Override
@@ -67,7 +73,7 @@ public class EXIntegerStage extends AbstractStage{
         B = idStage.getB();
         IMM = idStage.getIMM();
         NPC = idStage.getNPC();
-        IR = idStage.getIR();
+        this.IR = idStage.getIR();
         IRMemAddressHex = idStage.getIRMemAddressHex();
     }
 
@@ -76,11 +82,12 @@ public class EXIntegerStage extends AbstractStage{
         A = StringBinary.valueOf(0);
         B = StringBinary.valueOf(0);
         IMM = StringBinary.valueOf(0);
-        ALUOutput = StringBinary.valueOf(0);
+//        ALUOutput = StringBinary.valueOf(0);
+//        cond = 0;
     }
 
     public int getCond(){
-        return 0; //TODO
+        return cond;
     }
 
     public StringBinary getALUOutput(){
@@ -88,7 +95,7 @@ public class EXIntegerStage extends AbstractStage{
     }
 
     public StringBinary getNPC(){
-        return StringBinary.valueOf(0); //TODO
+        return NPC;
     }
 
     public StringBinary getA() {
