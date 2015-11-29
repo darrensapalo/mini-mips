@@ -14,8 +14,6 @@ public class MEMStage extends AbstractStage {
     private StringBinary ALUOutput;
     private StringBinary B;
 
-    private CPU cpu;
-
     public MEMStage(CPU cpu){
         super(cpu);
     }
@@ -68,6 +66,14 @@ public class MEMStage extends AbstractStage {
     @Override
     public void housekeeping(AbstractStage previousStage) {
         AbstractEXStage exStage = (AbstractEXStage) previousStage;
+
+        if(exStage instanceof EXIntegerStage){
+            if("L.S".equals(exStage.getIR().getInstruction())) {
+                if(cpu.checkWriteAfterWrite(exStage.getIR().getDestinationRegisterName()))
+                    return;
+            }
+        }
+
         IR = exStage.getIR();
         ALUOutput = exStage.getALUOutput();
         B = exStage.getB();

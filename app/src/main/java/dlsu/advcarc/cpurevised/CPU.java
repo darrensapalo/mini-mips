@@ -131,6 +131,11 @@ public class CPU {
         return false;
     }
 
+    public boolean checkWriteAfterWrite(String registerName){
+        return exStage.hasPendingFloatingWrite(registerName);
+    }
+
+
     public boolean isInstructionAfterRunningBranch(String instMemAddressHex){
         int instMemAddressInt = RadixHelper.convertHexToStringBinary(instMemAddressHex).getAsInt();
         int branchAddressInt = RadixHelper.convertHexToStringBinary(runningBranchMemAddressHex).getAsInt();

@@ -26,7 +26,7 @@ public class EXIntegerStage extends AbstractEXStage{
 
     @Override
     protected boolean checkExtraDependenciesIfCanExecute() {
-        return true;// TODO if L.S check if there is an active ADD.S or MULT.S
+        return true;
     }
 
     @Override

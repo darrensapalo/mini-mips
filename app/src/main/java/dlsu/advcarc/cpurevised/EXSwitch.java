@@ -104,7 +104,7 @@ public class EXSwitch extends AbstractStage {
         if(!adder.isNOP() && adder.hasCompletedExeuction())
             return adder;
 
-        if(!integer.isNOP() && integer.hasCompletedExeuction())
+        if(!integer.isNOP() && integer.hasCompletedExeuction() && !integer.isStalling())
             return integer;
 
         return null;
@@ -134,6 +134,11 @@ public class EXSwitch extends AbstractStage {
         return multiplier.hasPendingWrite(registerName) ||
                 adder.hasPendingWrite(registerName) ||
                 integer.hasPendingWrite(registerName);
+    }
+
+    public boolean hasPendingFloatingWrite(String registerName){
+        return multiplier.hasPendingWrite(registerName) ||
+                adder.hasPendingWrite(registerName);
     }
 
     public EXIntegerStage getEXIntegerStage() {
