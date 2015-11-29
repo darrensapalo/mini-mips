@@ -13,8 +13,6 @@ public class IFStage extends AbstractStage{
 
 
     private CPU cpu;
-    private Opcode IR;
-    private String IRMemAddressHex;
 
     private StringBinary NPC;
     private StringBinary PC;
@@ -23,7 +21,8 @@ public class IFStage extends AbstractStage{
 
     public IFStage(CPU cpu){
         this.cpu = cpu;
-
+        NPC = new StringBinary("0");
+        PC = new StringBinary("0");
     }
 
     @Override
@@ -33,10 +32,13 @@ public class IFStage extends AbstractStage{
 
     @Override
     public boolean execute() {
+
+        hasInstructionToForward = false;
+
         IRMemAddressHex = PC.toHexString(4);
         IR = new Opcode(new StringBinary(MemoryManager.instance().getInstance(IRMemAddressHex).getAsBinary()));
 
-        if("NOP".equals(IR.getInstruction()))
+        if(IR.isNOP())
             return false;
 
         /* NPC/PC control */
@@ -59,13 +61,14 @@ public class IFStage extends AbstractStage{
                 PC = NPC.clone();
         }
 
+        hasInstructionToForward = true;
         return true;
     }
 
     @Override
     public JsonArray toJsonArray() {
         return new JsonArray()
-                .add(new JsonObject().put("register", "IF/ID.IR").put("value", IR == null ? "null" : IR.toHexString(16)))
+                .add(new JsonObject().put("register", "IF/ID.IR").put("value",  getIRString()))
                 .add(new JsonObject().put("register", "IF/ID.NPC").put("value", NPC == null ? "null" : NPC.toHexString(16)));
     }
 
@@ -76,9 +79,6 @@ public class IFStage extends AbstractStage{
 
     @Override
     public void resetRegisters() {
-        NPC = new StringBinary("0");
-        PC = new StringBinary("0");
-        IR = Opcode.createNOP();
     }
 
     public boolean isNOP(){

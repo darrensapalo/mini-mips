@@ -29,31 +29,25 @@ public class IDStage extends AbstractStage{
 
     @Override
     public boolean hasInstructionToForward() {
-        return false;
+        return hasInstructionToForward;
     }
 
     @Override
     public boolean execute() {
 
-        if("NOP".equals(IR.getInstruction())) {
-            hasInstructionToForward = false;
-            return false;
-        }
+        hasInstructionToForward = false;
 
+        if("NOP".equals(IR.getInstruction()))
+            return false;
 
         if(cpu.isFlushing() && !IR.isBranchOrJump()) // TODO || nexxt stage is stalling
-        {
-            hasInstructionToForward = false;
             return false;
-        }
 
         /* Stall if there are Read After Write dependencies */
         List<String> registerReadDependencies = IR.getRegisterNamesToRead();
         for(String registerName: registerReadDependencies){
-            if(cpu.hasPendingWrite(registerName)) {
-                hasInstructionToForward = false;
+            if(cpu.hasPendingWrite(registerName))
                 return false;
-            }
         }
 
 
@@ -65,6 +59,7 @@ public class IDStage extends AbstractStage{
         B = bRegisterName == null ? StringBinary.valueOf(0) : RegisterManager.instance().getInstance(bRegisterName).getValue();
         IMM = IR.getImm();
 
+        hasInstructionToForward = true;
         return true;
     }
 

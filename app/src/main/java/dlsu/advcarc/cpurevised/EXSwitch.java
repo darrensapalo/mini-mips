@@ -42,7 +42,8 @@ public class EXSwitch extends AbstractStage {
     @Override
     public void resetRegisters() {
         //TODO check if we need to do anything here
-        integer.resetToNOP();
+        if(integer != null)
+            integer.resetToNOP();
     }
 
     public  boolean isReadyToAcceptInstruction(String instruction){
@@ -70,4 +71,7 @@ public class EXSwitch extends AbstractStage {
         return integer.getIRMemAddressHex();
     }
 
+    public EXIntegerStage getEXIntegerStage(){
+        return integer;
+    }
 }

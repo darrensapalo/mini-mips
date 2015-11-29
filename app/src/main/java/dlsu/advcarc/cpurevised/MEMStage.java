@@ -11,15 +11,11 @@ import io.vertx.core.json.JsonObject;
  */
 public class MEMStage extends AbstractStage {
 
-    private Opcode IR;
-    private String IRMemAddressHex;
-
     private StringBinary LMD;
     private StringBinary ALUOutput;
     private StringBinary B;
 
     private CPU cpu;
-    private boolean hasInstructionToForward;
 
     public MEMStage(CPU cpu){
         this.cpu = cpu;
@@ -27,12 +23,12 @@ public class MEMStage extends AbstractStage {
 
     @Override
     public boolean hasInstructionToForward() {
-        return false;
+        return IR.isNOP();
     }
 
     @Override
     public boolean execute() {
-        if("NOP".equals(IR.getInstruction()))
+        if(IR.isNOP())
             return false;
 
 
@@ -61,7 +57,7 @@ public class MEMStage extends AbstractStage {
         return new JsonArray()
                 .add(new JsonObject().put("register", "MEM/WB.LMD").put("value", LMD.toHexString(16)))
                 .add(new JsonObject().put("register", "MEM/WB.ALUOutput").put("value", ALUOutput.toHexString(16)))
-                .add(new JsonObject().put("register", "MEM/WB.IR").put("value", IR.toHexString(16)));
+                .add(new JsonObject().put("register", "MEM/WB.IR").put("value", getIRString()));
     }
 
     @Override

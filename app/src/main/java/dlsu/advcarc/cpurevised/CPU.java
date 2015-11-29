@@ -53,6 +53,8 @@ public class CPU {
     public boolean clock(){
 
         // Housekeeping
+        wbStage.resetToNOP();
+
         if(memStage.hasInstructionToForward() && wbStage.isReadyToAcceptInstruction()) {
             wbStage.housekeeping(memStage);
             memStage.resetToNOP();
@@ -106,7 +108,7 @@ public class CPU {
     /* Getters and Setters */
 
     public EXIntegerStage getEXIntegerStage (){
-        return null; //TODO
+        return exStage.getEXIntegerStage();
     }
 
     public boolean isFlushing() {

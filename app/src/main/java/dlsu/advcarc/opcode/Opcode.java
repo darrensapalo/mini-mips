@@ -45,6 +45,10 @@ public class Opcode {
         return "BEQ".equals(instruction) || "J".equals(instruction);
     }
 
+    public boolean isNOP(){
+        return "NOP".equals(getInstruction());
+    }
+
     public String getInstruction(){
         return  OpcodeHelper.getInstruction(opcodeBinary);
     }

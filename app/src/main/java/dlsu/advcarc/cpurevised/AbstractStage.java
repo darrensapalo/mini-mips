@@ -36,4 +36,10 @@ public abstract class AbstractStage {
 
     public abstract JsonArray toJsonArray();
 
+    public String getIRString(){
+        if(IR == null)
+            IR = Opcode.createNOP();
+        return IR.toHexString(16);
+    }
+
 }

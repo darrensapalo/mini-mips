@@ -43,6 +43,7 @@ public class ExecutionManager {
         this.programCode = programCode;
         MemoryManager.instance().inputProgramCode(programCode);
         this.cpu = new CPU();
+        cpu.inputProgramCode(programCode);
 
         /* Broadcast the Updated Immediate Values */
         EventBusHolder.instance()

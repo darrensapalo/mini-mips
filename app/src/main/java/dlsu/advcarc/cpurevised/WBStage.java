@@ -15,13 +15,13 @@ public class WBStage extends AbstractStage{
 
     @Override
     public boolean hasInstructionToForward() {
-        return false;
+        return true;
     }
 
     @Override
     public boolean execute() {
 
-        if("NOP".equals(IR.getInstruction()))
+        if(IR == null || "NOP".equals(IR.getInstruction()))
             return false;
 
         String destinationRegister = IR.getDestinationRegisterName();
