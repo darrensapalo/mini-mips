@@ -37,6 +37,9 @@ public abstract class AbstractStage {
 
     public abstract boolean hasInstructionToForward();
 
+    public boolean hasPendingWrite(String registerName){
+        return registerName.equals(IR.getDestinationRegisterName());
+    }
     public boolean executeIfAllowed(AbstractStage nextStage){
 
         // No need to do anything if NOP, unless IF

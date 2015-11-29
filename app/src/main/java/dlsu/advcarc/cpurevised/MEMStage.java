@@ -26,6 +26,11 @@ public class MEMStage extends AbstractStage {
     }
 
     @Override
+    public boolean hasPendingWrite(String registerName) {
+        return registerName.equals(IR.getDestinationRegisterName());
+    }
+
+    @Override
     protected boolean checkExtraDependenciesIfCanExecute() {
         return true;
     }
@@ -62,11 +67,12 @@ public class MEMStage extends AbstractStage {
 
     @Override
     public void housekeeping(AbstractStage previousStage) {
-        EXSwitch exStage = (EXSwitch) previousStage;
+        AbstractEXStage exStage = (AbstractEXStage) previousStage;
         IR = exStage.getIR();
         ALUOutput = exStage.getALUOutput();
         B = exStage.getB();
         IRMemAddressHex = exStage.getIRMemAddressHex();
+        exStage.resetToNOP();
     }
 
     @Override

@@ -7,19 +7,16 @@ import io.vertx.core.json.JsonObject;
 /**
  * Created by user on 11/29/2015.
  */
-public class EXIntegerStage extends AbstractStage{
-
-    private StringBinary A;
-    private StringBinary B;
-    private StringBinary IMM;
-    private StringBinary ALUOutput = StringBinary.valueOf(0);
-
-    private int cond;
-    private StringBinary NPC;
+public class EXIntegerStage extends AbstractEXStage{
 
     public EXIntegerStage(CPU cpu){
         super(cpu);
         resetRegisters();
+    }
+
+    @Override
+    public boolean hasCompletedExeuction() {
+        return true;
     }
 
     @Override
@@ -29,7 +26,7 @@ public class EXIntegerStage extends AbstractStage{
 
     @Override
     protected boolean checkExtraDependenciesIfCanExecute() {
-        return true;
+        return true;// TODO if L.S check if there is an active ADD.S or MULT.S
     }
 
     @Override
@@ -55,27 +52,6 @@ public class EXIntegerStage extends AbstractStage{
 
     }
 
-    @Override
-    public JsonArray toJsonArray() {
-        return new JsonArray()
-                .add(new JsonObject().put("register", "EX/MEM.B").put("value", B.toHexString(16)))
-                .add(new JsonObject().put("register", "EX/MEM.ALUOutput").put("value", ALUOutput.toHexString(16)))
-                .add(new JsonObject().put("register", "EX/MEM.Cond").put("value", cond))
-                .add(new JsonObject().put("register", "EX/MEM.IR").put("value", IR.toHexString(16)))
-                .add(new JsonObject().put("register", "EX/MEM.NPC").put("value", NPC == null? "" :NPC.toHexString(4)));
-
-    }
-
-    @Override
-    public void housekeeping(AbstractStage previousStage) {
-        IDStage idStage = (IDStage) previousStage;
-        A = idStage.getA();
-        B = idStage.getB();
-        IMM = idStage.getIMM();
-        NPC = idStage.getNPC();
-        this.IR = idStage.getIR();
-        IRMemAddressHex = idStage.getIRMemAddressHex();
-    }
 
     @Override
     public void resetRegisters() {
@@ -87,28 +63,8 @@ public class EXIntegerStage extends AbstractStage{
         NPC = StringBinary.valueOf(0);
     }
 
-    public int getCond(){
-        return cond;
+    @Override
+    public JsonArray toJsonArray() {
+        return super.toJsonArray("");
     }
-
-    public StringBinary getALUOutput(){
-        return ALUOutput;
-    }
-
-    public StringBinary getNPC(){
-        return NPC;
-    }
-
-    public StringBinary getA() {
-        return A;
-    }
-
-    public StringBinary getB() {
-        return B;
-    }
-
-    public StringBinary getIMM() {
-        return IMM;
-    }
-
 }

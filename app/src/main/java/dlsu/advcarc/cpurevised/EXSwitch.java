@@ -4,32 +4,62 @@ import dlsu.advcarc.opcode.Opcode;
 import dlsu.advcarc.parser.StringBinary;
 import io.vertx.core.json.JsonArray;
 
+import java.util.ArrayList;
+import java.util.List;
+
 /**
  * Created by user on 11/29/2015.
  */
 public class EXSwitch extends AbstractStage {
 
     private EXIntegerStage integer;
+    private EXAdder adder;
+    private EXMultiplier multiplier;
 
-    public EXSwitch(CPU cpu){
+    private List<String> activeInstructionsMem;
+    private List<Opcode> activeInstructionsLastCycle;
+
+    public EXSwitch(CPU cpu) {
         super(cpu);
         integer = new EXIntegerStage(cpu);
+        adder = new EXAdder(cpu);
+        multiplier = new EXMultiplier(cpu);
+        activeInstructionsMem = new ArrayList<String>();
+        activeInstructionsLastCycle = new ArrayList<Opcode>();
     }
 
     @Override
     public boolean hasInstructionToForward() {
-        return integer.hasInstructionToForward();
+        return false; // unused
     }
 
     @Override
     protected boolean checkExtraDependenciesIfCanExecute() {
-        return integer.checkExtraDependenciesIfCanExecute();
+        return true; //unused
     }
 
     @Override
-    public boolean executeIfAllowed(AbstractStage nextStage){
-        return integer.executeIfAllowed(nextStage);
-        //TODO call adder and multiplier here || adder.executeIfAllowed() ...
+    public boolean executeIfAllowed(AbstractStage nextStage) {
+        activeInstructionsLastCycle.clear();
+        activeInstructionsMem.clear();
+        boolean integerExecuted =  integer.executeIfAllowed(nextStage);
+        boolean adderExecuted = adder.executeIfAllowed(nextStage);
+        boolean multiplierExecuted = multiplier.executeIfAllowed(nextStage);
+
+        if(integerExecuted) {
+            activeInstructionsLastCycle.add(integer.getIR());
+            activeInstructionsMem.add(integer.getIRMemAddressHex());
+        }
+        if(adderExecuted){
+            activeInstructionsLastCycle.add(adder.getIR());
+            activeInstructionsMem.add(adder.getIRMemAddressHex());
+        }
+        if(multiplierExecuted){
+            activeInstructionsLastCycle.add(multiplier.getIR());
+            activeInstructionsMem.add(multiplier.getIRMemAddressHex());
+        }
+
+        return integerExecuted || adderExecuted || multiplierExecuted;
     }
 
     @Override
@@ -39,62 +69,74 @@ public class EXSwitch extends AbstractStage {
 
     @Override
     public JsonArray toJsonArray() {
-        return integer.toJsonArray();
+        return new JsonArray().addAll(integer.toJsonArray())
+                .addAll(adder.toJsonArray())
+                .addAll(multiplier.toJsonArray());
     }
 
     @Override
     public void housekeeping(AbstractStage previousStage) {
-        //TODO select appropriate EX component
-        integer.housekeeping(previousStage);
+        AbstractEXStage targetStage = getTargetStage(previousStage.getIR());
+        targetStage.housekeeping(previousStage);
     }
 
     @Override
     public void resetRegisters() {
         //TODO check if we need to do anything here
-        if(integer != null)
-            integer.resetToNOP();
+//        if (integer != null)
+//            integer.resetToNOP();
     }
 
     @Override
-    public boolean isNOP(){
-        return integer.isNOP();
+    public boolean isNOP() {
+        return integer.isNOP() && adder.isNOP() && multiplier.isNOP();
     }
-    public AbstractStage getTargetStage(Opcode opcode){
-        switch(opcode.getInstruction()){
+
+    public boolean isTargetStageNOP(Opcode opcode){
+        AbstractEXStage targetStage = getTargetStage(opcode);
+        return targetStage.isNOP();
+    }
+
+    public AbstractEXStage getStageToForward(){
+        if(!multiplier.isNOP() && multiplier.hasCompletedExeuction())
+            return multiplier;
+
+        if(!adder.isNOP() && adder.hasCompletedExeuction())
+            return adder;
+
+        if(!integer.isNOP() && integer.hasCompletedExeuction())
+            return integer;
+
+        return null;
+    }
+
+    public AbstractEXStage getTargetStage(Opcode opcode) {
+        switch (opcode.getInstruction()) {
             case "ADD.S":
-                return null; //TODO replace with adder
+                return adder;
             case "MUL.S":
-                return null; // TODO Replace with multiplier
-            default: return integer;
+                return multiplier;
+            default:
+                return integer;
         }
     }
 
-    public  boolean isReadyToAcceptInstruction(String instruction){
-
-        //TODO check for ADD.S and MUL.S
-        return integer.isNOP();
+    public List<String> getActiveInstructionsMem() {
+        return activeInstructionsMem;
     }
 
-    public Opcode getIR(){
-        //TODO select appropriate EX component
-        return integer.getIR();
+    public List<Opcode> getActiveInstructionsLastCycle() {
+        return activeInstructionsLastCycle;
     }
 
-    public StringBinary getB(){
-        //TODO select appropriate EX component
-        return integer.getB();
+    @Override
+    public boolean hasPendingWrite(String registerName){
+        return multiplier.hasPendingWrite(registerName) ||
+                adder.hasPendingWrite(registerName) ||
+                integer.hasPendingWrite(registerName);
     }
 
-    public StringBinary getALUOutput(){
-        //TODO select appropriate EX component
-        return integer.getALUOutput();
-    }
-
-    public String getIRMemAddressHex(){
-        return integer.getIRMemAddressHex();
-    }
-
-    public EXIntegerStage getEXIntegerStage(){
+    public EXIntegerStage getEXIntegerStage() {
         return integer;
     }
 }

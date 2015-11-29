@@ -1,5 +1,6 @@
 package dlsu.advcarc.cpurevised;
 
+import dlsu.advcarc.opcode.Opcode;
 import dlsu.advcarc.parser.ProgramCode;
 import dlsu.advcarc.server.Addresses;
 import dlsu.advcarc.server.EventBusHolder;
@@ -63,11 +64,12 @@ public class CPU {
             wbStage.housekeeping(memStage);
             memStage.resetToNOP();
         }
-        if(!exStage.isStalling() && !exStage.isNOP() &&  memStage.isNOP()) {
-            memStage.housekeeping(exStage);
+        AbstractEXStage exStageToForward = exStage.getStageToForward();
+        if(exStageToForward != null &&  memStage.isNOP()) {
+            memStage.housekeeping(exStageToForward);
             exStage.resetToNOP();
         }
-        if(!idStage.isStalling() && !idStage.isNOP() &&  exStage.isNOP()) {
+        if(!idStage.isStalling() && !idStage.isNOP() &&  exStage.isTargetStageNOP(idStage.getIR())) {
             exStage.housekeeping(idStage);
             idStage.resetToNOP();
         }
@@ -89,8 +91,12 @@ public class CPU {
             cpuCycleTracker.setWbInstruction(wbStage.getIRMemAddressHex());
         if(memExecuted)
             cpuCycleTracker.setMemInstruction(memStage.getIRMemAddressHex());
-        if(exExecuted)
-            cpuCycleTracker.setExInstruction(exStage.getIR().getInstruction(), exStage.getIRMemAddressHex());
+        if(exExecuted) {
+            List<Opcode> activeInstructions = exStage.getActiveInstructionsLastCycle();
+            List<String> memAddresses = exStage.getActiveInstructionsMem();
+            for(int i=0; i<activeInstructions.size(); i++)
+                cpuCycleTracker.setExInstruction(activeInstructions.get(i).getInstruction(), memAddresses.get(i));
+        }
         if(idExecuted)
             cpuCycleTracker.setIdInstruction(idStage.getIRMemAddressHex());
         if(ifExecuted)
@@ -118,7 +124,7 @@ public class CPU {
         stagesToCheck.add(wbStage);
 
         for(AbstractStage stage: stagesToCheck){
-            if(registerName.equals(stage.getIR().getDestinationRegisterName()))
+            if(stage.hasPendingWrite(registerName))
                 return true;
         }
 
