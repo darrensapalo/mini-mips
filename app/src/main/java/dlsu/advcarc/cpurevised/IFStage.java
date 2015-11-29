@@ -16,10 +16,18 @@ public class IFStage extends AbstractStage{
 
     private boolean hasInstructionToForward;
 
+    private StringBinary prevEXALUOutput;
+    private StringBinary prevEXNPC;
+    private int prevEXCond;
+
     public IFStage(CPU cpu){
         super(cpu);
         NPC = new StringBinary("0");
         PC = new StringBinary("0");
+
+        prevEXALUOutput = StringBinary.valueOf(0);
+        prevEXNPC = StringBinary.valueOf(0);
+        prevEXCond = 0;
     }
 
     @Override
@@ -52,10 +60,10 @@ public class IFStage extends AbstractStage{
         else{
 
             if(cpu.ifStageCanCheckCond()){
-                if(ex.getCond() == 1)
-                    NPC = ex.getALUOutput();
+                if(prevEXCond == 1)
+                    NPC = prevEXALUOutput;
                 else
-                    NPC = ex.getNPC();
+                    NPC = prevEXNPC;
 
                 // set back to false
                 cpu.setIfStageCanCheckCond(false);
@@ -70,34 +78,11 @@ public class IFStage extends AbstractStage{
             }
         }
 
-//        // to avoid the IF that runs on the same cycle as the EX
-//        if(cpu.ifStageCanCheckCond() && !cpu.isBranchRunning()){
-//
-//            if(ex.getCond() == 1)
-//                NPC = ex.getALUOutput();
-//            else
-//                NPC = ex.getNPC();
-//
-//            // set back to false
-//            cpu.setIfStageCanCheckCond(false);
-//            isStalling = true; //stall/flush one last time
-//        }
-//        else {
-//            NPC = PC.plus(StringBinary.valueOf(4));
-//        }
-
         PC = NPC.clone();
 
-//        // This is so that no housekeeping will occur if in flush mode
-//        if(cpu.isBranchRunning()){ // Flush mode
-//            isStalling = true;
-//        }
-//        else {
-//            isStalling = false;
-//
-//            if ("BEQ".equals(IR.getInstruction()) || "J".equals(IR.getInstruction()))
-//                cpu.setRunningBranch(IRMemAddressHex);
-//        }
+        prevEXALUOutput = ex.getALUOutput();
+        prevEXCond = ex.getCond();
+        prevEXNPC = ex.getNPC();
 
     }
 

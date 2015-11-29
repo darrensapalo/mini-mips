@@ -48,7 +48,7 @@ public class EXIntegerStage extends AbstractStage{
                 break;
             case "J":
                 cpu.setIfStageCanCheckCond(true);
-                cond = 0;
+                cond = 1;
                 ALUOutput = IR.getSubBinary(6,31).times(StringBinary.valueOf(4)).padBinaryValueStringBinary(64);
                 break;
         }
@@ -82,8 +82,9 @@ public class EXIntegerStage extends AbstractStage{
         A = StringBinary.valueOf(0);
         B = StringBinary.valueOf(0);
         IMM = StringBinary.valueOf(0);
-//        ALUOutput = StringBinary.valueOf(0);
-//        cond = 0;
+        ALUOutput = StringBinary.valueOf(0);
+        cond = 0;
+        NPC = StringBinary.valueOf(0);
     }
 
     public int getCond(){
