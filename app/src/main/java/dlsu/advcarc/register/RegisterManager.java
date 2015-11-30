@@ -91,8 +91,9 @@ public class RegisterManager {
     public JsonArray getJsonArrayR() {
         JsonArray rArray = new JsonArray();
 
-        for (Register register : rRegisters)
-            rArray.add(register.toJsonObject(16));
+        for (int i = 0; i < rRegisters.size(); i++)
+            if (i > 0)
+                rArray.add(rRegisters.get(i).toJsonObject(16));
 
         return rArray;
     }
@@ -100,8 +101,9 @@ public class RegisterManager {
     public JsonArray getJsonArrayF() {
         JsonArray fArray = new JsonArray();
 
-        for (Register register : fRegisters)
-            fArray.add(register.toJsonObject(8));
+        for (int i = 0; i < fRegisters.size(); i++)
+            if (i > 0)
+                fArray.add(fRegisters.get(i).toJsonObject(8));
 
         return fArray;
     }
