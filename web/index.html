@@ -7,155 +7,164 @@
 </head>
 <body class="application">
 
-  <div class="container-fluid">
+	<div class="container-fluid">
 
-    <div class="row">
+		<ul class="nav nav-tabs">
+		  <li class="active"><a data-toggle="tab" href="#tab-input">Input</a></li>
+		  <li><a data-toggle="tab" href="#tab-pipeline">Pipeline</a></li>
+		</ul>
+		
+		
+		<div class="tab-content">
+			<div class="row tab-pane fade in active" id="tab-input"> <!-- Start of Input Tab -->
+				<div class="col-sm-4">
+					<div class="panel panel-primary" id="panel-code">
+						<div class="panel-heading"><a data-toggle="collapse" href="#collapse1">MIPS Code Input</a>
+							<button type="button" id="button-go" class="btn btn-primary disabled">Go!</button></div>
+						<div id="collapse1" class="panel-collapse">
+						  <div class="panel-body" id="panel-code-body"> <!-- Start Panel Body -->
+
+							<div id="div-code-error" class="alert alert-danger collapse" role="alert"> <!-- Start Input Error Row -->
+							  <!-- <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+								<span aria-hidden="true">&times;</span>
+							  </button> -->
+							  <span id="span-code-error"></span>
+							</div> <!-- End Input Error Row -->
+
+							<div class="row"> <!-- Start Text Area Row -->
+							  <div class="col-sm-12">
+							  <textarea id="textarea-code" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"autofocus></textarea>
+							  </div>
+							</div> <!-- End of the Text Area Row-->
+
+							<div class="row"> <!-- Start Code Memory Row -->
+							  <div class="col-sm-12 table-responsive">
+								<table class="table table-condensed table-hover" id="table-opcode">
+								  <thead>
+									<tr>
+									  <th>Mem</th>
+									  <th>Opcode</th>
+									  <th>Instruction</th>
+									</tr>
+								  </thead>
+								  <tbody></tbody>
+								</table>
+							  </div>
+							</div> <!-- End Code Memory Row -->
+			
+						  </div>
+						  <div class="panel-footer">
+						  </div>
+						</div> <!-- End of collapsible Div -->
+					</div> <!-- End of Panel -->
+				</div>  <!-- End of the Left group of Panels-->
+				
+				<div class="col-sm-8">
+			   
+					<div class="row"> <!-- Start Whole Row -->
+
+					  <div class="col-sm-8">
+						<div class="panel panel-primary" id="panel-registers">
+						  <div class="panel-heading">Registers</div>
+						  <div class="panel-body">
+							
+							<div class="col-sm-6 table-responsive">
+							  <table class="table table-condensed table-hover" id="table-r-registers">
+								<thead>
+								  <tr>
+									<th>Register</th>
+									<th>Value</th>
+								  </tr>
+								</thead>
+								<tbody></tbody>
+							  </table>
+							</div>
+
+							<div class="col-sm-6 table-responsive">
+							  <table class="table table-condensed table-hover" id="table-f-registers">
+								<thead>
+								  <tr>
+									<th>Register</th>
+									<th>Value</th>
+								  </tr>
+								</thead>
+								<tbody></tbody>
+							  </table>
+							</div>
+
+						  </div>
+						</div>
+					  </div>
+
+					  <div class="col-sm-4">
+						  <div class="panel panel-primary" id="panel-memory">
+							<div class="panel-heading">Memory</div>
+							<div class="panel-body">
+							  <div class="table-responsive">
+								<table class="table table-condensed table-hover" id="table-memory">
+								  <thead>
+									<tr>
+									  <th>Value</th>
+									  <th>Address</th>
+									</tr>
+								  </thead>
+								  <tbody></tbody>
+								</table>
+							  </div>
+							</div>
+						  </div>
+					  </div>
+					</div> <!-- End of the Whole Row -->
+				  
+				</div> <!-- End of the Right group of Panels-->
+				
+			</div>  <!-- End of Input Tab -->
+
+		
+			
+			<div class="row tab-pane fade in" id="tab-pipeline"> <!-- Pipeline Row -->
+			
+				<div class="row"> <!-- Pipeline Row -->
+				  <div class="col-sm-12">
+					<div class="panel panel-primary" id="panel-pipeline">
+						<div class="panel-heading">Pipeline<button type="button" id="button-clock-once" class="btn btn-primary">Clock Once</button></div>
+						<div class="panel-body">
+
+						  <div class="col-sm-3 table-responsive">
+							<table class="table table-condensed table-hover" id="table-cpu-registers">
+							  <thead>
+								<tr>
+								  <th>Register</th>
+								  <th>Value</th>
+								</tr>
+							  </thead>
+							  <tbody></tbody>
+							</table>
+						  </div>
+
+						<div class="col-sm-9 table-responsive">
+						  <table class="table table-condensed table-bordered" id="table-cpu-pipeline">
+							<thead>
+							  <tr>
+								<th>Instruction</th>
+							  </tr>
+							</thead>
+							<tbody></tbody>
+						  </table>
+						</div>
 
 
-
-      <div class="col-sm-4">
-
-          <div class="panel panel-primary" id="panel-code">
-            <div class="panel-heading"><a data-toggle="collapse" href="#collapse1">MIPS Code Input</a></div>
-            <div id="collapse1" class="panel-collapse">
-              <div class="panel-body" id="panel-code-body">
-
-                <div id="div-code-error" class="alert alert-danger collapse" role="alert">
-                  <!-- <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-                    <span aria-hidden="true">&times;</span>
-                  </button> -->
-                  <span id="span-code-error"></span>
-                </div>
-
-
-                <div class="row">
-                  <div class="col-sm-12">
-                  <textarea id="textarea-code" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"autofocus></textarea>
-                  </div>
-                </div> <!-- End of the Text Area Row-->
-
-                <div class="row">
-                  <div class="col-sm-12 table-responsive">
-                    <table class="table table-condensed" id="table-opcode">
-                      <thead>
-                        <tr>
-                          <th>Mem</th>
-                          <th>Opcode</th>
-                          <th>Instruction</th>
-                        </tr>
-                      </thead>
-                      <tbody></tbody>
-                    </table>
-                  </div>
-                </div> <!-- End of the Table Row-->
-
-              </div>
-              <div class="panel-footer">
-                <button type="button" id="button-go" class="btn btn-primary disabled">Go!</button>
-              </div>
-            </div> <!-- End of collapsible panel -->
-          </div>
-      </div> <!-- End of the Left group of Panels-->
-
-
-
-      <div class="col-sm-8">
-       
-
-        <div class="row">
-
-          <div class="col-sm-8">
-            <div class="panel panel-primary" id="panel-registers">
-              <div class="panel-heading">Registers</div>
-              <div class="panel-body">
-                
-                <div class="col-sm-6 table-responsive">
-                  <table class="table table-condensed" id="table-r-registers">
-                    <thead>
-                      <tr>
-                        <th>Register</th>
-                        <th>Value</th>
-                      </tr>
-                    </thead>
-                    <tbody></tbody>
-                  </table>
-                </div>
-
-                <div class="col-sm-6 table-responsive">
-                  <table class="table table-condensed" id="table-f-registers">
-                    <thead>
-                      <tr>
-                        <th>Register</th>
-                        <th>Value</th>
-                      </tr>
-                    </thead>
-                    <tbody></tbody>
-                  </table>
-                </div>
-
-              </div>
-            </div>
-          </div>
-
-          <div class="col-sm-4">
-              <div class="panel panel-primary" id="panel-memory">
-                <div class="panel-heading">Memory</div>
-                <div class="panel-body">
-                  <div class="table-responsive">
-                    <table class="table table-condensed" id="table-memory">
-                      <thead>
-                        <tr>
-                          <th>Value</th>
-                          <th>Address</th>
-                        </tr>
-                      </thead>
-                      <tbody></tbody>
-                    </table>
-                  </div>
-                </div>
-              </div>
-          </div>
-
-        </div>
-          
-      </div> <!-- End of the Right group of Panels-->
-
-    </div> <!-- End of the Whole Big Row-->
-
-    <div class="row">
-          <div class="col-sm-12">
-            <div class="panel panel-primary" id="panel-pipeline">
-                <div class="panel-heading">Pipeline<button type="button" id="button-clock-once" class="btn btn-primary">Clock Once</button></div>
-                <div class="panel-body">
-
-                  <div class="col-sm-4 table-responsive">
-                    <table class="table table-condensed" id="table-cpu-registers">
-                      <thead>
-                        <tr>
-                          <th>Register</th>
-                          <th>Value</th>
-                        </tr>
-                      </thead>
-                      <tbody></tbody>
-                    </table>
-                  </div>
-
-                <div class="col-sm-8 table-responsive">
-                  <table class="table table-condensed" id="table-cpu-pipeline">
-                    <thead>
-                      <tr>
-                        <th>Instruction</th>
-                      </tr>
-                    </thead>
-                    <tbody></tbody>
-                  </table>
-                </div>
-
-
-                </div>
-              </div>
-          </div>
-        </div>
+						</div>
+					  </div>
+				  </div>
+				</div> <!-- End of Pipeline Row -->
+			
+			</div>
+		</div>
+	</div>
+	
+	
+	
   
   <script type="text/javascript" src="../../js/sockjs-1.0.3.min.js"></script>
   <script type="text/javascript" src="../../js/vertxbus-3.1.0.js"></script>

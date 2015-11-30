@@ -7,11 +7,16 @@ body{
 	padding: 10px;
 }
 
-/*tr{
-	height : 20px;
-	font-size: x-small;
+tr, td{
+	/*height : 20px;*/
+	font-size: 12px;
 	margin: 0 0 0 0;
-}*/
+	padding: 0px; 
+}
+
+.table-condensed>tbody>tr>td, .table-condensed>tfoot>tr>td {
+    padding: 0px;
+}
 
 #textarea-code{
 	width:100%; 
@@ -28,14 +33,18 @@ body{
 #panel-code.body{
 }
 
-#panel-registers, #panel-memory{
-	min-height: 280px;
-	max-height: 280px;
+#panel-code, #panel-registers, #panel-memory{
+	/*min-height: 350px;*/
+	max-height: 500px;
 	overflow-y: auto;
 }
 
 #panel-pipeline{
 	min-height: 300px;
+	overflow-x: auto;
 	/*max-height: 300px;
 	overflow-y: auto;*/
 }
+
+
+

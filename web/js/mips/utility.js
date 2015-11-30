@@ -91,11 +91,5 @@ function populatePipelineTable(data){
       .append('td')
         .text(function(d){
           return d;})
-        .attr('class', 'text-nowrap')
-        .attr('contenteditable', function(d){
-          if(d && d.length == 16 && d.indexOf(' ') < 0)
-            return true;
-          return false;
-        });
-
+        .attr('class', 'text-nowrap');
 }
