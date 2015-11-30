@@ -9,6 +9,9 @@ $('#button-go').on('click', onExecuteClick);
 $('#button-clock-once').on('click', onClockOnceClick);
 $('#button-clock-fully').on('click', onClockFullyClick);
 
+$('#btn-goto').on('click', scrollToRow);
+
+
 function onMemTableTDChange(event) {
   var esc = event.which == 27,
       nl = event.which == 13,
@@ -78,4 +81,23 @@ function onClockOnceClick(){
 
 function onClockFullyClick(){
   clock(true);
+}
+
+
+function scrollToRow(){
+
+  var targetAddress = $('#txt-goto').val();
+  var w = $('#panel-memory');
+
+  $('#table-memory tr').each(function(){
+      if($(this).find('td').eq(0).text() == targetAddress){
+          $(this).css('background','red');
+          w.scrollTop( $(this).offset().top - (w.height()/2) );
+          console.log($(this).offset().top);
+          console.log(w.height()/2);
+          
+      }
+      else
+        $(this).css('background','white');
+  });
 }
