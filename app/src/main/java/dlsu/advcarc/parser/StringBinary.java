@@ -56,7 +56,7 @@ public class StringBinary {
     }
 
     public long getAsLong(){
-        return Long.valueOf(value, 2);
+        return new BigInteger(value, 2).longValue();
     }
 
     public double getAsDouble(){
