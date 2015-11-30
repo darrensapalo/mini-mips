@@ -70,6 +70,12 @@ public class EXIntegerStage extends AbstractEXStage{
                 ALUOutput = A.plus(IMM).forceLengthStringBinary(64);
                 break;
 
+            case "ANDI":
+                A = A.padBinaryValueStringBinary(64);
+                IMM = IMM.padBinaryValueStringBinary(64);
+                ALUOutput = A.and(IMM);
+                break;
+
             case "BEQ":
                 cond = A.getAsLong() == B.getAsLong() ? 1 : 0;
                 cpu.setIfStageCanCheckCond(true);
