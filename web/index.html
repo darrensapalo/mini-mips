@@ -9,7 +9,7 @@
 
 	<div class="container-fluid">
 
-		<ul class="nav nav-tabs">
+		<ul class="nav nav-tabs" id="navbar">
 		  <li class="active"><a data-toggle="tab" href="#tab-input">Input</a></li>
 		  <li><a data-toggle="tab" href="#tab-pipeline">Pipeline</a></li>
 		</ul>
@@ -97,15 +97,19 @@
 					  </div>
 
 					  <div class="col-sm-4">
+              <div class="panel panel-primary" id="panel-memory-header">
+                <div class="panel-heading">Memory
+                  <form role="form" class="padding-15 black round-5 form-inline">
+                    <div class="form-group">
+                        <input id="txt-goto" type="text" class="form-control input-sm" maxlength="4">
+                        <button id="btn-goto" class="btn btn-warning btn-sm">GOTO</button>
+                     </div>
+                  </form>
+                </div>
+              </div>
+
 						  <div class="panel panel-primary" id="panel-memory">
-							<div class="panel-heading">Memory
-								<form role="form" class="padding-15 black round-5 form-inline">
-									<div class="form-group">
-											<input id="txt-goto" type="text" class="form-control input-sm" maxlength="4">
-											<button id="btn-goto" class="btn btn-warning btn-sm">GOTO</button>
-									 </div>
-								</form>
-							</div>
+							
 							<div class="panel-body">
 							  <div class="table-responsive">
 								<table class="table table-condensed table-hover" id="table-memory">

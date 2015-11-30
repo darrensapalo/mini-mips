@@ -88,14 +88,14 @@ function scrollToRow(){
 
   var targetAddress = $('#txt-goto').val();
   var w = $('#panel-memory');
-
+  var panelHeader = $('#panel-memory-header');
+  var navbar = $('#navbar');
+  
   $('#table-memory tr').each(function(){
       if($(this).find('td').eq(0).text() == targetAddress){
           $(this).css('background','#f39c12');
-          w.scrollTop( $(this).offset().top - (w.height()/2) );
-          console.log($(this).offset().top);
-          console.log(w.height()/2);
-          
+          w.animate({scrollTop: $(this).offset().top - (navbar.height() + panelHeader.height() + w.height()/2)}, 1000 );
+          // w.scrollTop( $(this).offset().top - (navbar.height() + panelHeader.height() + w.height()/2)) ;       
       }
       else
         $(this).css('background','white');
