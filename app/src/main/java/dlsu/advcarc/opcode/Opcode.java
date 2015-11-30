@@ -51,6 +51,9 @@ public class Opcode {
                 break;
 
             case "I":
+                if("BEQ".equals(getInstruction()))
+                    registers.add(getARegisterName());
+
                 registers.add(getBRegisterName());
                 break;
         }
