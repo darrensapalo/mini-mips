@@ -60,14 +60,25 @@ public class EXIntegerStage extends AbstractEXStage{
                 ALUOutput = A.shiftRight(-1*shiftTimes);
                 break;
 
+            case "LW":
+            case "LWU":
+            case "SW":
+            case "L.S":
+            case "S.S":
+                A = A.padBinaryValueArithmeticStringBinary(64);
+                IMM = IMM.padBinaryValueStringBinary(64);
+                ALUOutput = A.plus(IMM).forceLengthStringBinary(64);
+                break;
+
             case "BEQ":
+                cond = A.getAsLong() == B.getAsLong() ? 1 : 0;
                 cpu.setIfStageCanCheckCond(true);
-                cond = 0; //TODO 
 
                 IMM = IMM.padBinaryValueArithmeticStringBinary(64);
                 IMM = IMM.times(StringBinary.valueOf(4)).forceLengthStringBinary(64);
                 ALUOutput = NPC.plus(IMM).forceLengthStringBinary(64);
                 break;
+
             case "J":
                 cpu.setIfStageCanCheckCond(true);
                 cond = 1;
