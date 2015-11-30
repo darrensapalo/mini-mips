@@ -117,8 +117,7 @@ public class CPU {
         if(ifStageCanCheckCond)
             runningBranchMemAddressHex = null;
 
-
-        return true; //TODO
+        return !hasFinishedExecuting();
     }
 
     private boolean hasFinishedExecuting(){

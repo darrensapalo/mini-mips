@@ -7,6 +7,7 @@ $('#table-memory').on('keydown', onMemTableTDChange);
 $('#button-go').on('click', onExecuteClick);
 
 $('#button-clock-once').on('click', onClockOnceClick);
+$('#button-clock-fully').on('click', onClockFullyClick);
 
 function onMemTableTDChange(event) {
   var esc = event.which == 27,
@@ -73,4 +74,8 @@ function onExecuteClick(){
 
 function onClockOnceClick(){
   clock(false);
+}
+
+function onClockFullyClick(){
+  clock(true);
 }

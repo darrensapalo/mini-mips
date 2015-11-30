@@ -28,8 +28,7 @@ public class ExecutionManager {
     }
 
     public void clockFully() {
-        for (int i = 0; i < 10; i++)
-            cpu.clock(); //TODO keep on clocking until program finishes.
+        while(cpu.clock());
     }
 
     public void reset(){
