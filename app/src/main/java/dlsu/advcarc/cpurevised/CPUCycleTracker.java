@@ -50,8 +50,12 @@ public class CPUCycleTracker {
         map.get(RadixHelper.convertHexToStringBinary(memAddressHex).getAsInt()).add("IF");
     }
 
-    public void setIdInstruction(String memAddressHex) {
-        map.get(RadixHelper.convertHexToStringBinary(memAddressHex).getAsInt()).add("ID");
+    public void setIdInstruction(String memAddressHex){
+        List<String> target = map.get(RadixHelper.convertHexToStringBinary(memAddressHex).getAsInt());
+        String lastInserted = getLastInserted(target);
+        if(!lastInserted.equals("ID"))
+                target.add("ID");
+
     }
 
     public void setExInstruction(String instructionString, String memAddressHex) {
