@@ -3,6 +3,7 @@ package dlsu.advcarc.cpurevised;
 import dlsu.advcarc.memory.MemoryManager;
 import dlsu.advcarc.opcode.Opcode;
 import dlsu.advcarc.parser.StringBinary;
+import io.vertx.core.json.Json;
 import io.vertx.core.json.JsonArray;
 import io.vertx.core.json.JsonObject;
 
@@ -90,7 +91,9 @@ public class IFStage extends AbstractStage{
     public JsonArray toJsonArray() {
         return new JsonArray()
                 .add(new JsonObject().put("register", "IF/ID.IR").put("value",  getIRString()))
-                .add(new JsonObject().put("register", "IF/ID.NPC").put("value", NPC == null ? "null" : NPC.toHexString(16)));
+                .add(new JsonObject().put("register", "IF/ID.NPC").put("value", NPC == null ? "null" : NPC.toHexString(16)))
+                .add(new JsonObject().put("register", "PC").put("value", PC.toHexString(16)))
+                ;
     }
 
     @Override

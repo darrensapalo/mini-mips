@@ -33,9 +33,9 @@ tr, td{
 #panel-code.body{
 }
 
-#panel-code, #panel-registers, #panel-memory, #panel-pipeline{
+#panel-code, #panel-registers, #panel-memory{
 	/*min-height: 350px;*/
-	max-height: 550px;
+	max-height: 570px;
 	overflow-y: auto;
 }
 
