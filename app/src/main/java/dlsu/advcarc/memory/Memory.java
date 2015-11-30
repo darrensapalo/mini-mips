@@ -66,6 +66,10 @@ public class Memory implements Writable {
         return value.getAsDouble();
     }
 
+    public float getAsFloat(){
+        return value.getAsFloat();
+    }
+
     public String getAsHex() {
         return value.toHexString();
     }

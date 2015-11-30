@@ -63,6 +63,9 @@ public class StringBinary {
         return Double.longBitsToDouble(new BigInteger(value, 2).longValue());
     }
 
+    public float getAsFloat(){
+        return Float.intBitsToFloat(new BigInteger(value, 2).intValue());
+    }
 
     public int getAsInt() {
         return Integer.parseUnsignedInt(value, 2);
@@ -121,6 +124,9 @@ public class StringBinary {
         return new StringBinary(Long.toBinaryString(Double.doubleToLongBits(d)));
     }
 
+    public static StringBinary valueOf(float f){
+        return new StringBinary(Integer.toBinaryString(Float.floatToIntBits(f)));
+    }
 
     public StringBinary and(StringBinary b) {
         String thisBinary = padBinaryValue(64);

@@ -39,10 +39,20 @@ public class MEMStage extends AbstractStage {
         switch(IR.getInstruction()){
 
             case "L.S":
-            case "LW":
-            case "LWU":
+                // convert to double
                 String memAddressHex = ALUOutput.toHexString(4);
-                LMD = MemoryManager.instance().getInstance(memAddressHex).read();
+                LMD = StringBinary.valueOf(MemoryManager.instance().getInstance(memAddressHex).getAsFloat());
+                break;
+
+            case "LW":
+                // pad arithmetic
+                memAddressHex = ALUOutput.toHexString(4);
+                LMD = MemoryManager.instance().getInstance(memAddressHex).read().padBinaryValueArithmeticStringBinary(64);
+                break;
+            case "LWU":
+                // pad 0
+                memAddressHex = ALUOutput.toHexString(4);
+                LMD = MemoryManager.instance().getInstance(memAddressHex).read().padBinaryValueStringBinary(64);
                 break;
 
             case "S.S":
@@ -105,5 +115,7 @@ public class MEMStage extends AbstractStage {
     public CPU getCpu() {
         return cpu;
     }
+
+
 
 }

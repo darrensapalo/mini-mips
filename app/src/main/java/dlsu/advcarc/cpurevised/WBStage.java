@@ -10,6 +10,7 @@ import io.vertx.core.json.JsonArray;
 public class WBStage extends AbstractStage{
 
     private StringBinary ALUOutput;
+    private StringBinary LMD;
 
     public WBStage(CPU cpu){
         super(cpu);
@@ -30,8 +31,17 @@ public class WBStage extends AbstractStage{
     public void execute() {
         String destinationRegister = IR.getDestinationRegisterName();
 
-        if(destinationRegister != null && !destinationRegister.trim().isEmpty())
-            RegisterManager.instance().updateRegister(destinationRegister, ALUOutput);
+        if(destinationRegister != null && !destinationRegister.trim().isEmpty()) {
+            switch(IR.getInstruction()){
+                case "LW":
+                case "LWU":
+                case "L.S":
+                    RegisterManager.instance().updateRegister(destinationRegister, LMD);
+                    break;
+                default:
+                    RegisterManager.instance().updateRegister(destinationRegister, ALUOutput);
+            }
+        }
     }
 
     @Override
@@ -45,6 +55,7 @@ public class WBStage extends AbstractStage{
         IR = memStage.getIR();
         ALUOutput = memStage.getALUOutput();
         IRMemAddressHex = memStage.getIRMemAddressHex();
+        LMD = memStage.getLMD();
     }
 
     @Override
