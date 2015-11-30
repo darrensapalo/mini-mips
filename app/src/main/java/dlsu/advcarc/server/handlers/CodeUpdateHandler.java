@@ -19,8 +19,14 @@ public class CodeUpdateHandler implements Handler<Message<String>> {
         try {
             programCode = MipsParser.parseCodeString(message.body());
 
-            if (programCode.isValid())
-                ExecutionManager.instance().inputProgramCode(programCode);
+            if (programCode.isValid()) {
+                try {
+                    ExecutionManager.instance().inputProgramCode(programCode);
+                }catch(Exception e){
+                    //Exception can be caused here when generating opcodes. That is due to missing labels.
+                    programCode.setParsingErrors("Problem generating opcodes. Most likely due to missing labels.");
+                }
+            }
 
             JsonObject jsonObject = new JsonObject();
             jsonObject.put("isSuccessful", programCode.isValid());

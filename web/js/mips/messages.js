@@ -39,10 +39,10 @@ function updateCode(code){
       $('#span-code-error').html(msg.body['errors']);
       $('#div-code-error').show();    
     }
-    // else{
-    //   $('#div-code-error').hide();   
-    //   requestForCode(); // to refresh the opcode table
-    // }
+    else{
+      $('#div-code-error').hide();   
+      // requestForCode(); // to refresh the opcode table
+    }
 
   });
 

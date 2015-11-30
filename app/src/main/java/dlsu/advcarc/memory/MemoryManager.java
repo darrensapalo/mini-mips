@@ -88,7 +88,7 @@ public class MemoryManager {
             ram.get(i).write(value);
         }
 
-        broadcastMemoryState();
+//        broadcastMemoryState();
     }
 
     public void clear() {
@@ -104,16 +104,6 @@ public class MemoryManager {
         }
 
         return jsonArray;
-//        JsonArray codeMemoryArray = ExecutionManager.instance().getProgramCode().toJsonArray(false);
-//
-//        int numLinesOfCode = codeMemoryArray.size();
-//        int numLinesMissing = DATA_SEGMENT_SIZE / 4 - numLinesOfCode;
-//        int startAddingCodeAt = numLinesOfCode * 4;
-//
-//        for(int i=0;i<numLinesMissing;i++){
-//            codeMemoryArray.add(Code.createNOP(startAddingCodeAt + i*4).toJsonObject(false));
-//        }
-//        return codeMemoryArray;
     }
 
     public JsonArray getDataJsonArray(){
