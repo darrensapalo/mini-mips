@@ -48,13 +48,16 @@ public class EXIntegerStage extends AbstractEXStage{
                 ALUOutput = ALUOutput.padBinaryValueStringBinary(64); break;
 
             case "DMULT":
-                A = A.padBinaryValueArithmeticStringBinary(64);
-                B = B.padBinaryValueArithmeticStringBinary(64);
                 StringBinary rawProduct =  A.times(B).padBinaryValueArithmeticStringBinary(128);
                 StringBinary hi = rawProduct.substring(0, 63);
                 StringBinary lo = rawProduct.substring(64, 127);
                 cpu.setHI(hi);
                 cpu.setLO(lo);
+                break;
+
+            case "DSLL":
+                int shiftTimes = IMM.substring(5, 9).getAsInt();
+                ALUOutput = A.shiftRight(-1*shiftTimes);
                 break;
 
             case "BEQ":
