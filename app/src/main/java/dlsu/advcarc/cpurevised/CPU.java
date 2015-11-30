@@ -2,9 +2,12 @@ package dlsu.advcarc.cpurevised;
 
 import dlsu.advcarc.opcode.Opcode;
 import dlsu.advcarc.parser.ProgramCode;
+import dlsu.advcarc.parser.StringBinary;
+import dlsu.advcarc.register.Register;
 import dlsu.advcarc.server.Addresses;
 import dlsu.advcarc.server.EventBusHolder;
 import dlsu.advcarc.utils.RadixHelper;
+import io.vertx.core.json.Json;
 import io.vertx.core.json.JsonArray;
 import io.vertx.core.json.JsonObject;
 
@@ -28,6 +31,9 @@ public class CPU {
 
     private CPUCycleTracker cpuCycleTracker;
 
+    private StringBinary HI;
+    private StringBinary LO;
+
     /* Initialization Code */
 
     public CPU(){
@@ -43,6 +49,8 @@ public class CPU {
         programCode = null;
         ifStageCanCheckCond = false;
         runningBranchMemAddressHex = null;
+        HI = StringBinary.valueOf(0).padBinaryValueStringBinary(64);
+        LO = StringBinary.valueOf(0).padBinaryValueStringBinary(64);
     }
 
     public void inputProgramCode(ProgramCode programCode){
@@ -170,6 +178,22 @@ public class CPU {
         this.ifStageCanCheckCond = ifStageCanCheckCond;
     }
 
+    public StringBinary getHI() {
+        return HI;
+    }
+
+    public void setHI(StringBinary HI) {
+        this.HI = HI;
+    }
+
+    public StringBinary getLO() {
+        return LO;
+    }
+
+    public void setLO(StringBinary LO) {
+        this.LO = LO;
+    }
+
     /* Json Methods */
 
     public JsonObject toJsonObject() {
@@ -183,9 +207,16 @@ public class CPU {
         return new JsonArray()
                 .addAll(ifStage.toJsonArray())
                 .addAll(idStage.toJsonArray())
+                .addAll(getHILOArray())
                 .addAll(exStage.toJsonArray())
                 .addAll(memStage.toJsonArray())
                 ;
+    }
+
+    private JsonArray getHILOArray(){
+        return new JsonArray()
+                .add(new JsonObject().put("register", "HI").put("value",  HI.toHexString(16)))
+                .add(new JsonObject().put("register", "LO").put("value", LO.toHexString(16)));
     }
 
 }

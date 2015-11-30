@@ -1,5 +1,6 @@
 package dlsu.advcarc.cpurevised;
 
+import dlsu.advcarc.cpu.ALU;
 import dlsu.advcarc.parser.StringBinary;
 import io.vertx.core.json.JsonArray;
 import io.vertx.core.json.JsonObject;
@@ -37,7 +38,24 @@ public class EXIntegerStage extends AbstractEXStage{
             case "DADDU":
                 ALUOutput = A.plus(B); break;
 
-            //TODO implement the rest here:
+            case "OR":
+                A = A.padBinaryValueStringBinary(64);
+                B = B.padBinaryValueStringBinary(64);
+                ALUOutput = A.or(B); break;
+
+            case "SLT":
+                ALUOutput = (A.getAsLong() < B.getAsLong()) ? StringBinary.valueOf(1) : StringBinary.valueOf(0);
+                ALUOutput = ALUOutput.padBinaryValueStringBinary(64); break;
+
+            case "DMULT":
+                A = A.padBinaryValueArithmeticStringBinary(64);
+                B = B.padBinaryValueArithmeticStringBinary(64);
+                StringBinary rawProduct =  A.times(B).padBinaryValueArithmeticStringBinary(128);
+                StringBinary hi = rawProduct.substring(0, 63);
+                StringBinary lo = rawProduct.substring(64, 127);
+                cpu.setHI(hi);
+                cpu.setLO(lo);
+                break;
 
             case "BEQ":
                 cpu.setIfStageCanCheckCond(true);

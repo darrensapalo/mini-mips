@@ -12,8 +12,8 @@ public class StringBinary {
     private String value;
 
     public StringBinary(String value) throws NumberFormatException{
-        if (value.length() > 64)
-            throw new NumberFormatException("Invalid amount; Cannot write more than 64 bits.");
+//        if (value.length() > 64)
+//            throw new NumberFormatException("Invalid amount; Cannot write more than 64 bits.");
 
         if(!value.matches("[01]+"))
             throw new NumberFormatException("Invalid format; Should only use 1s or 0s.");
@@ -23,6 +23,10 @@ public class StringBinary {
 
     public StringBinary clone(){
         return new StringBinary(value);
+    }
+
+    public StringBinary substring(int startIndex, int endIndex){
+        return new StringBinary(value.substring(startIndex, endIndex+1));
     }
 
     public String padBinaryValue(int desiredLength){
@@ -90,7 +94,20 @@ public class StringBinary {
     }
 
     public StringBinary times(StringBinary multiplicand){
-        return new StringBinary(Long.toBinaryString(new BigInteger(value, 2).multiply(new BigInteger(multiplicand.value, 2)).longValue()));
+
+        BigInteger m1 = new BigInteger(value, 2);
+        BigInteger m2 = new BigInteger(multiplicand.value, 2);
+
+        long product = m1.multiply(m2).longValue();
+
+        StringBinary productBinary = new StringBinary(Long.toBinaryString(product));
+
+        if(product < 0 )
+            return productBinary.padBinaryValueArithmeticStringBinary(64);
+        else
+            return productBinary.padBinaryValueStringBinary(64);
+
+//        return new StringBinary(Long.toBinaryString(m1.multiply(m2).longValue()));
     }
 
 
