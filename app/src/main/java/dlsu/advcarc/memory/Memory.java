@@ -33,7 +33,8 @@ public class Memory implements Writable {
 
     @Override
     public void write(String value) {
-        MemoryManager.instance().updateMemory(memory, new StringBinary(value));
+        this.value = new StringBinary(value);
+//        MemoryManager.instance().updateMemory(memory, new StringBinary(value));
     }
 
     @Override
@@ -61,8 +62,12 @@ public class Memory implements Writable {
         return value.getAsLong();
     }
 
-    public double getAsDouble() {
-        return value.getAsDouble();
+//    public double getAsDouble() {
+//        return value.getAsDouble();
+//    }
+
+    public float getAsFloat(){
+        return value.getAsFloat();
     }
 
     public String getAsHex() {

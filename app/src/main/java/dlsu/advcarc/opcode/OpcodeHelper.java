@@ -109,6 +109,7 @@ public class OpcodeHelper {
                     case 56:
                         return "DSLL";
                 }
+                break;
 
                 // I Types
             case 4:
@@ -137,6 +138,10 @@ public class OpcodeHelper {
                         return "MUL.S";
                 }
         }
-        return null;
+        return "NOP";
+    }
+
+    public static int getInt(StringBinary opcode, int startIndex, int endIndex){
+        return new StringBinary(opcode.getBinaryValue().substring(startIndex,endIndex+1)).getAsInt();
     }
 }

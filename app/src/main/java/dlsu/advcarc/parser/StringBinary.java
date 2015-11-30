@@ -12,8 +12,8 @@ public class StringBinary {
     private String value;
 
     public StringBinary(String value) throws NumberFormatException{
-        if (value.length() > 64)
-            throw new NumberFormatException("Invalid amount; Cannot write more than 64 bits.");
+//        if (value.length() > 64)
+//            throw new NumberFormatException("Invalid amount; Cannot write more than 64 bits.");
 
         if(!value.matches("[01]+"))
             throw new NumberFormatException("Invalid format; Should only use 1s or 0s.");
@@ -21,14 +21,34 @@ public class StringBinary {
         this.value = value;
     }
 
+    public StringBinary clone(){
+        return new StringBinary(value);
+    }
+
+    public StringBinary substring(int startIndex, int endIndex){
+        return new StringBinary(value.substring(startIndex, endIndex+1));
+    }
+
     public String padBinaryValue(int desiredLength){
         return RadixHelper.padWithZero(value, desiredLength);
     }
 
+    public StringBinary padBinaryValueStringBinary(int desiredLength){
+        return new StringBinary(padBinaryValue(desiredLength));
+    }
+
     public String padBinaryValueArithmetic(int desiredLength){ return RadixHelper.padArithmetic(value, desiredLength);}
+
+    public StringBinary padBinaryValueArithmeticStringBinary(int desiredLength){
+        return new StringBinary(padBinaryValueArithmetic(desiredLength));
+    }
 
     public String forceLength(int desiredLength){
         return RadixHelper.forceLength(value, desiredLength);
+    }
+
+    public StringBinary forceLengthStringBinary(int desiredLength){
+        return new StringBinary(forceLength(desiredLength));
     }
 
     public String getBinaryValue(){
@@ -36,13 +56,16 @@ public class StringBinary {
     }
 
     public long getAsLong(){
-        return Long.valueOf(value, 2);
+        return new BigInteger(value, 2).longValue();
     }
 
-    public double getAsDouble(){
-        return Double.longBitsToDouble(new BigInteger(value, 2).longValue());
-    }
+//    public double getAsDouble(){
+//        return Double.longBitsToDouble(new BigInteger(value, 2).longValue());
+//    }
 
+    public float getAsFloat(){
+        return Float.intBitsToFloat(new BigInteger(value, 2).intValue());
+    }
 
     public int getAsInt() {
         return Integer.parseUnsignedInt(value, 2);
@@ -51,8 +74,6 @@ public class StringBinary {
     public String toHexString(){
         return toHexString(null);
     }
-
-
 
     public String toHexString(Integer desiredLength){
         String hex =  RadixHelper.convertBinaryToHexString(value);
@@ -76,7 +97,20 @@ public class StringBinary {
     }
 
     public StringBinary times(StringBinary multiplicand){
-        return new StringBinary(Long.toBinaryString(new BigInteger(value, 2).multiply(new BigInteger(multiplicand.value, 2)).longValue()));
+
+        BigInteger m1 = new BigInteger(value, 2);
+        BigInteger m2 = new BigInteger(multiplicand.value, 2);
+
+        long product = m1.multiply(m2).longValue();
+
+        StringBinary productBinary = new StringBinary(Long.toBinaryString(product));
+
+        if(product < 0 )
+            return productBinary.padBinaryValueArithmeticStringBinary(64);
+        else
+            return productBinary.padBinaryValueStringBinary(64);
+
+//        return new StringBinary(Long.toBinaryString(m1.multiply(m2).longValue()));
     }
 
 
@@ -86,11 +120,13 @@ public class StringBinary {
         return new StringBinary(Long.toBinaryString(n));
     }
 
-    public static StringBinary valueOf(double d){
-        return new StringBinary(Long.toBinaryString(Double.doubleToLongBits(d)));
+//    public static StringBinary valueOf(double d){
+//        return new StringBinary(Long.toBinaryString(Double.doubleToLongBits(d)));
+//    }
+
+    public static StringBinary valueOf(float f){
+        return new StringBinary(Integer.toBinaryString(Float.floatToIntBits(f)));
     }
-
-
 
     public StringBinary and(StringBinary b) {
         String thisBinary = padBinaryValue(64);

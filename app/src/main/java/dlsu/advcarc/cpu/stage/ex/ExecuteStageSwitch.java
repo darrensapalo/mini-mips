@@ -81,6 +81,7 @@ public class ExecuteStageSwitch extends Stage {
                     break;
             }
         } catch (Exception e) {
+            e.printStackTrace();
             if (DEBUG)
                 System.out.println(e.getMessage());
         }

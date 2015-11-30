@@ -44,10 +44,10 @@ public class Register implements Writable {
         this.value = value;
     }
 
-    public JsonObject toJsonObject() {
+    public JsonObject toJsonObject(int valueLength) {
         return new JsonObject()
                 .put("register", register)
-                .put("value", RadixHelper.padWithZero(value.toHexString(), 16));
+                .put("value", RadixHelper.padWithZero(value.toHexString(), valueLength));
     }
 
     @Override

@@ -1,6 +1,6 @@
 package dlsu.advcarc.opcode;
 
-import dlsu.advcarc.cpu.ExecutionManager;
+import dlsu.advcarc.cpurevised.ExecutionManager;
 import dlsu.advcarc.parser.StringBinary;
 import dlsu.advcarc.utils.RadixHelper;
 

@@ -26,12 +26,16 @@ public class RegisterUpdateHandler implements Handler<Message<JsonObject>>{
             if(Register.getType(registerName).equals("R")) {
                 long longValue = Long.parseLong(newValueString);
                 newValue = RadixHelper.convertLongToStringBinary(longValue);
+                if(longValue < 0)
+                    newValue = newValue.padBinaryValueArithmeticStringBinary(64);
+                else
+                    newValue = newValue.padBinaryValueStringBinary(64);
             }
             else{
-                double doubleValue = Double.parseDouble(newValueString);
-                long longValue = Double.doubleToLongBits(doubleValue);
-                newValue = RadixHelper.convertLongToStringBinary(longValue);
+                float floatVal = Float.parseFloat(newValueString);
+                newValue = StringBinary.valueOf(floatVal);
             }
+
 
             RegisterManager.instance().updateRegister(registerName, newValue);
 

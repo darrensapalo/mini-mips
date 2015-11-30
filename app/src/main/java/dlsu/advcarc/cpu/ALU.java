@@ -65,11 +65,11 @@ public class ALU {
 
             case "ADD.S":
                 // todo: how to read binary as floating point?
-                return StringBinary.valueOf(_a.getAsDouble() + _b.getAsDouble());
+//                return StringBinary.valueOf(_a.getAsDouble() + _b.getAsDouble());
 
             case "MUL.S":
                 // todo: how to read binary as floating point?
-                return StringBinary.valueOf(_a.getAsDouble() * _b.getAsDouble());
+//                return StringBinary.valueOf(_a.getAsDouble() * _b.getAsDouble());
 
             case "LW":
             case "LWU":
