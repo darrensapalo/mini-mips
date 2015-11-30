@@ -81,7 +81,7 @@ public class CPU {
             exStage.housekeeping(idStage);
             idStage.resetToNOP();
         }
-        if(!ifStage.isStalling() && !ifStage.isNOP() &&  idStage.isNOP()) {
+        if(!ifStage.isStalling() && !ifStage.isNOP() &&  idStage.isNOP() && !exStage.hasStall()) {
             idStage.housekeeping(ifStage);
             ifStage.resetToNOP();
         }
@@ -92,7 +92,7 @@ public class CPU {
         boolean memExecuted =  memStage.executeIfAllowed(wbStage);
         boolean exExecuted = exStage.executeIfAllowed(memStage);
         boolean idExecuted = idStage.executeIfAllowed(exStage.getTargetStage(idStage.getIR()));
-        boolean ifExecuted =  ifStage.executeIfAllowed(idStage);
+        boolean ifExecuted =  exStage.hasStall()? false : ifStage.executeIfAllowed(idStage);
 
         // Record the executions
         if(wbExecuted)
@@ -155,6 +155,7 @@ public class CPU {
         EventBusHolder.instance().getEventBus()
                 .publish(Addresses.CPU_BROADCAST, this.toJsonObject());
     }
+
 
     /* Getters and Setters */
 

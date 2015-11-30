@@ -92,6 +92,10 @@ public class EXSwitch extends AbstractStage {
         return integer.isNOP() && adder.isNOP() && multiplier.isNOP();
     }
 
+    public boolean hasStall(){
+        return integer.hasStalledLS(); // it's impossible to stall in adder or multiplier || adder.isStalling() || multiplier.isStalling();
+    }
+
     public boolean isTargetStageNOP(Opcode opcode){
         AbstractEXStage targetStage = getTargetStage(opcode);
         return targetStage.isNOP();

@@ -78,11 +78,18 @@ public class MEMStage extends AbstractStage {
         AbstractEXStage exStage = (AbstractEXStage) previousStage;
 
         if(exStage instanceof EXIntegerStage){
-            if("L.S".equals(exStage.getIR().getInstruction())) {
-                if(cpu.checkWriteAfterWrite(exStage.getIR().getDestinationRegisterName()))
-                    return;
+//            if("L.S".equals(exStage.getIR().getInstruction())) {
+//                if(cpu.checkWriteAfterWrite(exStage.getIR().getDestinationRegisterName()))
+//                    return;
+//            }
+            if(((EXIntegerStage) exStage).hasWaitingLS()) {
+                ((EXIntegerStage) exStage).setHasStalledLS(true);
+                return;
             }
+
+            ((EXIntegerStage) exStage).setHasStalledLS(false);
         }
+
 
         IR = exStage.getIR();
         ALUOutput = exStage.getALUOutput();

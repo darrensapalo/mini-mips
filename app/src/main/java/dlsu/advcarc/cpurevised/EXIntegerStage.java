@@ -10,9 +10,27 @@ import io.vertx.core.json.JsonObject;
  */
 public class EXIntegerStage extends AbstractEXStage{
 
+    private boolean hasStalledLS;
+
     public EXIntegerStage(CPU cpu){
         super(cpu);
         resetRegisters();
+    }
+
+    public boolean hasWaitingLS(){
+        if("L.S".equals(IR.getInstruction())) {
+            if(cpu.checkWriteAfterWrite(IR.getDestinationRegisterName()))
+                return true;
+        }
+        return false;
+    }
+
+    public boolean hasStalledLS() {
+        return hasStalledLS;
+    }
+
+    public void setHasStalledLS(boolean hasStalledLS) {
+        this.hasStalledLS = hasStalledLS;
     }
 
     @Override
