@@ -211,6 +211,7 @@ public class CPU {
                 .addAll(getHILOArray())
                 .addAll(exStage.toJsonArray())
                 .addAll(memStage.toJsonArray())
+                .addAll(wbStage.toJsonArray())
                 ;
     }
 
