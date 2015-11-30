@@ -59,9 +59,9 @@ public class StringBinary {
         return new BigInteger(value, 2).longValue();
     }
 
-    public double getAsDouble(){
-        return Double.longBitsToDouble(new BigInteger(value, 2).longValue());
-    }
+//    public double getAsDouble(){
+//        return Double.longBitsToDouble(new BigInteger(value, 2).longValue());
+//    }
 
     public float getAsFloat(){
         return Float.intBitsToFloat(new BigInteger(value, 2).intValue());
@@ -120,9 +120,9 @@ public class StringBinary {
         return new StringBinary(Long.toBinaryString(n));
     }
 
-    public static StringBinary valueOf(double d){
-        return new StringBinary(Long.toBinaryString(Double.doubleToLongBits(d)));
-    }
+//    public static StringBinary valueOf(double d){
+//        return new StringBinary(Long.toBinaryString(Double.doubleToLongBits(d)));
+//    }
 
     public static StringBinary valueOf(float f){
         return new StringBinary(Integer.toBinaryString(Float.floatToIntBits(f)));

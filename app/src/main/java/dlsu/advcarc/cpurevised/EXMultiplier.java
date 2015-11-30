@@ -35,7 +35,7 @@ public class EXMultiplier extends  AbstractEXStage {
     protected void execute() {
         cycleCount++;
         if(cycleCount == NUM_CYCLES_NEEDED)
-            ALUOutput = StringBinary.valueOf(A.getAsDouble() * B.getAsDouble());
+            ALUOutput = StringBinary.valueOf(A.getAsFloat() * B.getAsFloat());
     }
 
     @Override

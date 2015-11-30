@@ -39,7 +39,7 @@ public class MEMStage extends AbstractStage {
         switch(IR.getInstruction()){
 
             case "L.S":
-                // convert to double
+                // convert to float
                 String memAddressHex = ALUOutput.toHexString(4);
                 LMD = StringBinary.valueOf(MemoryManager.instance().getInstance(memAddressHex).getAsFloat());
                 break;

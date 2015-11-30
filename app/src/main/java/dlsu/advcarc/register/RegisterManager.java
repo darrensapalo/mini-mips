@@ -37,6 +37,9 @@ public class RegisterManager {
     private void initRegisters() {
         for (int i = 0; i < 32; i++) {
             rRegisters.add(new Register("R" + i));
+        }
+
+        for (int i = 0; i < 32; i++) {
             fRegisters.add(new Register("F" + i));
         }
     }
@@ -89,7 +92,7 @@ public class RegisterManager {
         JsonArray rArray = new JsonArray();
 
         for (Register register : rRegisters)
-            rArray.add(register.toJsonObject());
+            rArray.add(register.toJsonObject(16));
 
         return rArray;
     }
@@ -98,7 +101,7 @@ public class RegisterManager {
         JsonArray fArray = new JsonArray();
 
         for (Register register : fRegisters)
-            fArray.add(register.toJsonObject());
+            fArray.add(register.toJsonObject(8));
 
         return fArray;
     }

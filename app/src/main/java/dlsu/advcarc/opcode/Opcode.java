@@ -111,11 +111,15 @@ public class Opcode {
                 return "F"+registerNumber;
 
             case "I":
-                if("DSLL".equals(getInstruction()))
+                String instruction = getInstruction();
+
+                if("DSLL".equals(instruction))
                     registerNumber = OpcodeHelper.getInt(opcodeBinary, 16, 20);
                 else
                     registerNumber = OpcodeHelper.getInt(opcodeBinary, 11, 15);
-                return "R"+registerNumber;
+
+                String registerType = "L.S".equals(instruction) || "S.S".equals(instruction) ? "F" : "R";
+                return registerType+registerNumber;
         }
 
         return "";

@@ -62,9 +62,9 @@ public class Memory implements Writable {
         return value.getAsLong();
     }
 
-    public double getAsDouble() {
-        return value.getAsDouble();
-    }
+//    public double getAsDouble() {
+//        return value.getAsDouble();
+//    }
 
     public float getAsFloat(){
         return value.getAsFloat();
