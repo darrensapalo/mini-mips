@@ -2,7 +2,7 @@
 //      Utility        //
 ////////////////////////
 
-var opcodeColumns = ['mem', 'opcode', 'instruction'];
+var opcodeColumns = ['mem', 'instruction', 'opcode'];
 var registerColumns = ['register', 'value'];
 var memoryColumns = ['address', 'value'];
 var pipelineColumns = ['cycle', 'if', 'id', 'ex', 'mem', 'wb'];

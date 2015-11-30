@@ -56,7 +56,7 @@ public class Code {
     public JsonObject toJsonObject(boolean includeInstruction){
         JsonObject jsonObject = new JsonObject();
         jsonObject.put("mem", getMemoryLocationHex());
-        jsonObject.put("opcode", getOpcode().toString());
+        jsonObject.put("opcode", getOpcode().toString()+"-"+getOpcode().to32BitString());
         if(includeInstruction)
             jsonObject.put("instruction", (label != null) ? label + ": "+line :  line);
 
