@@ -81,7 +81,7 @@ public class EXAdder extends AbstractEXStage {
 
         jsonArray.add(new JsonObject().put("register", "Adder ALUOutput").put("value", ALUOutput.toHexString(16)));
 
-        System.out.println(jsonArray.toString());
+//        System.out.println(jsonArray.toString());
 
         return jsonArray;
 
@@ -91,6 +91,22 @@ public class EXAdder extends AbstractEXStage {
         EXInstruction last = instructions[instructions.length-1];
         instructions[instructions.length-1] = null;
         return last;
+    }
+
+    private boolean isArrayEmpty(){
+        for(EXInstruction instruction: instructions)
+            if(instruction != null)
+                return false;
+
+        return toExecute == null;
+    }
+
+    @Override
+    public boolean isNOP(){
+
+//        System.out.println(isArrayEmpty()+" and "+toExecute==null);
+
+        return isArrayEmpty() && toExecute == null;
     }
 
     @Override
