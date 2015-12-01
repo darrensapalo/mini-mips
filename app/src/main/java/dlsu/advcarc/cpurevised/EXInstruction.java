@@ -19,7 +19,8 @@ public class EXInstruction {
 
     public JsonArray toJsonArray(int number, String type){
         return new JsonArray()
-                .add(new JsonObject().put("register", type+number+" IR").put("value",IR.toHexString()));
+                .add(new JsonObject().put("register", type+number+" IR").put("value",IR.toHexString()))
+                .add(new JsonObject().put("register", type+number+" B").put("value", B.toHexString()));
     }
 
 }

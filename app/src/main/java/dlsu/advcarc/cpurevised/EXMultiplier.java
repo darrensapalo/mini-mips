@@ -107,6 +107,20 @@ public class EXMultiplier extends  AbstractEXStage {
     }
 
     @Override
+    public boolean hasPendingWrite(String registerName){
+
+        for(EXInstruction instruction: instructions){
+            if(instruction != null && instruction.IR.getDestinationRegisterName().equals(registerName))
+                return true;
+        }
+
+        if(toExecute != null && toExecute.IR.getDestinationRegisterName().equals(registerName))
+            return true;
+
+        return false;
+    }
+
+    @Override
     public boolean isNOP(){
 
 //        System.out.println(isArrayEmpty()+" and "+toExecute==null);
