@@ -12,6 +12,8 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
+import java.net.BindException;
+
 import static org.junit.Assert.*;
 
 /**
@@ -59,7 +61,7 @@ public class CPUTest {
         em.inputProgramCode(programCode);
 
         em.clockOnce();
-        assertEquals("Should be DADDU operation", "DADDU", cpu().getIfStage().getIR().getInstruction().equals("DADDU"));
+        assertEquals("Should be DADDU operation", "DADDU", cpu().getIfStage().getIR().getInstruction());
         em.clockOnce();
         em.clockOnce();
         em.clockOnce();
