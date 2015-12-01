@@ -117,7 +117,13 @@ public class StringBinary {
 
 
     public static StringBinary valueOf(long n){
-        return new StringBinary(Long.toBinaryString(n));
+        // Sign extend if necessary
+        if (n < 0)
+            return new StringBinary(Long.toBinaryString(n)).padBinaryValueStringBinary(32);
+
+            // Pad with zeroes if positive
+        else
+            return new StringBinary(new StringBinary(Long.toBinaryString(n)).forceLength(32));
     }
 
 //    public static StringBinary valueOf(double d){
@@ -125,7 +131,14 @@ public class StringBinary {
 //    }
 
     public static StringBinary valueOf(float f){
-        return new StringBinary(Integer.toBinaryString(Float.floatToIntBits(f)));
+        // Sign extend if necessary
+        if (f < 0)
+            return new StringBinary(Integer.toBinaryString(Float.floatToIntBits(f)));
+
+            // Pad with zeroes if positive
+        else
+            return new StringBinary(new StringBinary(Integer.toBinaryString(Float.floatToIntBits(f))).forceLength(32));
+
     }
 
     public StringBinary and(StringBinary b) {
