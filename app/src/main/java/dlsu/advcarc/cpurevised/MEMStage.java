@@ -97,6 +97,13 @@ public class MEMStage extends AbstractStage {
             B = exInstruction.B;
             IRMemAddressHex = exInstruction.IRMemAddressHex;
         }
+        else if(exStage instanceof EXMultiplier){
+            EXInstruction exInstruction = ((EXMultiplier) exStage).dequeue();
+            IR = exInstruction.IR;
+            ALUOutput = exStage.getALUOutput();
+            B = exInstruction.B;
+            IRMemAddressHex = exInstruction.IRMemAddressHex;
+        }
         else{
             IR = exStage.getIR();
             ALUOutput = exStage.getALUOutput();

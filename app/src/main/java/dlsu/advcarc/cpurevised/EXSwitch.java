@@ -57,8 +57,8 @@ public class EXSwitch extends AbstractStage {
 //            activeInstructionsMem.add(adder.getIRMemAddressHex());
         }
         if (multiplierExecuted) {
-            activeInstructionsLastCycle.add(multiplier.getIR());
-            activeInstructionsMem.add(multiplier.getIRMemAddressHex());
+//            activeInstructionsLastCycle.add(multiplier.getIR());
+//            activeInstructionsMem.add(multiplier.getIRMemAddressHex());
         }
 
         return integerExecuted || adderExecuted || multiplierExecuted;
@@ -138,11 +138,13 @@ public class EXSwitch extends AbstractStage {
 
     public List<String> getActiveInstructionsMem() {
         activeInstructionsMem.addAll(adder.getActiveInstructionsMem());
+        activeInstructionsMem.addAll(multiplier.getActiveInstructionsMem());
         return activeInstructionsMem;
     }
 
     public List<Opcode> getActiveInstructionsLastCycle() {
         activeInstructionsLastCycle.addAll(adder.getActiveInstructionsLastCycle());
+        activeInstructionsLastCycle.addAll(multiplier.getActiveInstructionsLastCycle());
         return activeInstructionsLastCycle;
     }
 
