@@ -17,9 +17,9 @@ public class EXInstruction {
     public String IRMemAddressHex;
     public StringBinary NPC;
 
-    public JsonArray toJsonArray(int number){
+    public JsonArray toJsonArray(int number, String type){
         return new JsonArray()
-                .add(new JsonObject().put("register", "A"+number+" IR").put("value",IR.toHexString()));
+                .add(new JsonObject().put("register", type+number+" IR").put("value",IR.toHexString()));
     }
 
 }

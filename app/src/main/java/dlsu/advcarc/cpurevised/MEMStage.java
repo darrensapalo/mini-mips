@@ -94,6 +94,7 @@ public class MEMStage extends AbstractStage {
             EXInstruction exInstruction = ((EXAdder) exStage).dequeue();
             IR = exInstruction.IR;
             ALUOutput = exStage.getALUOutput();
+            ((EXAdder) exStage).resetALUOutput();
             B = exInstruction.B;
             IRMemAddressHex = exInstruction.IRMemAddressHex;
         }
@@ -101,6 +102,7 @@ public class MEMStage extends AbstractStage {
             EXInstruction exInstruction = ((EXMultiplier) exStage).dequeue();
             IR = exInstruction.IR;
             ALUOutput = exStage.getALUOutput();
+            ((EXMultiplier) exStage).resetALUOutput();
             B = exInstruction.B;
             IRMemAddressHex = exInstruction.IRMemAddressHex;
         }

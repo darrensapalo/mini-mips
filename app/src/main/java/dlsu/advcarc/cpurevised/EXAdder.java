@@ -54,6 +54,8 @@ public class EXAdder extends AbstractEXStage {
             EXInstruction exInstruction = instructions[instructions.length-1];
             ALUOutput = StringBinary.valueOf(exInstruction.A.getAsFloat() + exInstruction.B.getAsFloat());
         }
+        else
+            ALUOutput = StringBinary.valueOf(0);
     }
 
     @Override
@@ -74,7 +76,7 @@ public class EXAdder extends AbstractEXStage {
         int i=1;
         for(EXInstruction instruction: instructions){
             if(instruction != null){
-                jsonArray.addAll(instruction.toJsonArray(i));
+                jsonArray.addAll(instruction.toJsonArray(i, "A"));
             }
             i++;
         }
@@ -91,6 +93,10 @@ public class EXAdder extends AbstractEXStage {
         EXInstruction last = instructions[instructions.length-1];
         instructions[instructions.length-1] = null;
         return last;
+    }
+
+    public void resetALUOutput(){
+        ALUOutput = StringBinary.valueOf(0);
     }
 
     private boolean isArrayEmpty(){
