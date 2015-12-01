@@ -90,12 +90,29 @@ public class MEMStage extends AbstractStage {
             ((EXIntegerStage) exStage).setHasStalledLS(false);
         }
 
-
-        IR = exStage.getIR();
-        ALUOutput = exStage.getALUOutput();
-        B = exStage.getB();
-        IRMemAddressHex = exStage.getIRMemAddressHex();
-        exStage.resetToNOP();
+        if(exStage instanceof EXAdder){
+            EXInstruction exInstruction = ((EXAdder) exStage).dequeue();
+            IR = exInstruction.IR;
+            ALUOutput = exStage.getALUOutput();
+            ((EXAdder) exStage).resetALUOutput();
+            B = exInstruction.B;
+            IRMemAddressHex = exInstruction.IRMemAddressHex;
+        }
+        else if(exStage instanceof EXMultiplier){
+            EXInstruction exInstruction = ((EXMultiplier) exStage).dequeue();
+            IR = exInstruction.IR;
+            ALUOutput = exStage.getALUOutput();
+            ((EXMultiplier) exStage).resetALUOutput();
+            B = exInstruction.B;
+            IRMemAddressHex = exInstruction.IRMemAddressHex;
+        }
+        else{
+            IR = exStage.getIR();
+            ALUOutput = exStage.getALUOutput();
+            B = exStage.getB();
+            IRMemAddressHex = exStage.getIRMemAddressHex();
+            exStage.resetToNOP();
+        }
     }
 
     @Override

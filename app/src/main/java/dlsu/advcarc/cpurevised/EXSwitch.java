@@ -51,12 +51,14 @@ public class EXSwitch extends AbstractStage {
             activeInstructionsMem.add(integer.getIRMemAddressHex());
         }
         if (adderExecuted) {
-            activeInstructionsLastCycle.add(adder.getIR());
-            activeInstructionsMem.add(adder.getIRMemAddressHex());
+//            activeInstructionsLastCycle.addAll(adder.getActiveInstructionsLastCycle());
+//            activeInstructionsMem.addAll(adder.getActiveInstructionsMem());
+//            activeInstructionsLastCycle.add(adder.getIR());
+//            activeInstructionsMem.add(adder.getIRMemAddressHex());
         }
         if (multiplierExecuted) {
-            activeInstructionsLastCycle.add(multiplier.getIR());
-            activeInstructionsMem.add(multiplier.getIRMemAddressHex());
+//            activeInstructionsLastCycle.add(multiplier.getIR());
+//            activeInstructionsMem.add(multiplier.getIRMemAddressHex());
         }
 
         return integerExecuted || adderExecuted || multiplierExecuted;
@@ -101,6 +103,15 @@ public class EXSwitch extends AbstractStage {
         return targetStage.isNOP();
     }
 
+    public boolean canAccommodate(Opcode opcode){
+        AbstractEXStage targetStage = getTargetStage(opcode);
+
+        if(targetStage instanceof EXAdder || targetStage instanceof EXMultiplier)
+            return true;
+
+        return targetStage.isNOP();
+    }
+
     public AbstractEXStage getStageToForward() {
         if (!multiplier.isNOP() && multiplier.hasCompletedExeuction())
             return multiplier;
@@ -126,10 +137,14 @@ public class EXSwitch extends AbstractStage {
     }
 
     public List<String> getActiveInstructionsMem() {
+        activeInstructionsMem.addAll(adder.getActiveInstructionsMem());
+        activeInstructionsMem.addAll(multiplier.getActiveInstructionsMem());
         return activeInstructionsMem;
     }
 
     public List<Opcode> getActiveInstructionsLastCycle() {
+        activeInstructionsLastCycle.addAll(adder.getActiveInstructionsLastCycle());
+        activeInstructionsLastCycle.addAll(multiplier.getActiveInstructionsLastCycle());
         return activeInstructionsLastCycle;
     }
 
