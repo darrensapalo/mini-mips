@@ -1,19 +1,15 @@
 package dlsu.advcarc.memory;
 
-import dlsu.advcarc.cpu.ExecutionManager;
 import dlsu.advcarc.parser.Code;
 import dlsu.advcarc.parser.ProgramCode;
 import dlsu.advcarc.parser.StringBinary;
-import dlsu.advcarc.register.RegisterManager;
 import dlsu.advcarc.server.Addresses;
 import dlsu.advcarc.server.EventBusHolder;
 import dlsu.advcarc.utils.RadixHelper;
 import io.vertx.core.json.JsonArray;
-import io.vertx.core.json.JsonObject;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 
 /**
  * Created by user on 11/19/2015.
@@ -35,10 +31,10 @@ public class MemoryManager {
     private List<Memory> ram = new ArrayList<Memory>();
 
     private MemoryManager(){
-        initRam();
+        clear();
     }
 
-    private void initRam(){
+    public void clear(){
         ram.clear();
         for(int i=0;i<4096;i++){
             long memLocation = 4 * i;
@@ -89,10 +85,6 @@ public class MemoryManager {
         }
 
 //        broadcastMemoryState();
-    }
-
-    public void clear() {
-        ram.clear();
     }
 
     public JsonArray getCodeJsonArray(){
