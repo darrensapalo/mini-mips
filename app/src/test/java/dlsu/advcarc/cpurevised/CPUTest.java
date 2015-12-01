@@ -842,7 +842,7 @@ public class CPUTest {
     @Test
     public void testMULS() throws Exception {
 
-        String code = "MUL.S F1, F2";
+        String code = "MUL.S F3, F2, F1";
 
         RegisterManager.instance().updateRegister("F1", StringBinary.valueOf(-2f));
         RegisterManager.instance().updateRegister("F2", StringBinary.valueOf(-3f));
@@ -859,7 +859,7 @@ public class CPUTest {
 
         // Eight (8) EX stages
         em.clockOnce();
-        assertEquals("Should be executing in exAdder stage", "MUL.S", cpu().getExStage().getEXAdderStage().getIR().getInstruction());
+        assertEquals("Should be executing in exMultiplier stage", "MUL.S", cpu().getExStage().getEXMultiplierStage().getIR().getInstruction());
         em.clockOnce();
         em.clockOnce();
         em.clockOnce();
@@ -877,22 +877,62 @@ public class CPUTest {
 
         StringBinary expected = StringBinary.valueOf(6f);
 
-
-        StringBinary hi = cpu().getHI();
-        StringBinary lo = cpu().getLO();
-
         float expectedAsFloat = expected.getAsFloat();
 
-        assertEquals("HI should be all zeroes, since the answer is positive", StringBinary.valueOf(0).forceLength(32), hi.forceLength(32));
 
-        assertEquals("LO should be equal to 6, since -2 * -3 is 6", expected.forceLength(32), lo.forceLength(32));
+        float f3 = RegisterManager.instance().getInstance("F3").read().getAsFloat();
+
+        float diff = f3 - expectedAsFloat;
 
 
+        System.out.println("F3         - " + RegisterManager.instance().getInstance("F3").read().getBinaryValue());
+        System.out.println("Add result - " + expected.getBinaryValue());
+
+        assertTrue("Resulting F register should be equal to 6f = -3f * -2f ... f3 = " + f3 + " and expected is " + expectedAsFloat, diff < 0.0005f);
     }
 
     @Test
     public void testLS() throws Exception {
 
+        String code = "L.S F2, 2000(F1)";
+        RegisterManager.instance().updateRegister("F1", StringBinary.valueOf(4));
+        RegisterManager.instance().updateRegister("F2", StringBinary.valueOf(0));
+        MemoryManager.instance().updateMemory("2004", StringBinary.valueOf(5));
+
+        ProgramCode programCode = MipsParser.parseCodeString(code);
+
+        em.inputProgramCode(programCode);
+
+        em.clockOnce();
+        assertEquals("Should be L.S operation", "L.S", cpu().getIfStage().getIR().getInstruction());
+
+        em.clockOnce();
+
+
+        // One (1) EX stages
+        em.clockOnce();
+        assertEquals("Should be executing in exMultiplier stage", "L.S", cpu().getExStage().getEXMultiplierStage().getIR().getInstruction());
+
+        // MEM
+        em.clockOnce();
+
+        // WB
+        em.clockOnce();
+
+        StringBinary expected = StringBinary.valueOf(6f);
+
+        float expectedAsFloat = expected.getAsFloat();
+
+
+        float f3 = RegisterManager.instance().getInstance("F3").read().getAsFloat();
+
+        float diff = f3 - expectedAsFloat;
+
+
+        System.out.println("F3         - " + RegisterManager.instance().getInstance("F3").read().getBinaryValue());
+        System.out.println("Add result - " + expected.getBinaryValue());
+
+        assertTrue("Resulting F register should be equal to 6f = -3f * -2f ... f3 = " + f3 + " and expected is " + expectedAsFloat, diff < 0.0005f);
     }
 
     @Test
