@@ -220,4 +220,25 @@ public class CPU {
                 .add(new JsonObject().put("register", "LO").put("value", LO.toHexString(16)));
     }
 
+    public IFStage getIfStage() {
+        return ifStage;
+    }
+
+    public IDStage getIdStage() {
+        return idStage;
+    }
+
+    public EXSwitch getExStage() {
+        return exStage;
+    }
+
+    public MEMStage getMemStage() {
+        return memStage;
+    }
+
+    public WBStage getWbStage() {
+        return wbStage;
+    }
+
+
 }
