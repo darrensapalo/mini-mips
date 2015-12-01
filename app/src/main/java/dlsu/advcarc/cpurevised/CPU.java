@@ -125,6 +125,10 @@ public class CPU {
     }
 
     public boolean hasPendingWrite(String registerName){
+
+        if("R0".equals(registerName) || "F0".equals(registerName))
+            return false;
+
         List<AbstractStage> stagesToCheck = new ArrayList<AbstractStage>();
         stagesToCheck.add(exStage);
         stagesToCheck.add(memStage);

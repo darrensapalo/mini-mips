@@ -8,7 +8,7 @@ import io.vertx.core.json.JsonArray;
  */
 public class EXMultiplier extends  AbstractEXStage {
 
-    public static final int NUM_CYCLES_NEEDED = 6;
+    public static final int NUM_CYCLES_NEEDED = 8;
     private int cycleCount = 0;
 
     protected EXMultiplier(CPU cpu) {

@@ -421,8 +421,6 @@ public class CPUTest {
 
     @Test
     public void testLWU() throws Exception {
-
-        // how is this different from lw?
         String code = "LWU R1, 1000(R0)";
         ProgramCode programCode = MipsParser.parseCodeString(code);
         em.inputProgramCode(programCode);
@@ -453,20 +451,268 @@ public class CPUTest {
     @Test
     public void testSW() throws Exception {
 
+        String code = "SW R1, 1000(R0)";
+        ProgramCode programCode = MipsParser.parseCodeString(code);
+        em.inputProgramCode(programCode);
+
+        RegisterManager.instance().updateRegister("R1", StringBinary.valueOf(12));
+        MemoryManager.instance().updateMemory("1000", StringBinary.valueOf(0));
+        assertEquals("Before writing, memory address should be initialized to zero", StringBinary.valueOf(0).getBinaryValue(), MemoryManager.instance().getInstance("1000").getAsBinary());
+
+        em.clockOnce();
+        assertEquals("Should be SW operation", "SW", cpu().getIfStage().getIR().getInstruction());
+
+        em.clockOnce();
+        em.clockOnce();
+
+        assertEquals("Should be executing in exInteger stage", "SW", cpu().getEXIntegerStage().getIR().getInstruction());
+
+        em.clockOnce();
+
+        StringBinary twelve = StringBinary.valueOf(12);
+        assertEquals("B should be equal to twelve, read from memory", twelve.getBinaryValue(), cpu().getMemStage().getB().getBinaryValue());
+        assertEquals("After writing, memory address should be equal to twelve", twelve.getBinaryValue(), MemoryManager.instance().getInstance("1000").getAsBinary());
+
+        em.clockOnce();
+        // nothing on write back
     }
 
     @Test
     public void testDSLL() throws Exception {
 
+
+        String code = "DSLL R1,R3,0003";
+        ProgramCode programCode = MipsParser.parseCodeString(code);
+        em.inputProgramCode(programCode);
+
+        RegisterManager.instance().updateRegister("R1", StringBinary.valueOf(0));
+        RegisterManager.instance().updateRegister("R3", StringBinary.valueOf(12));
+
+        assertEquals("Before writing, R1 should be initialized to zero", StringBinary.valueOf(0).forceLength(32), RegisterManager.instance().getInstance("R1").read().forceLength(32));
+
+        em.clockOnce();
+        assertEquals("Should be DSLL operation", "DSLL", cpu().getIfStage().getIR().getInstruction());
+
+        em.clockOnce();
+        em.clockOnce();
+
+        assertEquals("Should be executing in exInteger stage", "DSLL", cpu().getEXIntegerStage().getIR().getInstruction());
+
+        em.clockOnce();
+
+        em.clockOnce();
+
+
+        StringBinary ninetySix = StringBinary.valueOf(12 * 2 * 2 * 2);
+        assertEquals("After writing, register should be equal to 96", ninetySix.forceLength(32), RegisterManager.instance().getInstance("R1").read().forceLength(32));
+
     }
 
     @Test
-    public void testANDI() throws Exception {
+    public void testANDIcorrect() throws Exception {
+
+        String code = "ANDI R1,R3,FFFF";
+        ProgramCode programCode = MipsParser.parseCodeString(code);
+        em.inputProgramCode(programCode);
+
+        RegisterManager.instance().updateRegister("R1", StringBinary.valueOf(0));
+        RegisterManager.instance().updateRegister("R3", StringBinary.valueOf(12));
+
+        assertEquals("Before writing, result R1 should be initialized to zero", StringBinary.valueOf(0).forceLength(32), RegisterManager.instance().getInstance("R1").read().forceLength(32));
+
+        em.clockOnce();
+        assertEquals("Should be ANDI operation", "ANDI", cpu().getIfStage().getIR().getInstruction());
+
+        em.clockOnce();
+        em.clockOnce();
+
+        assertEquals("Should be executing in exInteger stage", "ANDI", cpu().getEXIntegerStage().getIR().getInstruction());
+
+        em.clockOnce();
+
+        em.clockOnce();
+
+
+        StringBinary twelve = StringBinary.valueOf(12);
+        assertEquals("After writing, register should be equal to 12", twelve.forceLength(32), RegisterManager.instance().getInstance("R1").read().forceLength(32));
+
+
+        code = "ANDI R1,R3,0000";
+        programCode = MipsParser.parseCodeString(code);
+        em.inputProgramCode(programCode);
+
+        RegisterManager.instance().updateRegister("R1", StringBinary.valueOf(0));
+        RegisterManager.instance().updateRegister("R3", StringBinary.valueOf(12));
+
+        assertEquals("Before writing, result R1 should be initialized to zero", StringBinary.valueOf(0).forceLength(32), RegisterManager.instance().getInstance("R1").read().forceLength(32));
+
+        em.clockOnce();
+        assertEquals("Should be ANDI operation", "ANDI", cpu().getIfStage().getIR().getInstruction());
+
+        em.clockOnce();
+        em.clockOnce();
+
+        assertEquals("Should be executing in exInteger stage", "ANDI", cpu().getEXIntegerStage().getIR().getInstruction());
+
+        em.clockOnce();
+
+        em.clockOnce();
+
+
+        twelve = StringBinary.valueOf(0);
+        assertEquals("After writing, register should be equal to zero, since imm = 0000h", twelve.forceLength(32), RegisterManager.instance().getInstance("R1").read().forceLength(32));
+
+    }
+
+
+    @Test
+    public void testANDIfail() throws Exception {
+
+        String code = "ANDI R1,R3,000B";
+        ProgramCode programCode = MipsParser.parseCodeString(code);
+        em.inputProgramCode(programCode);
+
+        RegisterManager.instance().updateRegister("R1", StringBinary.valueOf(0));
+        RegisterManager.instance().updateRegister("R3", StringBinary.valueOf(12));
+
+        assertEquals("Before writing, result R1 should be initialized to zero", StringBinary.valueOf(0).forceLength(32), RegisterManager.instance().getInstance("R1").read().forceLength(32));
+
+        em.clockOnce();
+        assertEquals("Should be ANDI operation", "ANDI", cpu().getIfStage().getIR().getInstruction());
+
+        em.clockOnce();
+        em.clockOnce();
+
+        assertEquals("Should be executing in exInteger stage", "ANDI", cpu().getEXIntegerStage().getIR().getInstruction());
+
+        em.clockOnce();
+
+        em.clockOnce();
+
+
+        StringBinary twelve = StringBinary.valueOf(8);
+        assertEquals("After writing, register should be equal to 8", twelve.forceLength(32), RegisterManager.instance().getInstance("R1").read().forceLength(32));
 
     }
 
     @Test
     public void testDADDIU() throws Exception {
+
+        String code = "DADDIU R1,R3,010F";
+        ProgramCode programCode = MipsParser.parseCodeString(code);
+        em.inputProgramCode(programCode);
+
+        RegisterManager.instance().updateRegister("R1", StringBinary.valueOf(0));
+        RegisterManager.instance().updateRegister("R3", StringBinary.valueOf(12));
+
+        assertEquals("Before writing, result R1 should be initialized to zero", StringBinary.valueOf(0).forceLength(32), RegisterManager.instance().getInstance("R1").read().forceLength(32));
+
+        em.clockOnce();
+        assertEquals("Should be DADDIU operation", "DADDIU", cpu().getIfStage().getIR().getInstruction());
+
+        em.clockOnce();
+        em.clockOnce();
+
+        assertEquals("Should be executing in exInteger stage", "DADDIU", cpu().getEXIntegerStage().getIR().getInstruction());
+
+        em.clockOnce();
+
+        em.clockOnce();
+
+
+        StringBinary sum = StringBinary.valueOf(12).plus(StringBinary.valueOf(271));
+        assertEquals("After writing, register should be equal to 271 + 12 = 283", sum.forceLength(32), RegisterManager.instance().getInstance("R1").read().forceLength(32));
+
+
+
+        code = "DADDIU R1,R3,FFFF";
+        programCode = MipsParser.parseCodeString(code);
+        em.inputProgramCode(programCode);
+
+        RegisterManager.instance().updateRegister("R1", StringBinary.valueOf(0));
+        RegisterManager.instance().updateRegister("R3", StringBinary.valueOf(1));
+
+        assertEquals("Before writing, result R1 should be initialized to zero", StringBinary.valueOf(0).forceLength(32), RegisterManager.instance().getInstance("R1").read().forceLength(32));
+
+        em.clockOnce();
+        assertEquals("Should be DADDIU operation", "DADDIU", cpu().getIfStage().getIR().getInstruction());
+
+        em.clockOnce();
+        em.clockOnce();
+
+        assertEquals("Should be executing in exInteger stage", "DADDIU", cpu().getEXIntegerStage().getIR().getInstruction());
+
+        em.clockOnce();
+
+        em.clockOnce();
+
+
+        sum = StringBinary.valueOf(0);
+        assertEquals("After writing, register should be equal to -1 + 1 = 0", sum.forceLength(32), RegisterManager.instance().getInstance("R1").read().forceLength(32));
+
+
+
+        code = "DADDIU R1,R3,7FFF";
+        programCode = MipsParser.parseCodeString(code);
+        em.inputProgramCode(programCode);
+
+        RegisterManager.instance().updateRegister("R1", StringBinary.valueOf(0));
+        RegisterManager.instance().updateRegister("R3", StringBinary.valueOf(1));
+
+        assertEquals("Before writing, result R1 should be initialized to zero", StringBinary.valueOf(0).forceLength(32), RegisterManager.instance().getInstance("R1").read().forceLength(32));
+
+        em.clockOnce();
+        assertEquals("Should be DADDIU operation", "DADDIU", cpu().getIfStage().getIR().getInstruction());
+
+        em.clockOnce();
+        em.clockOnce();
+
+        assertEquals("Should be executing in exInteger stage", "DADDIU", cpu().getEXIntegerStage().getIR().getInstruction());
+
+        em.clockOnce();
+
+        em.clockOnce();
+
+
+        sum = StringBinary.valueOf(32767).plus(StringBinary.valueOf(1));
+        assertEquals("After writing, register should be equal to 32767 + 1 = 32768", sum.forceLength(32), RegisterManager.instance().getInstance("R1").read().forceLength(32));
+
+    }
+
+    @Test
+    public void testJ() throws Exception {
+        // Case 1 - true
+
+        String code = "J L1\r\n" +
+                "DADDU R0, R0, R0\r\n" +
+                "DADDU R0, R0, R0\r\n" +
+                "DADDU R0, R0, R0\r\n" +
+                "DADDU R0, R0, R0\r\n" +
+                "DADDU R0, R0, R0\r\n" +
+                "L1: DADDU R1, R2, R3";
+
+        RegisterManager.instance().updateRegister("R1", StringBinary.valueOf(8));
+        RegisterManager.instance().updateRegister("R2", StringBinary.valueOf(16));
+
+        ProgramCode programCode = MipsParser.parseCodeString(code);
+
+        em.inputProgramCode(programCode);
+
+        em.clockOnce();
+        assertEquals("Should be J operation", "J", cpu().getIfStage().getIR().getInstruction());
+
+        em.clockOnce();
+        em.clockOnce();
+
+        assertEquals("Should be executing in exInteger stage", "J", cpu().getEXIntegerStage().getIR().getInstruction());
+        assertEquals("Cond should always be 1 for J", 1, cpu().getEXIntegerStage().getCond());
+        em.clockOnce();
+
+        em.clockOnce();
+
+        // -4, wraps around
+
+        assertEquals("NPC should jump to 28 [4, 8, 12, 16, 20, -24-, 28]", StringBinary.valueOf(28).getAsInt(), cpu().getIfStage().getNPC().getAsInt());
 
     }
 }

@@ -62,6 +62,10 @@ public class RegisterManager {
     }
 
     public void updateRegister(String registerName, StringBinary newValue) {
+
+        if("R0".equals(registerName) || "FO".equals(registerName))
+            return;
+
         Register register = getInstance(registerName);
         register.setValue(newValue);
 
