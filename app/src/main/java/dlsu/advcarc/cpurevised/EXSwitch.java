@@ -42,19 +42,19 @@ public class EXSwitch extends AbstractStage {
     public boolean executeIfAllowed(AbstractStage nextStage) {
         activeInstructionsLastCycle.clear();
         activeInstructionsMem.clear();
-        boolean integerExecuted =  integer.executeIfAllowed(nextStage);
+        boolean integerExecuted = integer.executeIfAllowed(nextStage);
         boolean adderExecuted = adder.executeIfAllowed(nextStage);
         boolean multiplierExecuted = multiplier.executeIfAllowed(nextStage);
 
-        if(integerExecuted) {
+        if (integerExecuted) {
             activeInstructionsLastCycle.add(integer.getIR());
             activeInstructionsMem.add(integer.getIRMemAddressHex());
         }
-        if(adderExecuted){
+        if (adderExecuted) {
             activeInstructionsLastCycle.add(adder.getIR());
             activeInstructionsMem.add(adder.getIRMemAddressHex());
         }
-        if(multiplierExecuted){
+        if (multiplierExecuted) {
             activeInstructionsLastCycle.add(multiplier.getIR());
             activeInstructionsMem.add(multiplier.getIRMemAddressHex());
         }
@@ -92,23 +92,23 @@ public class EXSwitch extends AbstractStage {
         return integer.isNOP() && adder.isNOP() && multiplier.isNOP();
     }
 
-    public boolean hasStall(){
+    public boolean hasStall() {
         return integer.hasStalledLS(); // it's impossible to stall in adder or multiplier || adder.isStalling() || multiplier.isStalling();
     }
 
-    public boolean isTargetStageNOP(Opcode opcode){
+    public boolean isTargetStageNOP(Opcode opcode) {
         AbstractEXStage targetStage = getTargetStage(opcode);
         return targetStage.isNOP();
     }
 
-    public AbstractEXStage getStageToForward(){
-        if(!multiplier.isNOP() && multiplier.hasCompletedExeuction())
+    public AbstractEXStage getStageToForward() {
+        if (!multiplier.isNOP() && multiplier.hasCompletedExeuction())
             return multiplier;
 
-        if(!adder.isNOP() && adder.hasCompletedExeuction())
+        if (!adder.isNOP() && adder.hasCompletedExeuction())
             return adder;
 
-        if(!integer.isNOP() && integer.hasCompletedExeuction() && !integer.isStalling())
+        if (!integer.isNOP() && integer.hasCompletedExeuction() && !integer.isStalling())
             return integer;
 
         return null;
@@ -134,18 +134,26 @@ public class EXSwitch extends AbstractStage {
     }
 
     @Override
-    public boolean hasPendingWrite(String registerName){
+    public boolean hasPendingWrite(String registerName) {
         return multiplier.hasPendingWrite(registerName) ||
                 adder.hasPendingWrite(registerName) ||
                 integer.hasPendingWrite(registerName);
     }
 
-    public boolean hasPendingFloatingWrite(String registerName){
+    public boolean hasPendingFloatingWrite(String registerName) {
         return multiplier.hasPendingWrite(registerName) ||
                 adder.hasPendingWrite(registerName);
     }
 
     public EXIntegerStage getEXIntegerStage() {
         return integer;
+    }
+
+    public EXAdder getEXAdderStage() {
+        return adder;
+    }
+
+    public EXMultiplier getEXMultiplierStage() {
+        return multiplier;
     }
 }

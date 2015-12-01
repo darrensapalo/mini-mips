@@ -26,7 +26,7 @@ public class CPUTest {
     private ExecutionManager em;
 
     @Before
-    public void setUp() {
+    public void setUp() throws Exception {
         vertx = Vertx.factory.vertx();
         verticle = new MipsVerticle();
         vertx.deployVerticle(verticle);
@@ -624,7 +624,6 @@ public class CPUTest {
         assertEquals("After writing, register should be equal to 271 + 12 = 283", sum.forceLength(32), RegisterManager.instance().getInstance("R1").read().forceLength(32));
 
 
-
         code = "DADDIU R1,R3,FFFF";
         programCode = MipsParser.parseCodeString(code);
         em.inputProgramCode(programCode);
@@ -649,7 +648,6 @@ public class CPUTest {
 
         sum = StringBinary.valueOf(0);
         assertEquals("After writing, register should be equal to -1 + 1 = 0", sum.forceLength(32), RegisterManager.instance().getInstance("R1").read().forceLength(32));
-
 
 
         code = "DADDIU R1,R3,7FFF";
@@ -715,4 +713,191 @@ public class CPUTest {
         assertEquals("NPC should jump to 28 [4, 8, 12, 16, 20, -24-, 28]", StringBinary.valueOf(28).getAsInt(), cpu().getIfStage().getNPC().getAsInt());
 
     }
+
+    @Test
+    public void testADDS() throws Exception {
+
+        String code = "ADD.S F3, F1, F2";
+
+        RegisterManager.instance().updateRegister("F1", StringBinary.valueOf(1.8f));
+        RegisterManager.instance().updateRegister("F2", StringBinary.valueOf(3.2f));
+
+        ProgramCode programCode = MipsParser.parseCodeString(code);
+
+        em.inputProgramCode(programCode);
+
+        em.clockOnce();
+        assertEquals("Should be ADD.S operation", "ADD.S", cpu().getIfStage().getIR().getInstruction());
+
+        em.clockOnce();
+
+
+        // Four (4) EX stages
+        em.clockOnce();
+        assertEquals("Should be executing in exAdder stage", "ADD.S", cpu().getExStage().getEXAdderStage().getIR().getInstruction());
+        em.clockOnce();
+        em.clockOnce();
+        em.clockOnce();
+
+        // MEM
+        em.clockOnce();
+
+        // WB
+        em.clockOnce();
+
+        StringBinary expected = StringBinary.valueOf(5.0f);
+        assertEquals("Resulting F register should be equal to 5.0f", expected.forceLength(32), RegisterManager.instance().getInstance("F3").read().forceLength(32));
+
+    }
+
+    @Test
+    public void testADDSnegative() throws Exception {
+
+        String code = "ADD.S F3, F1, F2";
+
+        RegisterManager.instance().updateRegister("F1", StringBinary.valueOf(-1.8f));
+        RegisterManager.instance().updateRegister("F2", StringBinary.valueOf(3.2f));
+
+        ProgramCode programCode = MipsParser.parseCodeString(code);
+
+        em.inputProgramCode(programCode);
+
+        em.clockOnce();
+        assertEquals("Should be ADD.S operation", "ADD.S", cpu().getIfStage().getIR().getInstruction());
+
+        em.clockOnce();
+
+
+        // Four (4) EX stages
+        em.clockOnce();
+        assertEquals("Should be executing in exAdder stage", "ADD.S", cpu().getExStage().getEXAdderStage().getIR().getInstruction());
+        em.clockOnce();
+        em.clockOnce();
+        em.clockOnce();
+
+        // MEM
+        em.clockOnce();
+
+        // WB
+        em.clockOnce();
+
+        StringBinary expected = StringBinary.valueOf(1.4f);
+
+
+        float f3 = RegisterManager.instance().getInstance("F3").read().getAsFloat();
+        float expectedAsFloat = expected.getAsFloat();
+
+        float diff = f3 - expectedAsFloat;
+
+        assertTrue("Resulting F register should be equal to 1.4f = 3.2f - 1.8f. f3 = " + f3 + " and expected is " + expectedAsFloat, diff < 0.0000005f);
+
+    }
+
+    @Test
+    public void testADDSnegativeLarge() throws Exception {
+
+        String code = "ADD.S F3, F1, F2";
+
+        RegisterManager.instance().updateRegister("F1", StringBinary.valueOf(-63.6666f));
+        RegisterManager.instance().updateRegister("F2", StringBinary.valueOf(-64.3333f));
+
+        ProgramCode programCode = MipsParser.parseCodeString(code);
+
+        em.inputProgramCode(programCode);
+
+        em.clockOnce();
+        assertEquals("Should be ADD.S operation", "ADD.S", cpu().getIfStage().getIR().getInstruction());
+
+        em.clockOnce();
+
+
+        // Four (4) EX stages
+        em.clockOnce();
+        assertEquals("Should be executing in exAdder stage", "ADD.S", cpu().getExStage().getEXAdderStage().getIR().getInstruction());
+        em.clockOnce();
+        em.clockOnce();
+        em.clockOnce();
+
+        // MEM
+        em.clockOnce();
+
+        // WB
+        em.clockOnce();
+
+        StringBinary expected = StringBinary.valueOf(-128f);
+
+
+        float f3 = RegisterManager.instance().getInstance("F3").read().getAsFloat();
+        float expectedAsFloat = expected.getAsFloat();
+
+        float diff = f3 - expectedAsFloat;
+
+        System.out.println("F3         - " + RegisterManager.instance().getInstance("F3").read().getBinaryValue());
+        System.out.println("Add result - " + expected.getBinaryValue());
+
+        assertTrue("Resulting F register should be equal to -128f = -64f - 64f ... f3 = " + f3 + " and expected is " + expectedAsFloat, diff < 0.0005f);
+
+    }
+
+    @Test
+    public void testMULS() throws Exception {
+
+        String code = "MUL.S F1, F2";
+
+        RegisterManager.instance().updateRegister("F1", StringBinary.valueOf(-2f));
+        RegisterManager.instance().updateRegister("F2", StringBinary.valueOf(-3f));
+
+        ProgramCode programCode = MipsParser.parseCodeString(code);
+
+        em.inputProgramCode(programCode);
+
+        em.clockOnce();
+        assertEquals("Should be MUL.S operation", "MUL.S", cpu().getIfStage().getIR().getInstruction());
+
+        em.clockOnce();
+
+
+        // Eight (8) EX stages
+        em.clockOnce();
+        assertEquals("Should be executing in exAdder stage", "MUL.S", cpu().getExStage().getEXAdderStage().getIR().getInstruction());
+        em.clockOnce();
+        em.clockOnce();
+        em.clockOnce();
+
+        em.clockOnce();
+        em.clockOnce();
+        em.clockOnce();
+        em.clockOnce();
+
+        // MEM
+        em.clockOnce();
+
+        // WB
+        em.clockOnce();
+
+        StringBinary expected = StringBinary.valueOf(6f);
+
+
+        StringBinary hi = cpu().getHI();
+        StringBinary lo = cpu().getLO();
+
+        float expectedAsFloat = expected.getAsFloat();
+
+        assertEquals("HI should be all zeroes, since the answer is positive", StringBinary.valueOf(0).forceLength(32), hi.forceLength(32));
+
+        assertEquals("LO should be equal to 6, since -2 * -3 is 6", expected.forceLength(32), lo.forceLength(32));
+
+
+    }
+
+    @Test
+    public void testLS() throws Exception {
+
+    }
+
+    @Test
+    public void testSS() throws Exception {
+    }
+
+
 }
