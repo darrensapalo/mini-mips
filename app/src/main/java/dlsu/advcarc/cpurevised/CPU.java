@@ -77,7 +77,7 @@ public class CPU {
             memStage.housekeeping(exStageToForward);
             exStage.resetToNOP();
         }
-        if(!idStage.isStalling() && !idStage.isNOP() &&  exStage.isTargetStageNOP(idStage.getIR())) {
+        if(!idStage.isStalling() && !idStage.isNOP() &&  exStage.canAccommodate(idStage.getIR())) {
             exStage.housekeeping(idStage);
             idStage.resetToNOP();
         }
